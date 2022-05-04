@@ -146,14 +146,17 @@ end
 %% GRID
 
 %  
-prev_vec = zeros(length(G),2);
+
+for i = 1:numpatients 
+    
+prev_vec = zeros(length(G(:,:,1)),2);
 Gf_vec = zeros(length(G),2);
 
-G_grid = [G(1),G(1),G(1)];
+G_grid = [G(:,1:p),G(:,1,p),G(:,1,p)];
 delta_G = 15;
 tspan2 = 5;
 t_vec = [5,10,15];
-prev_vec(1,:) = [G(1),G(1)];
+prev_vec(1,:) = [G(:,1,p),G(:,1,p)];
 % Gmin = [ 130 1.5 1.6 ]; % Their meals
 % Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 Gmin = [90 0.5 0.5]; % For meal under 50 considered
@@ -181,6 +184,8 @@ for i = 3 : length(G)-1
 end
 
 sum(zero_one)
+
+end
 
 %% Visualize 
 
