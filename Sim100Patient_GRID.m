@@ -139,9 +139,10 @@ end
 
 for p=1:numpatients
 
-G(:,:,p) = CGMsensor(X(:,:,p), p(:,p)); % [mg/dL] 
+G(:,:,p) = CGMsensor(X(:,:,p), pf(:,p)); % [mg/dL] 
 
 end
+
 %% GRID
 
 %  
@@ -160,19 +161,19 @@ Gmin = [90 0.5 0.5]; % For meal under 50 considered
 tau = 6;
 flag = 0;
 
-[ Gf_vec(2,:) , prev_vec(2,:) , flag, zero_one(2) ] = GRID( delta_G , G_grid , tau, tspan2 , ...
+[ Gf_vec(2,:) , prev_vec(2,:) , flag, zero_one(2) ] = GRID_func( delta_G , G_grid , tau, tspan2 , ...
                                     prev_vec(1,:) , Gmin, Gf_vec(1,:) , t_vec ,flag );
                                 
                                 G_grid=[G(1),G(1),G(2)];
                                 
-[ Gf_vec(3,:) , prev_vec(3,:) , flag, zero_one(3) ] = GRID( delta_G , G_grid , tau, tspan2 , ...
+[ Gf_vec(3,:) , prev_vec(3,:) , flag, zero_one(3) ] = GRID_func( delta_G , G_grid , tau, tspan2 , ...
                                     prev_vec(2,:) , Gmin, Gf_vec(2,:) , t_vec, flag );
                                 
                                 G_grid=[G(1),G(2),G(3)];
 
 for i = 3 : length(G)-1
     
-[ Gf_vec(i+1,:) , prev_vec(i+1,:) , flag, zero_one(i) ] = GRID( delta_G , G_grid , tau, tspan2 , ...
+[ Gf_vec(i+1,:) , prev_vec(i+1,:) , flag, zero_one(i) ] = GRID_func( delta_G , G_grid , tau, tspan2 , ...
                                     prev_vec(i,:) , Gmin, Gf_vec(i,:) , t_vec , flag );
                                 
                                 G_grid=[G(i-1),G(i),G(i+1)];
