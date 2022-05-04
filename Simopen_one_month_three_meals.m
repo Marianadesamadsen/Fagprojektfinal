@@ -6,7 +6,7 @@
 clear all 
 clc 
 close all 
-kej
+
 %% Making path 
 % addpath(genpath(fullfile(pwd, './src'))); 
 
