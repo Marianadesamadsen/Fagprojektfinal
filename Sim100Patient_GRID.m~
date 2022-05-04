@@ -147,7 +147,6 @@ end
 
 prev_vec = zeros(length(G(:,:,1)),2,numpatients);
 Gf_vec = zeros(length(G),2,numpatients);
-detectedmeals = zeros(1,numpatients);
 
 for p = 1:numpatients 
 
@@ -182,7 +181,49 @@ for i = 3 : length(G)-1
                                 
 end
 
-detectedmeals(p)=sum(zero_one(:,p));
+detectedmeal(sum(zero_one(:,p))
 
 end
+
+%% Visualize 
+
+% Create figure with absolute size for reproducibility
+figure;
+
+% Plot blood glucose concentration
+subplot(511);
+plot(T*min2h, G);
+xlim([t0, tf]*min2h);
+ylabel({'Blood glucose concentration', '[mg/dL]'});
+hold on 
+plot(tspan(1:end-1)*min2h,zero_one*200,'r.');
+
+% Plot meal carbohydrate
+subplot(512);
+stem(tspan(1:end-1)*min2h, Ts*D(1, :), 'MarkerSize', 0.1);
+xlim([t0, tf]*min2h);
+ylabel({'Meal carbohydrates', '[g CHO]'});
+hold on 
+plot(tspan(1:end-1)*min2h,zero_one*100,'r.');
+
+% Plot basal insulin flow rate
+subplot(513);
+stairs(tspan*min2h, U(1, [1:end, end]));
+xlim([t0, tf]*min2h);
+ylabel({'Basal insulin', '[mU/min]'});
+
+% Plot bolus insulin
+subplot(514);
+stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :), 'MarkerSize', 1);
+xlim([t0, tf]*min2h);
+ylabel({'Bolus insulin', '[U]'}); 
+xlabel('Time [h]');
+
+% Plot detected Meals
+subplot(515);
+plot(tspan(1:end-1)*min2h,zero_one,'b-');
+xlim([t0, tf]*min2h);
+ylabel({'detected meal'}); 
+xlabel('Time [h]'); 
+ 
 
