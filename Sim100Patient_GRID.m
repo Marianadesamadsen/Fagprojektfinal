@@ -161,7 +161,7 @@ prev_vec(1,:) = [G(:,1,p),G(:,1,p)];
 % Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 Gmin = [90 0.5 0.5]; % For meal under 50 considered
 
-tau = 6;
+tau = 6; 
 flag = 0;
 
 [ Gf_vec(2,:) , prev_vec(2,:) , flag, zero_one(2) ] = GRID_func( delta_G , G_grid , tau, tspan2 , ...
