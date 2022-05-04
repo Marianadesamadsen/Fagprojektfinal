@@ -33,7 +33,7 @@ mU2U  = 1/U2mU;  % Convert from mU  to U
 %% Inizializing parameters
 
 numpatients = 100;
-p=pmatrix(numpatients);
+pf=pmatrix(numpatients);
 Gs = 108; % [mg/dL]: Steady state blood glucose concentration
 ts = [];
 
@@ -41,7 +41,7 @@ ts = [];
 
 for i=1:numpatients
     
-    [xs(i,:), us(i,:), flag] = computeSteadyStateMVPModel(ts, p(:,i), Gs);
+    [xs(i,:), us(i,:), flag] = computeSteadyStateMVPModel(ts, pf(:,i), Gs);
 
 % If fsolve did not converge, throw an error
 if(flag ~= 1), error ('fsolve did not converge!'); end
@@ -131,7 +131,7 @@ end
 
 for p=1:numpatients
 
-[T(:,:,p), X(:,:,p)] = OpenLoopSimulation(x0(p,:)', tspan, U(:,:,p)', D(:,:,p)', p(:,p)', @MVPmodel, @ExplicitEuler, Nk);
+[T(:,:,p), X(:,:,p)] = OpenLoopSimulation(x0(p,:)', tspan, U(:,:,p), D(:,:,p), pf(:,p), @MVPmodel, @ExplicitEuler, Nk);
 
 end
 

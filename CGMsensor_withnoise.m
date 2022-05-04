@@ -26,3 +26,6 @@ Noise_signal_h = h + std*randn(size(h)) + meanValue;
 
 h = Noise_signal_h;
 end
+
+
+
