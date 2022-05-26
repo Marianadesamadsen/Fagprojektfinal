@@ -46,8 +46,8 @@ function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
 
 % Inisializing all values
 
-Gfm_m2 = Gfm_vec(1);     % The second previous derivative
-Gfm_m1 = Gfm_vec(2);     % The previous derivative 
+Gfm_m2 = Gfm_vec(1);     % The second previous derivative used in euqation 4
+Gfm_m1 = Gfm_vec(2);     % The previous derivative used in equation 4
 
 Gfnsm2_prev = G_prev(1); % The second previous noise-spike filtered value
                          % used in equation 1   
@@ -77,15 +77,15 @@ Gfm2 = lowfilt_func(tau,tspan,Gfnsm2,Gfm2_prev);
 Gfm1 = lowfilt_func(tau,tspan,Gfnsm1,Gfm2);
 Gf   = lowfilt_func(tau,tspan,Gfns,Gfm1);
 
-% Inisializing for the estimation part 
+% Inisializing input for estimate_lagrange
 Gf_vec = [ Gfm2 , Gfm1 , Gf ]; 
 
 % Computing the first derivative using lagrange 
-Gfm    = estimate_lagrange(t_vec,Gf_vec); % Returns the derivative
+Gfm    = estimate_lagrange(t_vec,Gf_vec); % Returns the derivative 
 
-% Grid 
-if (Gf > Gmin1) && ( (Gfm > Gmin3) && (Gfm_m1 > Gmin3) ...
-        && (Gfm_m2 > Gmin3) || (Gfm > Gmin2) && (Gfm_m2 > Gmin2) )
+% The detection part from equation 4
+if (Gf > Gmin1) && ... 
+   ((Gfm > Gmin3) && (Gfm_m1 > Gmin3) && (Gfm_m2 > Gmin3) || (Gfm > Gmin2) && (Gfm_m2 > Gmin2) )
     
     zero_one = 1; % detected meal
     

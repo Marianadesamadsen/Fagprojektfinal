@@ -77,28 +77,31 @@ Gfm2 = lowfilt_func(tau,tspan,Gfnsm2,Gfm2_prev);
 Gfm1 = lowfilt_func(tau,tspan,Gfnsm1,Gfm2);
 Gf   = lowfilt_func(tau,tspan,Gfns,Gfm1);
 
-% Inisializing for the estimation part 
+% Inisializing input for estimate_lagrange
 Gf_vec = [ Gfm2 , Gfm1 , Gf ]; 
 
 % Computing the first derivative using lagrange 
 Gfm    = estimate_lagrange(t_vec,Gf_vec); % Returns the derivative 
 
-% Grid 
-if (Gf > Gmin1) && ( (Gfm > Gmin3) && (Gfm_m1 > Gmin3) ...
-        && (Gfm_m2 > Gmin3) || (Gfm > Gmin2) && (Gfm_m2 > Gmin2) )
+% The detection part from equation 4
+if (Gf > Gmin1) && ... 
+   ((Gfm > Gmin3) && (Gfm_m1 > Gmin3) && (Gfm_m2 > Gmin3) ...
+   || (Gfm > Gmin2) && (Gfm_m2 > Gmin2) )
     
-    zero_one = 1; % detected meal
+    zero_one = 1; % A meal has been detected 
     
 else
     
-    zero_one = 0; % no meal detected
+    zero_one = 0; % No meal has been detected
     
 end
 
 % Output
-G_prev = [Gfnsm2,Gfm2]; % The previous for: Gfns-1 and Gf-1 eq. 1 & 2
-Gfm_vec = [Gfm_m1,Gfm]; % The previous for: Gfm-m1 and Gfm-m2
+G_prev = [Gfnsm2,Gfm2]; % Outputting the updated filtered values 
+Gfm_vec = [Gfm_m1,Gfm]; % Outputting the updated derivative values 
 
+
+% Counting part 
 if flag > 0 
     
     flag = flag -1;
