@@ -43,7 +43,7 @@ if(flag ~= 1), error ('fsolve did not converge!'); end
 %% Intital and final time for the simulation over 18 hours
 
 t0 =  0;       % min - start time
-tf = 720*h2min; % min - end time
+tf = 18*h2min; % min - end time
 Ts = 5;        % min - sampling time
 
 %% Number of contral intervals
@@ -66,22 +66,10 @@ U = repmat(us, 1, N); % The same bolus and base rate for all
 D = zeros(1, N); % No meal assumed
 
 %% Meal and meal bolus after 1 hour
-tMeal1           = 7*h2min;          % [min]
-tMeal2           = 12*h2min;
-tMeal3           = 18*h2min;
-idxMeal1         = tMeal1  /5 + 1;   % [#]
-idxMeal2         = tMeal2  /5 + 1;   % [#]
-idxMeal3         = tMeal3  /5 + 1;   % [#]
-
-% Lopping over 30 days (one month)
-for i = 0:29
-    D(1, (idxMeal1+24*h2min/Ts*i))   = 90     /Ts;       % [g CHO/min]
-    U(2, (idxMeal1+24*h2min/Ts*i))   = 10*U2mU/Ts;  
-    D(1, (idxMeal2+24*h2min/Ts*i))   = 90     /Ts;       % [g CHO/min]
-    U(2, (idxMeal2+24*h2min/Ts*i))   = 10*U2mU/Ts;  
-    D(1, (idxMeal3+24*h2min/Ts*i))   = 90     /Ts;       % [g CHO/min]
-    U(2, (idxMeal3+24*h2min/Ts*i))   = 10*U2mU/Ts;  
-end 
+tMeal           = 1*h2min;          % [min]
+idxMeal         = tMeal  /Ts + 1;   % [#]
+D(1, idxMeal)   = 90     /Ts;       % [g CHO/min]
+U(2, idxMeal)   = 10*U2mU/Ts;       % [mU/min]
 
 %% Simulating the control states
 

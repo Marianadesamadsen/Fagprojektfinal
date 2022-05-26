@@ -80,7 +80,6 @@ idxMeal3         = tMeal3  /Ts + 1;   % [#]
 idxSnack1        = tSnack1 /Ts + 1;   
 idxSnack2        = tSnack2 /Ts + 1;
 
-
 %% Making meal sizes with respectivly bolus sizes
 
 meals=[50,70,10,120,40,80,110,90,60];

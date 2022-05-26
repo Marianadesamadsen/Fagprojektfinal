@@ -86,7 +86,7 @@ ctrlPar = [
 
 ctrlState = [
       0.0;  %          Initial value of integral
-    108.0]; % [mg/dL] Last measurements (dummy value)
+    108.0]; % [mg/dL] Last measurements of glucose (dummy value)
 
 %% Updating the nominal basal rate at steady state 
 
@@ -99,11 +99,6 @@ D = zeros(1, N);
 tMeal           = 1*h2min;        % [min]
 idxMeal         = tMeal/Ts + 1;   % [#]
 D(1, idxMeal)   = 90   /Ts;       % [g CHO/min]
-
-%% Meal and meal bolus after 1 hour
-tMeal           = 1*h2min;          % [min]
-idxMeal         = tMeal  /5 + 1;   % [#]
-D(1, idxMeal)   = 90     /5;       % [g CHO/min]
 
 %% Simulate
 % Closed-loop simulation

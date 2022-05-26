@@ -18,7 +18,6 @@ function [T, X, Y, U, ctrlState] = ClosedLoopSimulation(tspan,x0,D,p, ...
 %   ctrlState0          - initial controller state                          (dimension: nc)
 %   simMethod           - simulation method         (function handle)
 %   NK                  - Number of steps in each control interval
-%   dhatk               - 
 %
 % OUTPUT:
 %   T - boundaries of control intervals (=tspan)    (dimension:      N+1)
