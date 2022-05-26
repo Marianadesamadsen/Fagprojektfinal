@@ -7,9 +7,6 @@ clear all
 clc 
 close all 
 
-%% Making path 
-% addpath(genpath(fullfile(pwd, './src'))); 
-
 %% Formatting the plots 
 
 fs = 11; % Font size 

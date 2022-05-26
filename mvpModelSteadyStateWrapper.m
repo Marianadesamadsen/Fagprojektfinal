@@ -12,7 +12,7 @@ function R = mvpModelSteadyStateWrapper(w, t, d, p, Gs)
 % and zero insulin and glucagon boli:
 % 
 %   [f(t, w, d, p); A w - b]
-%
+% 
 % REQUIRED PARAMETERS:
 %   w  - a vector of states and manipulated inputs  (dimension:  9)
 %   t  - time

@@ -14,11 +14,11 @@ function [T,X] = OpenLoopSimulation(x0, tspan, U, D, p, simModel, simMethod, NK)
 %   p                   - parameters                                        (dimension: np    )
 %   simModel            - simulation model          (function handle)
 %   simMethod           - simulation method         (function handle)
-%   opts                - an options structure (must contain the field Nk)
+%   Nk                  - Number of time steps in each control interval 
 % 
 % OUTPUT:
-%   T - boundaries of control intervals (=tspan)    (dimension:      N+1)
-%   X - the states in the simulation model          (dimension: nx x N+1)
+%   T - The control state of time for each stept                            (dimension:      N+1)
+%   X - The states of the solved differential equation stores in matrix     (dimension: nx x N+1)
 %
 
 % Number of control steps 
