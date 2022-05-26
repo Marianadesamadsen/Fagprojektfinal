@@ -36,9 +36,9 @@ y0 = observationMethod(x0,p);
 uDummy = ctrlAlgorithm(y0, ctrlPar, ctrlState0);
 
 % Number of each variable
-nx = numel(x0); % states
-ny = numel(y0); % glucose concentration
-nu = numel(uDummy); % manipulated inputs
+nx = numel(x0);         % states
+ny = numel(y0);         % glucose concentration
+nu = numel(uDummy);     % manipulated inputs
 nc = numel(ctrlState0); % glucose concentration and integral term
 
 % Number of control intervals

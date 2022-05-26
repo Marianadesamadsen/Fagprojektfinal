@@ -1,4 +1,4 @@
-function value=singleShootingObjective(ubo,idxbo,scalingFactor,x0,tspan,U,D,p,simModel,simMethod,objectiveFunction,NK)
+function value = singleShootingObjective(ubo,idxbo,scalingFactor,x0,tspan,U,D,p,simModel,simMethod,objectiveFunction,NK)
 
 % Meal and meal bolus 
 U(idxbo, 1) = ubo; 
@@ -13,3 +13,7 @@ Z = CGMsensor(X, p);
 value = abs(scalingFactor*objectiveFunction(T, Z)); 
 
 end
+
+
+
+
