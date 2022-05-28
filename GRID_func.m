@@ -101,13 +101,23 @@ G_prev = [Gfnsm2,Gfm2]; % Outputting the updated filtered values
 Gfm_vec = [Gfm_m1,Gfm]; % Outputting the updated derivative values 
 
 
-% Counting part 
+% COUNTING PART
+
 if flag > 0 
+    
+ % flag larger than 0 means that a meal has been detected within 120 min
+ % implying that a meal should not be detected again already. So zero_one
+ % is set to 0. Therefore, flag is subtracted by -1, such that it will 
+ % count down so a meal can be detetected again after 120 min.
     
     flag = flag -1;
     zero_one = 0;
 
 elseif flag == 0 && zero_one == 1
+    
+  % flag equal to zero means a meal may be detected again 
+  % but only is if zero_one equals 1. When this happen flag start over
+  % counting down 120 min.
     
     flag = 120/tspan;
     
