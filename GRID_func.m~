@@ -30,20 +30,16 @@ function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
 %                         As follows: [G'_{F}(k-2),G'{F}(k-2)].
 %                         For equation (4).
 %
-% flag                  - For counting the time from last detected meal
+% flag                  - The counting value from last detected meal
 %
 % OUTPUT:
 % Gfm_vec               - The stored new vector of the previous filtered 
 %                         glucose measurements. 
-%                         As follows: [G'_{F}(k-1),G'{F}(k)]. 
+%                         As follows: [G'_{F}(k-2),G'{F}(k-2)]. 
 % 
-% G_prev                - The stored new vector of previous glucose
-%                         measurements. 
-%                         As follows: [G_{F,NS}(k-2),G_{F}(k-2)].
-% 
+% prev_vec              - The stored new vector of  [G_{F,NS}(k-1), G_{F}(k-2)]
 % zero_one              - 1 or 0 for detected meal.
-% 
-% flag                  - For counting the time from last detected meal
+% flag                  -
 % 
 % PROJECT:
 % Fagprojekt 2022

@@ -12,6 +12,7 @@ function Gf_ctrlstate = lowfilt_func(tau,tspan,Gfns,Gf_prev)
 % 
 % INPUT:
 % tau           -   Filter time constant
+% tspan         -   The interval step given as a number 
 % delta_t       -   The samling time period 
 % Gfns          -   The filtered value from spikefilt_func
 % Gf_prev       -   The previous filtered value from lowfilt_func
