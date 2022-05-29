@@ -30,14 +30,14 @@ nx = numel(x0);
 T = zeros(N+1, 1);
 X = zeros(N+1, nx); 
 
-% Storing inizial condition
+% Storing initial condition
 T(1) = tspan(1);
 X(1,:) = x0;
 
 % Step size
 h = (tspan(end)-tspan(1))/N;
 
-% Inizial time
+% Initial time
 tk=tspan(1);
 
 % Overwriting such that we start with xk

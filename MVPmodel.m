@@ -1,28 +1,47 @@
 function f = MVPmodel(t, x, u, d, p)
-% MVPMODEL Evaluate the right-hand side function of the Medtronic Virtual
-% Patient (MPV) model.
+% MVPmodel() 
 % 
-% Description:
-% This model describes the dynamics of the blood glucose concentration in
-% response to meals and subcutaneous insulin.
-%
-% Auther: 
-% Mariana de Sá Madsen 
-% Mona Saleem 
-% Emma Lind
-%
+% DESCRIPTION:
+% The function is the implementation of the Medtronic Virtual Patient
+% Model. It describes the dynamics of insulin and glucose concentration  
+% in response to a meal (glucose) and insulin in 
+% a patient given the patients' individual parameters, state vector and
+% time. The function returns the left hand side of the MVP model (the
+% derivative x'(t)) for one time point t. Function will be used for several
+% simulations as a function handle.
+
 % INPUT:
-%   t - time
-%   x - a vector of state variables         (dimension:  7)
-%   u - a vector of manipulated inputs      (dimension:  2)
-%   d - a vector of disturbance variables   (dimension:  1)
-%   p - a vector parameters                 (dimension: 10)
-% 
+%   t       - time
+%   x       - a vector of state variables                       (dimension:  7)
+%   u       - fast acting insulin, vector of manipulated inputs (dimension:  2)
+%   d       - meal rate, vector of disturbance variables        (dimension:  1)
+%   p       - a vector parameters                               (dimension: 10)
+%
 % OUTPUT:
-% Returns all the devivatives of X.
+% Returns the left hand side of the MVP model that being the derivatives of
+% the state vector x
+% 
+% PROJECT:
+% Fagprojekt 2022
+% A diabetes case study - Meal detection
+%
+% GENERAL:
+% BSc                       : Mathematics and technology 
+% University                : The Technical University of Denmark (DTU)
+% Department                : Applied Mathematics and Computer Science 
+% 
+% AUTHORS:
+% Emma Victoria Lind
+% Mariana de Sá Madsen 
+% Mona Saleem
+% 
+% CONTACT INFORMATION
+% s201205@student.dtu.dk
+% s191159@student.dtu.dk
+% s204226@student.dtu.dk
 
 
-% Inizializing the values of the vector X.
+% Initializing the values of the vector x.
 
 % Meal subsystem
 D1  = x(1); % [g CHO]
@@ -31,7 +50,7 @@ D2  = x(2); % [g CHO]
 % Insulin subsystem
 Isc = x(3); % [mU/L] Subcutaneous insulin concentration (Under the skin)
 Ip  = x(4); % [mU/L] Plasma insulin concentration (In the blood)
-Ieff = x(5); % [1/min]  Effekt of the insulin
+Ieff = x(5); % [1/min]  Effect of the insulin
 
 % Glucose subsystem
 G = x(6); % [mg/dL] Blood glucose concentration
@@ -58,10 +77,10 @@ tausc   = p(10); % [min]           Subcutaneous insulin time constant
 % Meal rate of appearance
 RA = 1000*D2/(VG*taum); % [(mg/dL)/min]
 
-% Inizialising the output vector
+% Initializing the output vector
 f = zeros(7, 1);
 
-% Calculating the derivatives:
+% Calculating the derivatives given by eq (2a-2g):
 f(1) =  d  - D1 /taum;
 f(2) = (D1 - D2)/taum;
 f(3) = ((ubasal + ubolus)/CI - Isc)/tau1;
