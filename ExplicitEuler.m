@@ -1,68 +1,86 @@
 function [T,X] = ExplicitEuler(f, tspan, x0, u, d, p)
 %
-% ExplicitEUler fixed step size to approximate the solution to 
-% an initial value problem.
+% ExplicitEuler
 %
-% [T,X] = ExplicitEuler_vores1(f, tspan, x0, varvargin)
-% 
 % DESCRIPTION:
-% Approximating the solution of the differential equations 
-% to the initial value problem
+% This function uses the explicit Euler method to approximate a solution
+% to a system of differential equations to the initial value problem.
 %
 % INPUT:
-%   f      - function handle for evaluating the right-hand side function
-%   tspan  - points in time where the solution is approximated (dimension: N+1)
-%   x0     - initial states                                    (dimension: nx)
-%   u,d,pf - inputs for the function for evaluating 
-% 
+%   f      - function to handle that computes the derivative (MVP model).
+%   tspan  - points in time where the solution is approximated.
+%   x0     - Initial state vector.
+%   u      - manipulated inputs (used for MVP model).
+%   d      - disturbance inputs (used for MVP model).
+%   p      - parameter vector   (used for MVP model).
+%
 % OUTPUT:
-%   T - boundaries of control intervals             (dimension: N+1)
-%   X - The solution to the differential equations  (dimension: N+1 x nx)
+%   T - Time steps of control intervals
+%   X - The solution to the differential equations at each control step
+%
+% PROJECT:
+% Fagprojekt 2022
+% A diabetes case study - Meal detection
+%
+% GENEREL:
+% BSc                       : Mathematics and technology
+% University                : The Technical University of Denmark (DTU)
+% Department                : Applied Mathematics and Computer Science
+%
+% AUTHORS:
+% Emma Victoria Lind
+% Mariana de Sá Madsen
+% Mona Saleem
+%
+% CONTACT INFORMATION
+% s201205@student.dtu.dk
+% s191159@student.dtu.dk
+% s204226@student.dtu.dk
+%
 
-
-% Number of steps
-N=numel(tspan) - 1;
+% Number of steps to approximate each the control step
+N = numel(tspan) - 1;
 
 % Length of the vector
 nx = numel(x0);
 
-% Allocating memory:
+% Allocating memory for Outputs
 T = zeros(N+1, 1);
-X = zeros(N+1, nx); 
+X = zeros(N+1, nx);
 
 % Storing initial condition
 T(1) = tspan(1);
 X(1,:) = x0;
 
-% Step size
+% Step size in the approximation (Explicit Euler step)
 h = (tspan(end)-tspan(1))/N;
 
-% Initial time
-tk=tspan(1);
+% Overwriting such that we start with tk
+tk = tspan(1);
 
 % Overwriting such that we start with xk
-xk=x0;
+xk = x0;
 
 for k=1:N
-    
-    % Calculating fk
+
+    % Calculating fk (finding derivative with MVP model)
     fk = feval(f, tk, xk, u, d, p);
-    
-    % Calculating xk+1
+
+    % Calculating xk+1 (Explicit Euler step)
     xkp1 = xk + h*fk;
+
     % Storing it in the matrix
     X(k+1,:) = xkp1;
+
     % Updating the xk
-    xk=xkp1; 
-    
-    % Calculating tkp1
+    xk=xkp1;
+
+    % Updating to tkp1
     tkp1 = tspan(k+1);
-    % Storing in the vector
+
+    % Storing in vector
     T(k+1) = tkp1;
-    
-end
 
 end
 
-
-
+end

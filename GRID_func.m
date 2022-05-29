@@ -1,24 +1,26 @@
-function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
-         delta_G , G , tau, tspan , G_prev , Gmin, Gfm_vec , t_vec, flag)
+function  [ Gfm_vec , filt_prev , flag, zero_one ] = GRID_func( ...
+         delta_G , G_vec , tau, tspan , filt_prev , Gmin, Gfm_vec , t_vec, flag)
 %
 % GRID_func()
 % 
 % DESCRIPTION:
 % The function is a part of the GRID algortihm. This is part of the
-% estimation section of the algortihm. The function finds the first
-% derivative using the 3-point lagrangian interpolation polynomial. The
-% first derivative is used later in the last section of the GRID algorithm.
+% dectection logic, the last part of the algortihm. 
+% The function takes in the glucose measurements, calls the two filter 
+% functions and finds the derivatives. After this it is able to detect
+% weather or not there a meal has been detected. Lastly, it counts down
+% such that a meal will not be detected twice within two hours
 % 
 % INPUT:
-% Delta G               - The maximum ROC (rate of change)  
+% delta_G               - The maximum ROC (rate of change)  
 %
-% G                     - Vector consisting of the glucose value and the 
+% G_vec                 - Vector consisting of the glucose value and the 
 %                         two previous glucose measurements.
 %                         As follows: [Gm-2, Gm-1, Gm].
 %                           
 % tspan                 - The interval step given as a number
 %
-% prev_vec              - Vector of previous filteret glucose measurements
+% filt_prev             - Vector of previous filteret glucose measurements
 %                         As follows: [G_{F,NS}(k-1), G_{F}(k-2)].
 %                         For equation (1)&(3).
 %
@@ -29,6 +31,8 @@ function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
 % Gfm_vec               - Vector of previous derivatives
 %                         As follows: [G'_{F}(k-2),G'{F}(k-2)].
 %                         For equation (4).
+%
+% t_vec                 - Vector of sampling time respectively for G 
 %
 % flag                  - For counting the time from last detected meal
 %
@@ -64,15 +68,18 @@ function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
 % s191159@student.dtu.dk
 % s204226@student.dtu.dk
 %
+% REFERENCE: 
+% MANGLER FRA ARTIKEL 
+%
 
 % Inisializing all values
 
 Gfm_m2 = Gfm_vec(1);     % The second previous derivative used in euqation 4
 Gfm_m1 = Gfm_vec(2);     % The previous derivative used in equation 4
 
-Gfnsm2_prev = G_prev(1); % The second previous noise-spike filtered value
+Gfnsm2_prev = filt_prev(1); % The second previous noise-spike filtered value
                          % used in equation 1   
-Gfm2_prev   = G_prev(2); % The second previous low filterd value used in 
+Gfm2_prev   = filt_prev(2); % The second previous low filterd value used in 
                          % equation 2
 
 % Minimum values used in equation 4
@@ -81,9 +88,9 @@ Gmin2 = Gmin(2);
 Gmin3 = Gmin(3);            
 
 % The two previous measured gluscose values and the one at control state
-Gm2 = G(1);              % The second previous glucose value  
-Gm1 = G(2);              % The previous glucose value  
-G   = G(3);              % The glucose value at control state   
+Gm2     = G_vec(1);              % The second previous glucose value  
+Gm1     = G_vec(2);              % The previous glucose value  
+G       = G_vec(3);              % The glucose value at control state   
 
 
 % COMPUTING 
@@ -118,7 +125,7 @@ else
 end
 
 % Output
-G_prev = [Gfnsm2,Gfm2]; % Outputting the updated filtered values 
+filt_prev = [Gfnsm2,Gfm2]; % Outputting the updated filtered values 
 Gfm_vec = [Gfm_m1,Gfm]; % Outputting the updated derivative values 
 
 

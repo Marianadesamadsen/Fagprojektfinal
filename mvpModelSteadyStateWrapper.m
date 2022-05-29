@@ -1,84 +1,68 @@
 function R = mvpModelSteadyStateWrapper(w, t, d, p, Gs)
-% MVPMODELSTEADYSTATEWRAPPER Wrapper used to identify the steady state
-% of the Medtronic Virtual Patient (MVP) model.
 %
-% SYNOPSIS:
-%   R = mvpModelSteadyStateWrapper(w, t, d, p, Gs)
-%
+% mvpModelSteadyStateWrapper
+% 
 % DESCRIPTION:
-% This function is used together with a root-finding algorithm, e.g., one
-% implemented in Matlabs fsolve, in order to find the steady state of the
-% Medtronic Virtual Patient (MVP) model for a given glucose concentration
-% and zero insulin and glucagon boli:
-% 
-%   [f(t, w, d, p); A w - b]
-% 
-% REQUIRED PARAMETERS:
-%   w  - a vector of states and manipulated inputs  (dimension:  9)
+% The function is used to identidy the steady state. It computes three
+% equations. These will be used with a foot-finding algorithm, meaning that
+% the equations will be sat equal to 0, and then computing the manipulated
+% values and state vector when steady state. 
+%
+% INPUT:
+%   w  - a vector of states and manipulated inputs. [x,u]
 %   t  - time
-%   d  - a vector of disturbance variables          (dimension:  1)
-%   p  - a vector parameters                        (dimension: 10)
+%   d  - a vector of disturbance variables         
+%   p  - a vector of parameters                        
 %   Gs - the steady state blood glucose concentration [mg/dL]
 %
-% OPTIONAL PARAMETERS:
-%
-% RETURNS:
-%   R - the residual equations (dimension: 9)
-%
-% DEPENDENCIES:
-% mvpModel
-%
-% See also mvpModel
-%          mvpOutput
-%          generateMVPParameters
-%          computeSteadyStateMVPModel
+% OUTPUT:
+% R - the residual equations 
 % 
-% REFERENCES
-% [1] Kanderian, S. S., Weinzimer, S., Voskanyan, G., and Steil, G. M.
-% (2009). Identification of intraday metabolic profiles during closed-loop
-% glucose control in individuals with type 1 diabetes. Journal of Diabetes
-% Science and Technology, 3(5), 1047-1057.
-% [2] Facchinetti, A., Favero, S. D., Sparacino, G., Castle, J. R., Ward,
-% W. K., and Cobelli, C. (2014). Modeling the glucose sensor error. IEEE
-% Transactions on Biomedical Engineering, 61(3), 620-629.
-% [3] Reenberg, A. T., Ritschel, T. K. S., Lindkvist, E. B., Laugesen, C.,
-% Svensson, J., Ranjan, A. G., Nørgaard, K. Jørgensen, J. B., 2022.
-% Nonlinear Model Predictive Control and System Identification for a Dual-
-% hormone Artificial Pancreas. In submission. arXiv: 2202.13938.
+% PROJECT:
+% Fagprojekt 2022
+% A diabetes case study - Meal detection
+%
+% GENEREL:
+% BSc                       : Mathematics and technology 
+% University                : The Technical University of Denmark (DTU)
+% Department                : Applied Mathematics and Computer Science 
+% 
+% AUTHORS:
+% Emma Victoria Lind
+% Mariana de Sá Madsen 
+% Mona Saleem
 % 
 % CONTACT INFORMATION
-%  info@diamatica.com
-%  tobk@dtu.dk
-% athre@dtu.dk
-%  jbjo@dtu.dk
-% 
-% AUTHORS
-% Tobias K. S. Ritschel
-% Asbjørn Thode Reenberg
-% John Bagterp Jørgensen
+% s201205@student.dtu.dk
+% s191159@student.dtu.dk
+% s204226@student.dtu.dk
+%
 
-% Extract states
+% Extract state vector
 x = w(1:end-2);
 
 % Extract manipulated inputs
 u = w(end-1:end);
 
-% Specified state variable
+% Glucose value
 G = x(6); % [mg/dL]
 
-% Specified manipulated input
+% Bolus insulin 
 ubo = u(2); % [mU/min]
 
-% Evaluate the right-hand side of the Hovorka model
+% Computing the right hand side of the MVP model (the derivatives).
 R1 = MVPmodel(t, x, u, d, p);
 
-% Specification equation for the blood glucose concentration
+% The change in the blood glucose concentration from the steady state
 R2 = G - Gs; % [mg/dL]
 
 % Specification equation for bolus insulin flow rate
 R3 = ubo;
 
-% Collect residual equations
+% All these equations will be sat equal to 0, and solved with fsolve to 
+% compute the state vector and the manipulated inputs at steady state
+
+% Collected residual equations
 R = [R1; R2; R3]; 
 
 end
