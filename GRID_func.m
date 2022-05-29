@@ -5,12 +5,14 @@ function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
 % 
 % DESCRIPTION:
 % The function is a part of the GRID algortihm. This is part of the
-% estimation section of the algortihm. The function finds the first
-% derivative using the 3-point lagrangian interpolation polynomial. The
-% first derivative is used later in the last section of the GRID algorithm.
+% dectection logic, the last part of the algortihm. 
+% The function takes in the glucose measurements, calls the two filter 
+% functions and finds the derivatives. After this it is able to detect
+% weather or not there a meal has been detected. Lastly, it counts down
+% such that a meal will not be detected twice within two hours
 % 
 % INPUT:
-% Delta G               - The maximum ROC (rate of change)  
+% delta_G               - The maximum ROC (rate of change)  
 %
 % G                     - Vector consisting of the glucose value and the 
 %                         two previous glucose measurements.
