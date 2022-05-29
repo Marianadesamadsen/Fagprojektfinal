@@ -1,5 +1,5 @@
 function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
-         delta_G , G , tau, tspan , G_prev , Gmin, Gfm_vec , t_vec, flag)
+         delta_G , G_vec , tau, tspan , G_prev , Gmin, Gfm_vec , t_vec, flag)
 %
 % GRID_func()
 % 
@@ -14,13 +14,13 @@ function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
 % INPUT:
 % delta_G               - The maximum ROC (rate of change)  
 %
-% G                     - Vector consisting of the glucose value and the 
+% G_vec                 - Vector consisting of the glucose value and the 
 %                         two previous glucose measurements.
 %                         As follows: [Gm-2, Gm-1, Gm].
 %                           
 % tspan                 - The interval step given as a number
 %
-% prev_vec              - Vector of previous filteret glucose measurements
+% G_prev                - Vector of previous filteret glucose measurements
 %                         As follows: [G_{F,NS}(k-1), G_{F}(k-2)].
 %                         For equation (1)&(3).
 %
@@ -31,6 +31,8 @@ function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
 % Gfm_vec               - Vector of previous derivatives
 %                         As follows: [G'_{F}(k-2),G'{F}(k-2)].
 %                         For equation (4).
+%
+% t_vec                 - Vector of sampling time respectively for G 
 %
 % flag                  - For counting the time from last detected meal
 %
@@ -66,6 +68,9 @@ function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
 % s191159@student.dtu.dk
 % s204226@student.dtu.dk
 %
+% REFERENCE: 
+% MANGLER FRA ARTIKEL 
+%
 
 % Inisializing all values
 
@@ -83,9 +88,9 @@ Gmin2 = Gmin(2);
 Gmin3 = Gmin(3);            
 
 % The two previous measured gluscose values and the one at control state
-Gm2 = G(1);              % The second previous glucose value  
-Gm1 = G(2);              % The previous glucose value  
-G   = G(3);              % The glucose value at control state   
+Gm2     = G_vec(1);              % The second previous glucose value  
+Gm1     = G_vec(2);              % The previous glucose value  
+G       = G_vec(3);              % The glucose value at control state   
 
 
 % COMPUTING 
