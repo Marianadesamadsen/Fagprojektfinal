@@ -38,7 +38,7 @@ function [T,X] = ExplicitEuler(f, tspan, x0, u, d, p)
 % s204226@student.dtu.dk
 %
 
-% Number of steps to approximate between the control step
+% Number of steps to approximate each the control step
 N = numel(tspan) - 1;
 
 % Length of the vector
@@ -52,7 +52,7 @@ X = zeros(N+1, nx);
 T(1) = tspan(1);
 X(1,:) = x0;
 
-% Step size in the approximation
+% Step size in the approximation (Explicit Euler step)
 h = (tspan(end)-tspan(1))/N;
 
 % Overwriting such that we start with tk
