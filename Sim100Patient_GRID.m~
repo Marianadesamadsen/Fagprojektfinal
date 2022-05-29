@@ -104,7 +104,8 @@ bolus = 0;
 meal  = randi([50,150],1,90);
 snack = 20;
 
-%% Inserting the meal sizes at the different hours/indicies
+%% Inserting the meal sizes at the different hours/index
+
 
 % Looping over all patients
 for p=1:numpatients
@@ -121,21 +122,17 @@ for p=1:numpatients
         U(2, (idxMeal3+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
         
     % Inserting the different meal sizes at the indcies 
-        D(1, (idxSnack1+24*h2min/Ts*i),p)   = snack     /Ts;            % [g CHO/min]
+        D(1, (idxSnack1+24*h2min/Ts*i),p)   = snack     /Ts;       % [g CHO/min]
         U(2, (idxSnack1+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
-        D(1, (idxSnack2+24*h2min/Ts*i),p)   = snack    /Ts;             % [g CHO/min]
+        D(1, (idxSnack2+24*h2min/Ts*i),p)   = snack    /Ts;       % [g CHO/min]
         U(2, (idxSnack2+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
         
      end
 
 end
 
-%% Simulating the control states for all patients
+%% Simulating the control states
 
-% Inisializing 
-
-
-% Looping over all patients
 for p=1:numpatients
 
 [T(:,:,p), X(:,:,p)] = OpenLoopSimulation(x0(p,:)', tspan, U(:,:,p), D(:,:,p), pf(:,p), @MVPmodel, @ExplicitEuler, Nk);
