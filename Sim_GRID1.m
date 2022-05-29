@@ -1,4 +1,4 @@
-%% Simulation test of the GRID algorithm 
+%% Simulation test of the GRID algorithm 30 days, 3 meals
 
 % Simulating 3 meals on 30 days, and detecting the meals
 % by using the GRID algorithm
@@ -67,9 +67,12 @@ D = zeros(1, N); % No meal assumed
 
 %% Meal and meal bolus at 7, 12, 18 hours
 
+% Time meals
 tMeal1           = 7*h2min;         
 tMeal2           = 12*h2min;
-tMeal3           = 18*h2min;  
+tMeal3           = 18*h2min; 
+
+% Index meals
 idxMeal1         = tMeal1  /Ts + 1;   
 idxMeal2         = tMeal2  /Ts + 1;   
 idxMeal3         = tMeal3  /Ts + 1;   
@@ -86,12 +89,12 @@ snack = 20;
 for i = 0:29
     
     % Inserting the different meal sizes at the indcies 
-        D(1, (idxMeal1+24*h2min/Ts*i),p)   = meal(1+3*i)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal1+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
-        D(1, (idxMeal2+24*h2min/Ts*i),p)   = meal(2+3*i)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal2+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
-        D(1, (idxMeal3+24*h2min/Ts*i),p)   = meal(3+3*i)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal3+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
+        D(1, (idxMeal1+24*h2min/Ts*i))   = meal(1+3*i)     /Ts;       % [g CHO/min]
+        U(2, (idxMeal1+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
+        D(1, (idxMeal2+24*h2min/Ts*i))   = meal(2+3*i)     /Ts;       % [g CHO/min]
+        U(2, (idxMeal2+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
+        D(1, (idxMeal3+24*h2min/Ts*i))   = meal(3+3*i)     /Ts;       % [g CHO/min]
+        U(2, (idxMeal3+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
         
 end
 
@@ -149,7 +152,7 @@ sum(zero_one)
 % Create figure with absolute size for reproducibility
 figure;
 
-% Plot blood glucose concentration
+% Plot blood glucose concentration and the detected meals as points
 subplot(511);
 plot(T*min2h, G);
 xlim([t0, tf]*min2h);
@@ -157,7 +160,7 @@ ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
 plot(tspan(1:end-1)*min2h,zero_one*200,'r.');
 
-% Plot meal carbohydrate
+% Plot meal carbohydrate and the detected meals as points
 subplot(512);
 stem(tspan(1:end-1)*min2h, Ts*D(1, :), 'MarkerSize', 0.1);
 xlim([t0, tf]*min2h);

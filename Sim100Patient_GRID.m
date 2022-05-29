@@ -1,7 +1,9 @@
-%% Simulation test of the GRID algorithm 
+%% Simulation test of the GRID algorithm on 100 patients
 
-% Simulating 3 meals and 2 snacks on 30 days, and detecting the meals
-% by using x0 based on the steadystate vector
+% Simulating 3 meals and 2 snacks on 30 days on 100 patients at a time
+% using the GRID algorithm
+
+%% 
 
 clear all 
 clc 
@@ -18,8 +20,6 @@ set(groot, 'DefaultLineLineWidth',  lw);
 set(groot, 'DefaultStairLineWidth', lw);
 set(groot, 'DefaultStemLineWidth',  lw);
 
-% reset(groot);
-
 %%  Conversion factors 
 
 h2min = 60;      % Convert from h   to min 
@@ -29,30 +29,33 @@ mU2U  = 1/U2mU;  % Convert from mU  to U
 
 %% Inizializing parameters
 
-numpatients = 100;
-pf=pmatrix(numpatients);
-Gs = 108; % [mg/dL]: Steady state blood glucose concentration
+numpatients = 100;         % number of patients
+pf = pmatrix(numpatients); % computing the p vectors for all patients
+Gs = 108;                  % Steady state blood glucose concentration
 ts = [];
 
 %% Computing steadty state
 
+% Inisializing
+xs=zeros(numpatients,:);
+us=zeros(numpatients,:);
+
+% Looping over all patients
 for i=1:numpatients
     
     [xs(i,:), us(i,:), flag] = computeSteadyStateMVPModel(ts, pf(:,i), Gs);
 
-% If fsolve did not converge, throw an error
-if(flag ~= 1), error ('fsolve did not converge!'); end
+    % If fsolve did not converge, throw an error
+    if(flag ~= 1), error ('fsolve did not converge!'); end
 
 end
 
 %% Intital and final time for the simulation over 30 days
-
 t0 =  0;       % min - start time
 tf = 720*h2min; % min - end time
 Ts = 5;        % min - sampling time
 
 %% Number of contral intervals
-
 N = (tf - t0)/5; % [#]
 
 %% Number of time steps in each control/sampling interval
@@ -66,24 +69,32 @@ x0 = xs;
 
 %% Manipulated inputs
 
-for i=1:100
+% Inisializing
+U=zeros(:,:,numpatients);
+
+% Looping over all patients 
+for i=1:numpatients
     
-    U(:,:,i) = repmat(us(i,:)', 1, N); % The same bolus and base rate for all
+    U(:,:,i) = repmat(us(i,:)', 1, N); % The same bolus and base rate for all time samples
 
 end
 
 %% Disturbance variables
 D = zeros(1, N,numpatients); % No meal assumed
 
-%% Meal and meal bolus at hours 7,12,18
-tMeal1           = 7*h2min;          % [min]
+%% Meals and snacks at 7,12,18 hours and 10,15 hours
+
+% Time meals
+tMeal1           = 7*h2min;          
 tMeal2           = 12*h2min;
 tMeal3           = 18*h2min;
 tSnack1          = 15*h2min;
-tSnack2          = 10*h2min;   
-idxMeal1         = tMeal1  /Ts + 1;   % [#]
-idxMeal2         = tMeal2  /Ts + 1;   % [#]
-idxMeal3         = tMeal3  /Ts + 1;   % [#]
+tSnack2          = 10*h2min;  
+
+% Index meals
+idxMeal1         = tMeal1  /Ts + 1;   
+idxMeal2         = tMeal2  /Ts + 1;   
+idxMeal3         = tMeal3  /Ts + 1;  
 idxSnack1        = tSnack1 /Ts + 1;   
 idxSnack2        = tSnack2 /Ts + 1;
 
