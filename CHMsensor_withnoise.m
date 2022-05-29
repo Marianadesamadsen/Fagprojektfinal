@@ -1,16 +1,16 @@
-function g = CGMsensor(x,pg)
+function h = CHMsensor_withnoise(X,ph)
 % 
 % CGMsensor()
 % 
 % DESCRIPTION:
-% Subtracts the glucose value from the x vector
+% Subtracts the subcutaneous glucose value from the x vector and adds gaussian noise
 %
 % INPUT:
 % x     - the state vector
-% pg    - vector of parameters (not used)
+% ph    - vector of parameters (not used)
 %
 % OUTPUT:
-% The glucose value
+% h     - the subcutaneous blood glucose concentration with Gaussian noise
 % 
 % PROJECT:
 % Fagprojekt 2022
@@ -32,8 +32,20 @@ function g = CGMsensor(x,pg)
 % s204226@student.dtu.dk
 %    
 
-% [mg/dL] The glucose concentration
-g = x(6,:);
+% Subcutanius glucose concentration
+h = X(7, :);
+
+% Computing the Gaussian noise
+std=1.5;        % standard deviation of 2%
+meanValue=0;    % mean=0
+
+% Adding the noise
+Noise_signal_g = h + std*randn(size(h)) + meanValue;
+
+% Updating output with noise
+h = Noise_signal_g;
 
 end
+
+
 
