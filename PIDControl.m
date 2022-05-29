@@ -1,63 +1,89 @@
 function [uk,ctrlstate] = PIDControl(yk, ctrlPar, ctrlState)
 %
-% PIDCONTROLLER PID controller for controlling the insulin flow rate.
-%
-% DESCRIPTION: 
+% PIDControl()
+% 
+% DESCRIPTION:
 % This function implements a discretized proportional-integral-derivative
 % (PID) controller for controlling the blood glucose concentration.
 %
 % INPUT:
-%   Ik              - the integral term (Ik)
-%   ybar            - the traget glucose concentration, y=108
-%   yk              - the current glucose concentration, yk
-%   ykm1            - previous glucose concentration, yk-1
-%   us              - insulin state
-%   Kp,Ti,Td        - tuned parameters
-%   Ts              - samlping time, 5 min
-% 
-% Output:
+% ctrlPar    - vector of the following:
+%                   * Ts              - samlping time, 5 min
+%                   * Kp              - Proportional gain
+%                   * Ki              - Integrator gain  
+%                   * Kd              - Derivative gain     
+%                   * ybar            - The traget glucose concentration, y=108
+%                   * ubar            - Nominal insulin flow rate
+%                   * Ti              - Tuned parameters
+%                   * Td              - Tuned parameters
+%
+% crtlState  - vector of the following:
+%                   * Ik              - The integral term (Ik)
+%                   * ykm1            - Previous glucose concentration, yk-1
+%
+% OUTPUT:
 %   uk          - a vector of manipulated inputs
 %   crtlstate   - the updated controller state
+% 
+% PROJECT:
+% Fagprojekt 2022
+% A diabetes case study - Meal detection
+%
+% GENEREL:
+% BSc                       : Mathematics and technology 
+% University                : The Technical University of Denmark (DTU)
+% Department                : Applied Mathematics and Computer Science 
+% 
+% AUTHORS:
+% Emma Victoria Lind
+% Mariana de Sá Madsen 
+% Mona Saleem
+% 
+% CONTACT INFORMATION
+% s201205@student.dtu.dk
+% s191159@student.dtu.dk
+% s204226@student.dtu.dk
+%
 
 
 % Unpack control parameters
-Ts      = ctrlPar(1); % [min]    Sampling time
-Kp      = ctrlPar(2); %          Proportional gain
-% Ki      = ctrlPar(3); %          Integrator gain
-% Kd      = ctrlPar(4); %          Derivative gain
-ybar    = ctrlPar(5); % [mg/dL]  Target blood glucose concentration
-ubar    = ctrlPar(6); % [mU/min] Nominal insulin flow rate
-Ti      = ctrlPar(7);
-Td      = ctrlPar(8);
+Ts      = ctrlPar(1);  %          Sampling time
+Kp      = ctrlPar(2);  %          Proportional gain
+%Ki      = ctrlPar(3); %          Integrator gain (not used since we calculate it in the function line 68)
+%Kd      = ctrlPar(4); %          Derivative gain (not used since we calculate it in the function line 69)
+ybar    = ctrlPar(5);  %          Target blood glucose concentration
+ubar    = ctrlPar(6);  %          Nominal insulin flow rate
+Ti      = ctrlPar(7);  %          Tuned parameters
+Td      = ctrlPar(8);  %          Tuned parameters
 
 % Unpack control state
-Ik = ctrlState(1); %           Value of integral at previous time step
-ykm1 = ctrlState(2); % [mg/dL]   Previous observed glucose concentration
-
+Ik = ctrlState(1);    %           Value of integral at previous time step
+ykm1 = ctrlState(2);  %           Previous observed glucose concentration
 
 % Computing
 
-ek = yk-ybar; % Setpoint error
+ek = yk-ybar;              % Setpoint error
 
-Ki = Kp * Ts/Ti; % helps controlling the steady state
-Kd = Kp * Td/Ts; % the top 
+Ki = Kp * Ts/Ti;           % Helps controlling the steady state
+Kd = Kp * Td/Ts;           % The top 
 
-Pk = Kp * ek; % Proportional term: controls how fast we change the error 
+Pk = Kp * ek;              % Proportional term. Controls how fast the error change 
 
-Ikp1 = Ik + Ki * ek; % Integral term: Ik the area of the error
+Ikp1 = Ik + Ki * ek;       % Integral term. The area of the error
 
-Dk = Kd * (yk-ykm1); % Derivative term: The top of the curve
+Dk = Kd * (yk-ykm1);       % Derivative term. The top of the curve
 
 uba = ubar + Pk + Ik + Dk; % Basal insulin flow rate
 
-ubo = 0; % Bolus insulin flow rate is zero
+ubo = 0;                   % Bolus insulin flow rate is zero
+
 
 % OUTPUT 
 
-% Manipulated inputs (must be non-negative) OUTPUT
+% The controlled manipulated inputs at time step
 uk = [uba,ubo];
 
-% Controller state OUTPUT
+% Controller state OUTPUT 
 ctrlstate = [Ikp1; yk];
 
 end

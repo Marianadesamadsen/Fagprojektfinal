@@ -75,10 +75,9 @@ for k=1:N
     % Updating the xk
     xk=xkp1; 
     
-    % Updating to tkp1
+    % Calculating tkp1
     tkp1 = tspan(k+1);
-    
-    % Storing in vector
+    % Storing in the vector
     T(k+1) = tkp1;
     
 end
