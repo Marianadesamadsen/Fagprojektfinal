@@ -121,37 +121,40 @@ G = CGMsensor(X, p); % [mg/dL]
 %% Detecting meals using GRID algorithm
 
 % Inisializing 
-G_prev = zeros(length(G),2);    % The vector of previous filtered values
-Gfm_vec = zeros(length(G),2);   % The vector of previous derivatives
-G_vec = [G(1),G(1),G(1)];       % Inserting the start previous glucose measurements as the same value
-delta_G = 15;                   % From article
-t_vec = [5,10,15];              % The respective sampling times
-G_prev(1,:) = [G(1),G(1)];      % Inserting the previous filtered value as the not filtered values
-tau = 6;                        % From the article
-flag = 0;                       % No detected meal to begin with
-Gmin = [90 0.5 0.5];            % For meal under 50 considered
+filt_prev      = zeros(length(G),2); % The vector of previous filtered values
+Gfm_vec        = zeros(length(G),2); % The vector of previous derivatives
+G_vec          = [G(1),G(1),G(1)];   % Inserting the start previous glucose measurements as the same value
+delta_G        = 15;                 % From article
+t_vec          = [5,10,15];          % The respective sampling times
+filt_prev(1,:) = [G(1),G(1)];        % Inserting the previous filtered value as the not filtered values
+tau            = 6;                  % From the article
+flag           = 0;                  % No detected meal to begin with
+Gmin           = [90 0.5 0.5];       % For meal under 50 considered
 
 % Other tries
 %Gmin = [ 130 1.5 1.6 ]; % Their meals
 %Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 
 
-% Making the first two detections
-[ Gfm_vec(2,:) , G_prev(2,:) , flag, zero_one(2) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    G_prev(1,:) , Gmin, Gfm_vec(1,:) , t_vec ,flag );
+% Computing the first two detections
+[ Gfm_vec(2,:) , filt_prev(2,:) , flag, zero_one(2) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
+                                    filt_prev(1,:) , Gmin, Gfm_vec(1,:) , t_vec ,flag );
                                 
+                                % Updating G_vec
                                 G_vec=[G(1),G(1),G(2)];
                                 
-[ Gfm_vec(3,:) , G_prev(3,:) , flag, zero_one(3) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    G_prev(2,:) , Gmin, Gfm_vec(2,:) , t_vec, flag );
+[ Gfm_vec(3,:) , filt_prev(3,:) , flag, zero_one(3) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
+                                    filt_prev(2,:) , Gmin, Gfm_vec(2,:) , t_vec, flag );
                                 
+                                % Updating G_vec
                                 G_vec=[G(1),G(2),G(3)];
-% Making the last detections
+% Computing the last detections
 for i = 3 : length(G)-1
     
-[ Gfm_vec(i+1,:) , G_prev(i+1,:) , flag, zero_one(i) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    G_prev(i,:) , Gmin, Gfm_vec(i,:) , t_vec , flag );
+[ Gfm_vec(i+1,:) , filt_prev(i+1,:) , flag, zero_one(i) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
+                                    filt_prev(i,:) , Gmin, Gfm_vec(i,:) , t_vec , flag );
                                 
+                                % Updating G_vec
                                 G_vec=[G(i-1),G(i),G(i+1)];
                                 
 end

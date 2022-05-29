@@ -1,5 +1,5 @@
-function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
-         delta_G , G_vec , tau, tspan , G_prev , Gmin, Gfm_vec , t_vec, flag)
+function  [ Gfm_vec , filt_prev , flag, zero_one ] = GRID_func( ...
+         delta_G , G_vec , tau, tspan , filt_prev , Gmin, Gfm_vec , t_vec, flag)
 %
 % GRID_func()
 % 
@@ -20,7 +20,7 @@ function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
 %                           
 % tspan                 - The interval step given as a number
 %
-% G_prev                - Vector of previous filteret glucose measurements
+% filt_prev             - Vector of previous filteret glucose measurements
 %                         As follows: [G_{F,NS}(k-1), G_{F}(k-2)].
 %                         For equation (1)&(3).
 %
@@ -77,9 +77,9 @@ function  [ Gfm_vec , G_prev , flag, zero_one ] = GRID_func( ...
 Gfm_m2 = Gfm_vec(1);     % The second previous derivative used in euqation 4
 Gfm_m1 = Gfm_vec(2);     % The previous derivative used in equation 4
 
-Gfnsm2_prev = G_prev(1); % The second previous noise-spike filtered value
+Gfnsm2_prev = filt_prev(1); % The second previous noise-spike filtered value
                          % used in equation 1   
-Gfm2_prev   = G_prev(2); % The second previous low filterd value used in 
+Gfm2_prev   = filt_prev(2); % The second previous low filterd value used in 
                          % equation 2
 
 % Minimum values used in equation 4
@@ -125,7 +125,7 @@ else
 end
 
 % Output
-G_prev = [Gfnsm2,Gfm2]; % Outputting the updated filtered values 
+filt_prev = [Gfnsm2,Gfm2]; % Outputting the updated filtered values 
 Gfm_vec = [Gfm_m1,Gfm]; % Outputting the updated derivative values 
 
 
