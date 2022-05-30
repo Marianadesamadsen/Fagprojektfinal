@@ -54,7 +54,7 @@ function ubo=computeOptimalBolus(N,M,idxbo,scalingFactor,x0,tspan,U,D,p,simModel
 % s191159@student.dtu.dk
 % s204226@student.dtu.dk
 
-% Calculating the max phi value 
+% Calculating the min phi value 
 min_phi=singleShootingObjective(N,idxbo,scalingFactor,x0,tspan,U,D,p,simModel,simMethod,objectiveFunction,NK);
 
 % Setting optimal bolus for that value
