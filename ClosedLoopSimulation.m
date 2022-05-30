@@ -1,22 +1,25 @@
 function [T, X, Y, U, ctrlState] = ClosedLoopSimulation(tspan,x0,D,p, ... 
     ctrlAlgorithm, simMethod, simModel, observationMethod, ctrlPar,ctrlState0,NK)
-% CLOSEDLOOPSIMULATION Simulate a closed-loop control algorithm.
+%
+% ClosedLoopSimulation()
 % 
 % DESCRIPTION:
-% Perform a closed-loop simulation of a model-based control algorithm for
+% Performs a closed-loop simulation of a model-based control algorithm for
 % given initial condition, control intervals, disturbance variables,
 % parameters, simulation model, observation model, and control algorithm.
+% Closed-loop is used when the input depends on the output; this function
+% is part of the PID-controller. 
 %
 % INPUT:
 %   x0                  - initial state                                     (dimension: nx    )
 %   tspan               - boundaries of the control intervals               (dimension: N+1   )
 %   D                   - disturbance variables for each control interval   (dimension: nd x N)
 %   p                   - parameters                                        (dimension: np    )
-%   simModel            - simulation model          (function handle)
-%   ctrlAlgorithm       - control algorithm         (function handle)
+%   simModel            - simulation model                                  (function handle)
+%   ctrlAlgorithm       - control algorithm                                 (function handle)
 %   ctrlPar             - controller parameters
 %   ctrlState0          - initial controller state                          (dimension: nc)
-%   simMethod           - simulation method         (function handle)
+%   simMethod           - simulation method                                 (function handle)
 %   NK                  - Number of steps in each control interval
 %
 % OUTPUT:
@@ -25,6 +28,26 @@ function [T, X, Y, U, ctrlState] = ClosedLoopSimulation(tspan,x0,D,p, ...
 %   X - the observed variables                      (dimension: ny x N+1)
 %   U - the computed manipulated inputs             (dimension: nu x N  )
 %   ctrlState - matrix of controller states         (dimension: nc x N+1)
+%
+% PROJECT:
+% Fagprojekt 2022
+% A diabetes case study - Meal detection
+%
+% GENEREL:
+% BSc                       : Mathematics and technology 
+% University                : The Technical University of Denmark (DTU)
+% Department                : Applied Mathematics and Computer Science 
+% 
+% AUTHORS:
+% Emma Victoria Lind
+% Mariana de Sá Madsen 
+% Mona Saleem
+% 
+% CONTACT INFORMATION
+% s201205@student.dtu.dk
+% s191159@student.dtu.dk
+% s204226@student.dtu.dk
+%
 
 % Initial time
 t0 = tspan(1);

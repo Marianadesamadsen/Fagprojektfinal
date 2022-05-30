@@ -1,5 +1,11 @@
 function phi = asymmetricQuadraticPenaltyFunction(T, Z)
-
+% asymmetricQuadraticPenaltyFunction() 
+%
+% DESCRIPTION:
+% The function evaluates the objective function, which is the integral of
+% the asymmetric quadratic glucose penalty function. This integral is 
+% computed by using the right-rectangle rule on the given time interval.
+%
 % INPUT
 %   T   - vector of times       (dimension: N+1)
 %   Z   - matrix of outputs     (dimension: nz x N+1)

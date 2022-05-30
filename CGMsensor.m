@@ -32,7 +32,7 @@ function g = CGMsensor(x,pg)
 % s204226@student.dtu.dk
 %
 
-% [mg/dL] The glucose concentration
-g = x(6,:);
+% [mg/dL] The subcutaneous glucose concentration
+g = x(7,:);
 
 end

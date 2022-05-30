@@ -8,7 +8,7 @@ function [uk,ctrlstate] = PIDControl(yk, ctrlPar, ctrlState)
 %
 % INPUT:
 % ctrlPar    - vector of the following:
-%                   * Ts              - samlping time, 5 min
+%                   * Ts              - sampling time, 5 min
 %                   * Kp              - Proportional gain
 %                   * Ki              - Integrator gain  
 %                   * Kd              - Derivative gain     
