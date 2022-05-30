@@ -57,7 +57,7 @@ function ubo=computeOptimalBolus(N,M,idxbo,scalingFactor,x0,tspan,U,D,p,simModel
 % Calculating the min phi value 
 min_phi=singleShootingObjective(N,idxbo,scalingFactor,x0,tspan,U,D,p,simModel,simMethod,objectiveFunction,NK);
 
-% Setting optimal bolus for that value
+% Setting optimal bolus for the highest posible value
 ubo=N; 
 
 for i=1:M:N
@@ -68,7 +68,7 @@ current_phi=singleShootingObjective(i,idxbo,scalingFactor,x0,tspan,U,D,p,simMode
 
 % Checking if the current value is less than the min_phi
 if abs(current_phi)<abs(min_phi)   
-    ubo=i; % Setting ubo to that value
+    ubo=i; % Setting ubo to that value that is lower than ubo before
     min_phi=current_phi; % Overwriting for testing new current_phi
 end
 
