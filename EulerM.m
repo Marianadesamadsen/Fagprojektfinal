@@ -29,7 +29,7 @@ R = 4;
 
 for k=1:N
 
-    dt = T(k)/(2^8);
+    dt = T(k)/N;
     Dt = R*dt; 
     
     dW = sqrt(dt)*randn(1,2^8);
@@ -38,7 +38,7 @@ for k=1:N
     fk = feval(f, tk, xk, u, d, p);
 
     Winc = sum(dW(R*(k-1)+1:R*k));
-    xkp1 = xk + Dt*lambda*fk + mu*fk*Winc;
+    xkp1 = xk + Dt*lambda*fk + mu*xk*Winc;
 
     % Storing it in the matrix
     X(k+1,:) = xkp1;
