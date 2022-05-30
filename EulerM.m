@@ -38,8 +38,7 @@ for k=1:N
     fk = feval(f, tk, xk, u, d, p);
 
     Winc = sum(dW(R*(k-1)+1:R*k));
-    Xtemp = fk + Dt*lambda*fk + mu*fk*Winc;
-    X(k) = Xtemp;
+    xkp1 = xk + Dt*lambda*fk + mu*fk*Winc;
 
     % Storing it in the matrix
     X(k+1,:) = xkp1;
