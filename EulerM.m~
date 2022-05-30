@@ -1,5 +1,8 @@
 function [X] = EulerM(f,tspan,x0,u,d,p)
 
+
+
+
 % Number of steps to approximate each the control step
 N = numel(tspan) - 1;
 
@@ -14,30 +17,19 @@ X = zeros(N+1, nx);
 T(1) = tspan(1);
 X(1,:) = x0;
 
-% Overwriting such that we start with tk
-tk = tspan(1);
-
-% Overwriting such that we start with xk
-xk = x0;
+% Step size in the approximation (Explicit Euler step)
+h = (tspan(end)-tspan(1))/N;
 
 lambda = 1.5;
 mu = 0; 
 
-dW = sqrt(dt)*randn(1,2^8);
-
-R = 4; 
-
 for k=1:N
 
-    dt = T(k)/(2^8);
-    Dt = R*dt; 
-    
     % Calculating fk (finding derivative with MVP model)
     fk = feval(f, tk, xk, u, d, p);
 
-    Winc = sum(dW(R*(k-1)+1:R*k));
-    Xtemp = fk + Dt*lambda*fk + mu*fk*Winc;
-    X(k) = Xtemp;
+    % Calculating xk+1 (Explicit Euler step)
+    xkp1 = xk + h*fk;
 
     % Storing it in the matrix
     X(k+1,:) = xkp1;
@@ -50,6 +42,26 @@ for k=1:N
 
     % Storing in vector
     T(k+1) = tkp1;
+
+dt = T/N;
+
+R = 4; 
+Dt = R*dt; 
+L = N/R; % L EM steps of size Dt = R*dt
+Xem = zeros(1,L); % preallocate for efficiency
+Xtemp = x0;
+
+for j = 1:L
+    
+Winc = sum(dW(R*(j-1)+1:R*j));
+Xtemp = Xtemp + Dt*lambda*Xtemp + mu*Xtemp*Winc;
+Xem(j) = Xtemp;
+
+end
+
+X=Xem;
+    
+    
     
 end
 
