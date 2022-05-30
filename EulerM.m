@@ -17,6 +17,9 @@ X(1,:) = x0;
 % Overwriting such that we start with tk
 tk = tspan(1);
 
+% delta t
+dt = tspan(2)-tspan(1);
+
 % Overwriting such that we start with xk
 xk = x0;
 
@@ -28,7 +31,7 @@ for k=1:N-1
     % Calculating fk (finding derivative with MVP model)
     fk = feval(f, tk, xk, u, d, p);
 
-    xkp1 = xk + fk + xk*(W(k+1)-W(k));
+    xkp1 = xk + fk*dt + xk*(W(k+1)-W(k));
 
     % Storing it in the matrix
     X(k+1,:) = xkp1;
