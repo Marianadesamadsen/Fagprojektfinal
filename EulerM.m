@@ -20,25 +20,15 @@ tk = tspan(1);
 % Overwriting such that we start with xk
 xk = x0;
 
-% The stochastic elements 
-lambda = 1.5;
-mu = 0; 
+% The simulation of noise
+W=brownianmotion(N,tspan);
 
-% 
-R = 4; 
-
-for k=1:N
-
-    dt = T(k)/N;
-    Dt = R*dt; 
-    
-    dW = sqrt(dt)*randn(1,2^8);
+for k=1:N-1
     
     % Calculating fk (finding derivative with MVP model)
     fk = feval(f, tk, xk, u, d, p);
 
-    Winc = sum(dW(R*(k-1)+1:R*k));
-    xkp1 = xk + Dt*lambda*fk + mu*xk*Winc;
+    xkp1 = xk + fk + xk*(W(k+1)-W(k));
 
     % Storing it in the matrix
     X(k+1,:) = xkp1;
