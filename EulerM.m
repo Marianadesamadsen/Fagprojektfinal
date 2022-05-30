@@ -31,6 +31,7 @@ for k=1:N-1
     % Calculating fk (finding derivative with MVP model)
     fk = feval(f, tk, xk, u, d, p);
 
+    % Euler Maruyama step
     xkp1 = xk + fk*dt + xk*(W(k+1)-W(k));
 
     % Storing it in the matrix

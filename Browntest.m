@@ -1,7 +1,7 @@
 
 
-N=8640;
-T=8640;
+N=100;
+T=1;
 
 W=brownianmotion(N,T);
 
@@ -12,7 +12,5 @@ plot(W)
 % omkring 0. 
 
 % W er den random process i målingerne. 
-
-
 
 
