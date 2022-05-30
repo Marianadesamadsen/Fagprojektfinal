@@ -32,7 +32,7 @@ function h = CHMsensor_withnoise(X,ph)
 % s204226@student.dtu.dk
 %    
 
-% Subcutanius glucose concentration
+% Subcutaneous glucose concentration
 h = X(7, :);
 
 % Computing the Gaussian noise
