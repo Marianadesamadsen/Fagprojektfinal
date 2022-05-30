@@ -17,7 +17,7 @@ function [T,X] = ExplicitEuler(f, tspan, x0, u, d, p)
 % OUTPUT:
 %   T - Time steps of control intervals
 %   X - The solution to the differential equations at each control step
-%
+% 
 % PROJECT:
 % Fagprojekt 2022
 % A diabetes case study - Meal detection
@@ -38,7 +38,7 @@ function [T,X] = ExplicitEuler(f, tspan, x0, u, d, p)
 % s204226@student.dtu.dk
 %
 
-% Number of steps to approximate each the control step
+% Number of control steps
 N = numel(tspan) - 1;
 
 % Length of the vector

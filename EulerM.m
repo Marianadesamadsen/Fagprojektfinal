@@ -1,6 +1,6 @@
 function [T,X] = EulerM(f,tspan,x0,u,d,p)
 
-% Number of steps to approximate each the control step
+% Number of control steps
 N = numel(tspan) - 1;
 
 % Length of the vector
@@ -20,9 +20,11 @@ tk = tspan(1);
 % Overwriting such that we start with xk
 xk = x0;
 
+% The stochastic elements 
 lambda = 1.5;
 mu = 0; 
 
+% 
 R = 4; 
 
 for k=1:N
@@ -50,9 +52,8 @@ for k=1:N
 
     % Storing in vector
     T(k+1) = tkp1;
-    
+   
 end
-
 
 
 end
