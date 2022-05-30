@@ -1,4 +1,4 @@
-function f = MVPmodel_noise(t, x, u, d, p)
+function f = MVPmodel2_noise(t, x, u, d, p)
 % MVPmodel() 
 % 
 % DESCRIPTION:
@@ -41,27 +41,31 @@ function f = MVPmodel_noise(t, x, u, d, p)
 % s191159@student.dtu.dk
 % s204226@student.dtu.dk
 
+% Computing the Gaussian noise
+std=1.5;        % standard deviation of 2%
+meanValue=0;    % mean=0
 
 % Initializing the values of the vector x.
 
 % Meal subsystem
-D1  = x(1); % [g CHO]
-D2  = x(2); % [g CHO]
+D1  = x(1) + std*randn(size(x(1))) + meanValue; % [g CHO]
+D2  = x(2) + std*randn(size(x(2))) + meanValue; % [g CHO]
 
 % Insulin subsystem
-Isc = x(3); % [mU/L] Subcutaneous insulin concentration (Under the skin)
-Ip  = x(4); % [mU/L] Plasma insulin concentration (In the blood)
-Ieff = x(5); % [1/min]  Effect of the insulin
+Isc = x(3) + std*randn(size(x(3))) + meanValue; % [mU/L] Subcutaneous insulin concentration (Under the skin)
+Ip  = x(4) + std*randn(size(x(4))) + meanValue; % [mU/L] Plasma insulin concentration (In the blood)
+Ieff = x(5) + std*randn(size(x(5))) + meanValue; % [1/min]  Effect of the insulin
 
 % Glucose subsystem
-G = x(6); % [mg/dL] Blood glucose concentration
+G = x(6) + std*randn(size(x(6))) + meanValue; % [mg/dL] Blood glucose concentration
 
 % Glucose concentration measurement
-Gsc = x(7); % [mg/dL] Subcutaneous glucose concentration (Under the skin)
+Gsc = x(7) + std*randn(size(x(7))) + meanValue; % [mg/dL] Subcutaneous glucose concentration (Under the skin)
 
 % Manipulated inputs
 ubasal = u(1); % [ mU/min] Insulin basal flow rate
 ubolus = u(2); % [ mU/min] Insulin bolus flow rate
+
 
 % Parameters
 tau1    = p(1); % [min]            Insulin absorption time
@@ -78,30 +82,17 @@ tausc   = p(10); % [min]           Subcutaneous insulin time constant
 % Meal rate of appearance
 RA = 1000*D2/(VG*taum); % [(mg/dL)/min]
 
-% Computing the Gaussian noise
-std=1.5;        % standard deviation of 2%
-meanValue=0;    % mean=0
-
 % Initializing the output vector
 f = zeros(7, 1);
 
 % Calculating the derivatives given by eq (2a-2g):
-f1 =  d  - D1 /taum;
-f2 = (D1 - D2)/taum;
-f3 = ((ubasal + ubolus)/CI - Isc)/tau1;
-f4 = (Isc-Ip)/tau2;
-f5 = p2*(SI*Ip - Ieff);
-f6 = -(GEZI + Ieff)*G + EGP0 + RA;
-f7 = (G - Gsc)/tausc;
-
-% Adding the stochastic noise
-f(1) = f1 + std*randn(size(f1)) + meanValue;
-f(2) = f2 + std*randn(size(f2)) + meanValue;
-f(3) = f3 + std*randn(size(f3)) + meanValue;
-f(4) = f4 + std*randn(size(f4)) + meanValue;
-f(5) = f5 + std*randn(size(f5)) + meanValue;
-f(6) = f6 + std*randn(size(f6)) + meanValue;
-f(7) = f7 + std*randn(size(f7)) + meanValue;
+f(1) =  d  - D1 /taum;
+f(2) = (D1 - D2)/taum;
+f(3) = ((ubasal + ubolus)/CI - Isc)/tau1;
+f(4) = (Isc-Ip)/tau2;
+f(5) = p2*(SI*Ip - Ieff);
+f(6) = -(GEZI + Ieff)*G + EGP0 + RA;
+f(7) = (G - Gsc)/tausc;
 
 end
 
