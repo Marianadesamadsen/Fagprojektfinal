@@ -1,4 +1,4 @@
-function g = CHMsensor_withnoise(X,ph)
+function g = CGMsensor_withnoise(X,pg)
 % 
 % CGMsensor()
 % 
@@ -7,7 +7,7 @@ function g = CHMsensor_withnoise(X,ph)
 %
 % INPUT:
 % x     - the state vector
-% ph    - vector of parameters (not used)
+% pg    - vector of parameters (not used)
 %
 % OUTPUT:
 % h     - the subcutaneous blood glucose concentration with Gaussian noise

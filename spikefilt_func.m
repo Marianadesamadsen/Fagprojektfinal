@@ -1,4 +1,4 @@
-function Gfns_ctrlstate = spikefilt_func(Gm,Gfns_prev,delta_G)
+function Gfns_ctrlstate = spikefilt_func(G,Gfns_prev,delta_G)
 % 
 % spikefilt_func()
 % 
@@ -10,7 +10,7 @@ function Gfns_ctrlstate = spikefilt_func(Gm,Gfns_prev,delta_G)
 % glucose will be consideret as meals in the GRID algorithm.
 %
 % INPUT:
-% Gm         - The glucose measurement in the blood at the control state
+% G          - The glucose measurement in the blood at the control state
 % Gfns_prev  - The previous filteret measuret glucose in the blood
 % delta_G    - The maximum ROC (rate of change)
 %
@@ -41,21 +41,21 @@ function Gfns_ctrlstate = spikefilt_func(Gm,Gfns_prev,delta_G)
 % 3 if-statements in the preprocessing section to detect extreme
 % measurements
 
-    if abs( Gm - Gfns_prev ) <= delta_G
+    if abs( G - Gfns_prev ) <= delta_G
         
         % If the change in glucose is smaller than the maximum 
         % rate of change then the measurement is not changed
         
-        Gfns_ctrlstate = Gm; 
+        Gfns_ctrlstate = G; 
         
-    elseif  (Gfns_prev - Gm) > delta_G
+    elseif  (Gfns_prev - G) > delta_G
         
         % If the above change is larger, then maximum ROC is subtracted 
         % from the measurement
         
         Gfns_ctrlstate = Gfns_prev - delta_G;
     
-    elseif  (Gm - Gfns_prev) > delta_G
+    elseif  (G - Gfns_prev) > delta_G
         
         % If the above change is larger, then maximum ROC is added 
         % to the measurement
