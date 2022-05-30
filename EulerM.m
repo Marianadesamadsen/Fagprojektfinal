@@ -23,14 +23,14 @@ xk = x0;
 lambda = 1.5;
 mu = 0; 
 
-dW = sqrt(dt)*randn(1,2^8);
-
 R = 4; 
 
 for k=1:N
 
     dt = T(k)/(2^8);
     Dt = R*dt; 
+    
+    dW = sqrt(dt)*randn(1,2^8);
     
     % Calculating fk (finding derivative with MVP model)
     fk = feval(f, tk, xk, u, d, p);
