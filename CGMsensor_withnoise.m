@@ -1,4 +1,4 @@
-function h = CHMsensor_withnoise(X,ph)
+function g = CHMsensor_withnoise(X,ph)
 % 
 % CGMsensor()
 % 
@@ -33,17 +33,17 @@ function h = CHMsensor_withnoise(X,ph)
 %    
 
 % Subcutaneous glucose concentration
-h = X(7, :);
+g = X(7, :);
 
 % Computing the Gaussian noise
 std=1.5;        % standard deviation of 2%
 meanValue=0;    % mean=0
 
 % Adding the noise
-Noise_signal_g = h + std*randn(size(h)) + meanValue;
+Noise_signal_g = g + std*randn(size(g)) + meanValue;
 
 % Updating output with noise
-h = Noise_signal_g;
+g = Noise_signal_g;
 
 end
 
