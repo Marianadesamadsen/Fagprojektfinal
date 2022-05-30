@@ -1,4 +1,4 @@
-function [X] = EulerM(f,tspan,x0,u,d,p)
+function [T,X] = EulerM(f,tspan,x0,u,d,p)
 
 % Number of steps to approximate each the control step
 N = numel(tspan) - 1;
