@@ -139,7 +139,7 @@ X=zeros(7,N+1,numpatients);
 % Looping over all patients
 for p=1:numpatients
 
-[T(:,:,p), X(:,:,p)] = OpenLoopSimulation(x0(p,:)', tspan, U(:,:,p), D(:,:,p), pf(:,p), @MVPmodel, @EulerM, Nk);
+[T(:,:,p), X(:,:,p)] = OpenLoopSimulation(x0(p,:)', tspan, U(:,:,p), D(:,:,p), pf(:,p), @MVPmodel2_noise, @EulerM2, Nk);
 
 end 
 

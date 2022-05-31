@@ -170,7 +170,7 @@ t_vec            = [5,10,15];                    % The respective sampling times
 filt_prev(1,:,p) = [G(:,1,p),G(:,1,p)];          % Inserting the previous filtered value as the not filtered values
 tau              = 6;                            % From article
 flag             = 0;                            % No detected meals to begin with 
-Gmin             = [90 0.5 0.5];                 % For meal under 50 considered
+Gmin             = [90 0.5 0.5];                 % For meal no meals under 50 considered
 
 % Other tries
 % Gmin = [ 130 1.5 1.6 ]; % Their meals

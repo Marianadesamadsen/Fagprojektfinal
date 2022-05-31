@@ -1,4 +1,4 @@
-function [T,X] = EulerM(f,tspan,x0,u,d,p)
+function [T,X] = EulerM2(f,tspan,x0,u,d,p)
 
 % Number of control steps
 N = numel(tspan) - 1;
@@ -24,7 +24,7 @@ dt = tspan(2)-tspan(1);
 xk = x0;
 
 % The simulation of noise
-W=brownianmotion(N,tspan); % Snak med hjælpelærerne 
+% W=brownianmotion(N,tspan); % Snak med hjælpelærerne 
 
 for k=1:N-1
     
@@ -32,7 +32,7 @@ for k=1:N-1
     fk = feval(f, tk, xk, u, d, p);
 
     % Euler Maruyama step
-    xkp1 = xk + fk*dt + xk*(W(k+1)-W(k));
+    xkp1 = xk + fk*dt;  % + xk*(W(k+1)-W(k));
 
     % Storing it in the matrix 
     X(k+1,:) = xkp1;

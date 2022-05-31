@@ -1,5 +1,8 @@
 function W=brownianmotion(N,tspan)
 
+
+
+
 T=numel(tspan);
 
 % Simulation of brownianmotion noise that is gaussian distributed
