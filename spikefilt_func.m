@@ -63,7 +63,7 @@ function Gfns_ctrlstate = spikefilt_func(G,Gfns_prev,delta_G)
         Gfns_ctrlstate = Gfns_prev + delta_G;
     
     end
-   hej
+   
     
 end
 
