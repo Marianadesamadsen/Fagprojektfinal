@@ -1,0 +1,7 @@
+The data in the three files,
+
+780G_Sample_Carelink.csv,
+Control-IQ_Sample_Diasend.xls, and
+Control-IQ_Sample_Tconnect.csv,
+
+cannot be shared with people who are not attending the course 01666 Project work - Bachelor of Mathematics and Technology at Technical University of Denmark during the spring semester and/or the 3-week period in June, 2022.

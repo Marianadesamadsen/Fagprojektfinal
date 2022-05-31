@@ -6,7 +6,7 @@ function f = MVPmodel(t, x, u, d, p)
 % Model. It describes the dynamics of insulin and glucose concentration  
 % in response to a meal (glucose) and insulin in 
 % a patient given the patients' individual parameters, state vector and
-% time. The function returns the left hand side of the MVP model (the
+% time. The function returns the right hand side of the MVP model (the
 % derivative x'(t)) for one time point t. Function will be used for several
 % simulations as a function handle.
 

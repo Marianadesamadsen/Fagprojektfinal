@@ -36,7 +36,7 @@ ts = [];
 
 %% Computing steadty state
 
-% Inisializing
+% Initializing
 xs=zeros(numpatients,7);
 us=zeros(numpatients,2);
 
@@ -130,6 +130,7 @@ for p=1:numpatients
 
 end
 
+
 %% Simulating the control states for all patients
 
 % Inisializing 
@@ -143,6 +144,7 @@ for p=1:numpatients
 
 end
 
+
 %% Blood glucose concentration 
 
 % Inisializing
@@ -154,6 +156,14 @@ for p=1:numpatients
 G(:,:,p) = CGMsensor_withnoise(X(:,:,p), pf(:,p)); % [mg/dL] 
 
 end
+
+sum = 0;
+for p = 1:numpatients
+    sum = sum(isnan(G(:,:,p)));
+end
+
+    
+    
 
 %% GRID
 

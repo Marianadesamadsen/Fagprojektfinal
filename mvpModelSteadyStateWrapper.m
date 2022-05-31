@@ -3,8 +3,8 @@ function R = mvpModelSteadyStateWrapper(w, t, d, p, Gs)
 % mvpModelSteadyStateWrapper
 % 
 % DESCRIPTION:
-% The function is used to identidy the steady state. It computes three
-% equations. These will be used with a foot-finding algorithm, meaning that
+% The function is used to identify the steady state. It computes three
+% equations. These will be used with a root-finding algorithm, meaning that
 % the equations will be sat equal to 0, and then computing the manipulated
 % values and state vector when steady state. 
 %
