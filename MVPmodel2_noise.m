@@ -42,7 +42,7 @@ function f = MVPmodel2_noise(t, x, u, d, p)
 % s204226@student.dtu.dk
 
 % Computing the Gaussian noise
-std=1.5;        % standard deviation of 2%
+std=1;        % standard deviation of 2%
 meanValue=0;    % mean=0
 
 % Initializing the values of the vector x.
