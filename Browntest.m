@@ -1,7 +1,7 @@
 
 clear
-N=100;
-T=1;
+N=8640;
+T=18641;
 
 W=brownianmotion(N,T);
 

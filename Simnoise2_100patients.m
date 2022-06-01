@@ -162,8 +162,6 @@ for p = 1:numpatients
     sum = sum(isnan(G(:,:,p)));
 end
 
-    
-    
 
 %% GRID
 
