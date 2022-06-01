@@ -1,8 +1,9 @@
 function W=brownianmotion(N,tspan)
 
+h2min = 60;   
+min2h = 1/h2min;
 
-
-T=1;%tspan(end);
+T=tspan(end)*min2h; 
 
 % Simulation of brownianmotion noise that is gaussian distributed
 % increments in the concentration of glucose.

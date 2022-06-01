@@ -100,11 +100,11 @@ end
 
 %% Simulating the control states based on x0, the steady state.
 
-[T, X] = OpenLoopSimulation(x0, tspan, U, D, p, @MVPmodel, @EulerM2, Nk);
+[T, X] = OpenLoopSimulation(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk);
 
 %% Blood glucose concentration 
 
-G = CGMsensor(X, p); % [mg/dL] 
+G = CGMsensor_withnoise(X, p); % [mg/dL] 
 
 %% Detecting meals using GRID algorithm
 
@@ -161,8 +161,8 @@ subplot(511);
 plot(T*min2h, G);
 xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
-hold on 
-plot(tspan(1:end-1)*min2h,zero_one*200,'r.');
+% hold on 
+% plot(tspan(1:end-1)*min2h,zero_one*200,'r.');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(512);
