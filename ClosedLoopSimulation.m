@@ -110,9 +110,9 @@ for k = 1:N
     % Compute manipulated inputs after the PID control
     [uk, ctrlStatekp1] = ctrlAlgorithm(yk, ctrlPar, ctrlStatek);
     
-    % Solving the differential equa tion with explicit euler
+    % Solving the differential equation with explicit euler
     [Tk, Xk] = simMethod(simModel, tspank, xk, uk, dk, p);
-  
+     
     %%% Overwriting for the next loop
     
     % States at the next time step
