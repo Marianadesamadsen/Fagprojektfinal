@@ -24,9 +24,9 @@ dt = tspan(2)-tspan(1);
 xk = x0;
 
 % The simulation of noise
-W=brownianmotion2(N,tspan); % Snak med hjælpelærerne 
+W=brownianmotion2(N+1,tspan); % Snak med hjælpelærerne 
 
-for k=1:N-1
+for k=1:N
     
     % Calculating fk (finding derivative with MVP model)
     fk = feval(f, tk, xk, u, d, p);
@@ -35,7 +35,7 @@ for k=1:N-1
     gt(6)=xk(6);
 
     % Euler Maruyama step
-    xkp1 = xk + fk*dt + gt*(W(k+1)-W(k));
+    xkp1 = xk + fk*dt + gt*abs(W(k+1)-W(k));
 
     % Storing it in the matrix 
     X(k+1,:) = xkp1;

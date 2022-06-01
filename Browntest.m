@@ -1,9 +1,9 @@
 
 clear
-N=8640;
-T=18641;
+tspank = linspace(0, 5, 10+1);
+Nk = numel(tspank) - 1;
 
-W=brownianmotion(N,T);
+W=brownianmotion(Nk,tspank);
 
 figure 
 plot(W)
