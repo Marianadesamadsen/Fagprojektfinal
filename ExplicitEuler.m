@@ -1,4 +1,4 @@
-function [T,X] = ExplicitEuler(f, tspan, x0, u, d, p)
+function [T,X] = ExplicitEuler(f, tspank, x0, u, d, p)
 %
 % ExplicitEuler
 %
@@ -8,7 +8,7 @@ function [T,X] = ExplicitEuler(f, tspan, x0, u, d, p)
 %
 % INPUT:
 %   f      - function to handle that computes the derivative (MVP model).
-%   tspan  - points in time where the solution is approximated.
+%   tspank - points in time where the solution is approximated.
 %   x0     - Initial state vector.
 %   u      - manipulated inputs (used for MVP model).
 %   d      - disturbance inputs (used for MVP model).
@@ -39,29 +39,29 @@ function [T,X] = ExplicitEuler(f, tspan, x0, u, d, p)
 %
 
 % Number of control steps
-N = numel(tspan) - 1;
+Nk = numel(tspank) - 1;
 
 % Length of the vector
 nx = numel(x0);
 
 % Allocating memory for Outputs
-T = zeros(N+1, 1);
-X = zeros(N+1, nx);
+T = zeros(Nk+1, 1);
+X = zeros(Nk+1, nx);
 
 % Storing initial condition
-T(1) = tspan(1);
+T(1) = tspank(1);
 X(1,:) = x0;
 
 % Step size in the approximation (Explicit Euler step)
-h = (tspan(end)-tspan(1))/N;
+h = (tspank(end)-tspank(1))/Nk;
 
 % Overwriting such that we start with tk
-tk = tspan(1);
+tk = tspank(1);
 
 % Overwriting such that we start with xk
 xk = x0;
 
-for k=1:N
+for k=1:Nk
 
     % Calculating fk (finding derivative with MVP model)
     fk = feval(f, tk, xk, u, d, p);
@@ -76,7 +76,7 @@ for k=1:N
     xk=xkp1;
 
     % Updating to tkp1
-    tkp1 = tspan(k+1);
+    tkp1 = tspank(k+1);
 
     % Storing in vector
     T(k+1) = tkp1;
