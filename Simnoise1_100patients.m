@@ -161,6 +161,7 @@ end
 filt_prev      = zeros(length(G(:,:,1)),2,numpatients); % The vector of previous filtered values
 Gfm_vec        = zeros(length(G),2,numpatients);        % The vector of previous derivatives
 detectedmeals  = zeros(1,numpatients);                  % Detected meals for each patient in matrix
+zero_one       = zeros(length(G)-1,numpatients);        % Detected meals and not detected meals 
 
 for p = 1:numpatients 
 
@@ -177,13 +178,13 @@ Gmin             = [90 0.5 0.5];                 % For meal under 50 considered
 % Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 
 % Computing the first two detections
-[ Gfm_vec(2,:,p) , filt_prev(2,:,p) , flag, zero_one(2) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
+[ Gfm_vec(2,:,p) , filt_prev(2,:,p) , flag, zero_one(1,p) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
                                     filt_prev(1,:,p) , Gmin, Gfm_vec(1,:,p) , t_vec ,flag );
                                 
                                 % Updating G_vec
                                 G_vec=[G(:,1,p),G(:,1,p),G(:,2,p)];
                                 
-[ Gfm_vec(3,:,p) , filt_prev(3,:,p) , flag, zero_one(3) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
+[ Gfm_vec(3,:,p) , filt_prev(3,:,p) , flag, zero_one(2,p) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
                                     filt_prev(2,:,p) , Gmin, Gfm_vec(2,:,p) , t_vec, flag );
                                 
                                 % Updating G_vec
