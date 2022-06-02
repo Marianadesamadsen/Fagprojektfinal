@@ -96,7 +96,7 @@ for i = 0:29
         D(1, (idxMeal3+24*h2min/Ts*i))   = meal(3+3*i)     /Ts;       % [g CHO/min]
         U(2, (idxMeal3+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
         
-end
+end 
 
 %% Simulating the control states based on x0, the steady state.
 
