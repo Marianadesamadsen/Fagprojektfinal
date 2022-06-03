@@ -10,7 +10,7 @@ function g = CGMsensor_withnoise(X,pg)
 % pg    - vector of parameters (not used)
 %
 % OUTPUT:
-% h     - the subcutaneous blood glucose concentration with Gaussian noise
+% g     - the subcutaneous blood glucose concentration with Gaussian noise
 % 
 % PROJECT:
 % Fagprojekt 2022

@@ -161,8 +161,8 @@ subplot(511);
 plot(T*min2h, G);
 xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
-% hold on 
-% plot(tspan(1:end-1)*min2h,zero_one*200,'r.');
+hold on 
+plot(tspan(1:end-1)*min2h,zero_one*200,'r.');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(512);
