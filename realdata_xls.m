@@ -34,7 +34,7 @@ clear
 data=importdata('Control-IQ_Sample_Tconnect.csv');
 
 G=data.data;
-tid=[data.textdata(1:780,4);data.textdata(797:1272,3)];
+tid=data.textdata(2:780,4);
 
 
 %% Detecting meals using GRID algorithm
