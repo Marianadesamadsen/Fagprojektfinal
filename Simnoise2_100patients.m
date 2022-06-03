@@ -176,7 +176,7 @@ flag             = 0;                            % No detected meals to begin wi
 Gmin             = [90 0.5 0.5];                 % For meal under 50 considered
 
 % Other tries
-% Gmin = [ 130 1.5 1.6 ]; % Their meals
+% Gmin = [ 130 1.5 1.6 ]; % Their meals 
 % Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 
 % Computing the first two detections
@@ -209,54 +209,7 @@ detectedmeals(p)=sum(zero_one(:,p));
 
 end
 
-%% Visualize 
-
-% Create figure with absolute size for reproducibility
-figure;
-
-% Plot blood glucose concentration and the detected meals as points
-subplot(511);
-plot((T(:,:,1)*min2h), G(:,:,1),'r');
-hold on 
-plot((T(:,:,2)*min2h), G(:,:,2),'b');
-xlim([t0, tf]*min2h);
-ylabel({'Blood glucose concentration', '[mg/dL]'});
-hold on 
-plot(tspan(1:end-1)*min2h,zero_one(:,1)*150,'r.');
-hold on 
-plot(tspan(1:end-1)*min2h,zero_one(:,2)*200,'b.');
-
-% Plot meal carbohydrate and the detected meals as points
-subplot(512);
-stem(tspan(1:end-1)*min2h, Ts*D(1,:,1), 'MarkerSize', 0.1);
-xlim([t0, tf]*min2h);
-ylabel({'Meal carbohydrates', '[g CHO]'});
-hold on 
-plot(tspan(1:end-1)*min2h,zero_one(:,1)*100,'r.');
-
-% Plot basal insulin flow rate
-subplot(513);
-stairs(tspan*min2h, U(1, [1:end, end],1));
-xlim([t0, tf]*min2h);
-ylabel({'Basal insulin', '[mU/min]'});
-
-% Plot bolus insulin
-subplot(514);
-stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :,1), 'MarkerSize', 1);
-xlim([t0, tf]*min2h);
-ylabel({'Bolus insulin', '[U]'}); 
-xlabel('Time [h]');
-
-% Plot detected Meals
-subplot(515);
-plot(tspan(1:end-1)*min2h,zero_one,'b-');
-xlim([t0, tf]*min2h);
-ylabel({'detected meal'}); 
-xlabel('Time [h]'); 
-
-
-
-%%
+%% Finding minimum and maximum patient
 
 sum(G(:,:,1:100));
 
@@ -275,6 +228,60 @@ for i=1:100
     end
     
 end
+
+%% Visualize 
+
+reset(groot);
+
+% Create figure with absolute size for reproducibility
+figure;
+
+% Plot blood glucose concentration and the detected meals as points
+subplot(411);
+plot((T(:,:,minpatient)*min2h), G(:,:,minpatient),'r');
+hold on 
+plot((T(:,:,maxpatient)*min2h), G(:,:,maxpatient),'b');
+xlim([t0, tf]*min2h);
+ylabel({'Blood glucose concentration', '[mg/dL]'});
+legend({'minpatient,maxpatient'});
+hold on 
+plot(tspan(1:end-1)*min2h,zero_one(:,minpatient)*150,'r.');
+hold on 
+plot(tspan(1:end-1)*min2h,zero_one(:,maxpatient)*200,'b.');
+
+% Plot meal carbohydrate and the detected meals as points
+subplot(412);
+stem(tspan(1:end-1)*min2h, Ts*D(1,:,minpatient), 'MarkerSize', 0.1);
+hold on 
+stem(tspan(1:end-1)*min2h, Ts*D(1,:,maxpatient), 'MarkerSize', 0.1);
+xlim([t0, tf]*min2h);
+ylabel({'Meal carbohydrates', '[g CHO]'});
+legend({'minpatient,maxpatient'});
+hold on 
+plot(tspan(1:end-1)*min2h,zero_one(:,minpatient)*100,'r.');
+hold on 
+plot(tspan(1:end-1)*min2h,zero_one(:,maxpatient)*100,'b.');
+
+% Plot basal insulin flow rate
+subplot(413);
+stairs(tspan*min2h, U(1, [1:end, end],minpatient));
+stairs(tspan*min2h, U(1, [1:end, end],maxpatient));
+legend({'minpatient,maxpatient'});
+xlim([t0, tf]*min2h);
+ylabel({'Basal insulin', '[mU/min]'});
+
+% Plot bolus insulin
+subplot(414);
+stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :,minpatient), 'MarkerSize', 1);
+stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :,maxpatient), 'MarkerSize', 1);
+xlim([t0, tf]*min2h);
+ylabel({'Bolus insulin', '[U]'}); 
+xlabel('Time [h]');
+
+
+
+
+
 
 
 
