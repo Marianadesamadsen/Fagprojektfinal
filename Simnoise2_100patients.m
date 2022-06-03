@@ -209,3 +209,43 @@ detectedmeals(p)=sum(zero_one(:,p));
 
 end
 
+%% Visualize 
+
+% Create figure with absolute size for reproducibility
+figure;
+
+% Plot blood glucose concentration and the detected meals as points
+subplot(511);
+plot((T(:,:,1)*min2h), G(:,:,1));
+xlim([t0, tf]*min2h);
+ylabel({'Blood glucose concentration', '[mg/dL]'});
+hold on 
+plot(tspan(1:end-1)*min2h,zero_one(:,1)*200,'r.');
+
+% Plot meal carbohydrate and the detected meals as points
+subplot(512);
+stem(tspan(1:end-1)*min2h, Ts*D(1,:,1), 'MarkerSize', 0.1);
+xlim([t0, tf]*min2h);
+ylabel({'Meal carbohydrates', '[g CHO]'});
+hold on 
+plot(tspan(1:end-1)*min2h,zero_one(:,1)*100,'r.');
+
+% Plot basal insulin flow rate
+subplot(513);
+stairs(tspan*min2h, U(1, [1:end, end],1));
+xlim([t0, tf]*min2h);
+ylabel({'Basal insulin', '[mU/min]'});
+
+% Plot bolus insulin
+subplot(514);
+stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :,1), 'MarkerSize', 1);
+xlim([t0, tf]*min2h);
+ylabel({'Bolus insulin', '[U]'}); 
+xlabel('Time [h]');
+
+% Plot detected Meals
+subplot(515);
+plot(tspan(1:end-1)*min2h,zero_one,'b-');
+xlim([t0, tf]*min2h);
+ylabel({'detected meal'}); 
+xlabel('Time [h]'); 
