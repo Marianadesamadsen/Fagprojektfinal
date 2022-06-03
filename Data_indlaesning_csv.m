@@ -21,4 +21,6 @@ data = struct2cell(data_temp);
 CGM_data = data{1}
 
 date_temp = data{2}
-date = date_temp(1:780, 4)
+date = date_temp(2:780, 4)
+
+
