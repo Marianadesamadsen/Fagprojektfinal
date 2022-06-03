@@ -12,21 +12,13 @@ data_temp = readtable('Control-IQ_Sample_Tconnect.csv');
 
 data = data_temp(1:779, 3);
 
-%% 
+%%
 % Load the full data
 data_temp = importdata('Control-IQ_Sample_Tconnect.csv');
-data = struct2cell(data_temp); 
+data = struct2cell(data_temp);
 
 % Convert to CGM data and date of time
 CGM_data = data{1}
 
 date_temp = data{2}
-date = date_temp(1:780, 4)  
-
-
-
-
-
-
-
-
+date = date_temp(1:780, 4)
