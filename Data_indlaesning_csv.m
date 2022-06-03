@@ -13,6 +13,6 @@ data_temp = readtable('Control-IQ_Sample_Tconnect.csv');
 data = data_temp(1:779, 3);
 
 %% 
-importdata('Control-IQ_Sample_Tconnect.csv')
+data=importdata('Control-IQ_Sample_Tconnect.csv')
 
 
