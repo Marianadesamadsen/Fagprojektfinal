@@ -7,7 +7,7 @@ function Gfns_ctrlstate = spikefilt_func(G,Gfns_prev,delta_G)
 % preprocessing section of the algortihm. The function filters the data
 % using a noise-spike filter. This means the function will consider what
 % data are extreme and what is not. Such that only extreme measurements of
-% glucose will be consideret as meals in the GRID algorithm.
+% glucose will be considered as meals in the GRID algorithm.
 %
 % INPUT:
 % G          - The glucose measurement in the blood at the control state
