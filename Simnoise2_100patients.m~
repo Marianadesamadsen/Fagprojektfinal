@@ -260,17 +260,17 @@ xlabel('Time [h]');
 
 sum(G(:,:,1:100));
 
-minp=min(sum(G(:,:,1:100)));
+=min(sum(G(:,:,1:100)))
 
-maxp=max(sum(G(:,:,1:100)));
+max(sum(G(:,:,1:100)))
 
 for i=1:100
     
-    if minp == sum(G(:,:,i))
+    if min(sum(G(:,:,1:100))) == G(:,:,i)
         minpatient = i;
     end
     
-    if maxp == sum(G(:,:,i))
+    if max(sum(G(:,:,1:100))) == G(:,:,i)
         maxpatient = i;
     end
     
