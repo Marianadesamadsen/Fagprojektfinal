@@ -28,13 +28,11 @@ U2mU  = 1e3;     % Convert from U   to mU
 mU2U  = 1/U2mU;  % Convert from mU  to U 
 
 %% Loading data 
-clc 
-clear
 
 data=importdata('Control-IQ_Sample_Tconnect.csv');
 
-G=data.data(1:780,1);
-tid=data.textdata(1:780,4);
+G=data.data;
+tid=data.textdata(2:780,4);
 
 
 %% Detecting meals using GRID algorithm
@@ -44,7 +42,7 @@ filt_prev      = zeros(length(G),2); % The vector of previous filtered values
 Gfm_vec        = zeros(length(G),2); % The vector of previous derivatives
 G_vec          = [G(1),G(1),G(1)];   % Inserting the start previous glucose measurements as the same value
 delta_G        = 15;                 % From article
-t_vec          = [5,10,15];          % The respective sampling times
+t_vec          = [t(1),t(2),t(3)];   % The respective sampling times
 filt_prev(1,:) = [G(1),G(1)];        % Inserting the previous filtered value as the not filtered values
 tau            = 6;                  % From the article
 flag           = 0;                  % No detected meal to begin with
@@ -80,7 +78,7 @@ for i = 3 : length(G)-1
 end
 
 % The total amount of detected meals
-sum(zero_one)
+detectedmeals=sum(zero_one);
 
 %% Visualize 
 
