@@ -29,6 +29,7 @@ mU2U  = 1/U2mU;  % Convert from mU  to U
 
 %% Loading data 
 clc
+clear
 
 %data = readtable('Control-IQ_Sample_Diasend.xls');
 
