@@ -29,13 +29,9 @@ mU2U  = 1/U2mU;  % Convert from mU  to U
 
 %% Loading data 
 clc 
-clear 
+clear
 
-[~,sheet_name]=xlsfinfo('Control-IQ_Sample_Diasend.xls');
-
-for k=1:numel(sheet_name)
-  [~,~,data{k}]=xlsread('Control-IQ_Sample_Diasend.xls',sheet_name{k}); 
-end
+data=importdata('Control-IQ_Sample_Diasend.xls'); 
 
 dataGlucose=data{2}(6:end,1:2);
 
