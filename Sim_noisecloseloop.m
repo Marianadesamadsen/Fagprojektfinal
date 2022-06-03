@@ -67,7 +67,7 @@ simModel = @MVPmodel;
 observationModel = @CHMsensor;
 
 % Simulation method/function
-simMethod = @EulerM;
+simMethod = @ExplicitEuler;
 
 %% Controller parameters and state
 ctrlPar = [
@@ -128,7 +128,6 @@ end
 
 % Blood glucose concentration
 Gsc = Y; % [mg/dL]
-
 
 %% Detecting meals using GRID algorithm
 
