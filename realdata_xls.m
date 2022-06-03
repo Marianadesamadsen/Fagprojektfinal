@@ -31,9 +31,10 @@ mU2U  = 1/U2mU;  % Convert from mU  to U
 clc 
 clear
 
-data=importdata('Control-IQ_Sample_Diasend.xls'); 
+data=importdata('Control-IQ_Sample_Tconnect.csv');
 
-dataGlucose=data{2}(6:end,1:2);
+G=data.data;
+tid=[data.textdata(1:780,4);data.textdata(797:1272,3)];
 
 
 %% Detecting meals using GRID algorithm
