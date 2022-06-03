@@ -36,7 +36,7 @@ clear
 [~,sheet_name]=xlsfinfo('Control-IQ_Sample_Diasend.xls');
 
 for k=1:numel(sheet_name)
-  [~,~,data{k}]=xlsread('Control-IQ_Sample_Diasend.xls',sheet_name{k}); %[~,~,data{k}]
+  [~,~,data{k}]=xlsread('Control-IQ_Sample_Diasend.xls',sheet_name{k}); 
 end
 
 
