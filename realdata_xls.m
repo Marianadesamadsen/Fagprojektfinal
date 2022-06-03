@@ -31,8 +31,6 @@ mU2U  = 1/U2mU;  % Convert from mU  to U
 clc
 clear
 
-%data = readtable('Control-IQ_Sample_Diasend.xls');
-
 [~,sheet_name]=xlsfinfo('Control-IQ_Sample_Diasend.xls');
 
 for k=1:numel(sheet_name)
