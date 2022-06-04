@@ -213,15 +213,12 @@ end
 
 %% Finding minimum and maximum patient
 
-sum(G(:,:,1:100));
 % Sums the glucose concentration for each patient and stores it as a vector
 s=sum(G(:,:,1:100));
 
-minp=min(sum(G(:,:,1:100)));
 % Find the minimum value
 minp=min(s);
 
-maxp=max(sum(G(:,:,1:100)));
 % Find the maximum value
 maxp=max(s);
 
@@ -238,7 +235,6 @@ for i=1:100
     % If the ith patient has the maximum patient sum then it is the maximum
     % patient
     if maxp == sum(G(:,:,i))
-        maxpatient = i;
         maxpatient = i; % The index for the max patient
     end
     
