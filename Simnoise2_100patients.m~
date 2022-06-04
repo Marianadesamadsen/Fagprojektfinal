@@ -211,14 +211,20 @@ end
 
 %% Finding minimum and maximum patient
 
-sum(G(:,:,1:100));
+% Sums the glucose concentration for each patient and stores it as a vector
+s=sum(G(:,:,1:100));
 
-minp=min(sum(G(:,:,1:100)));
+% Find the minimum value
+minp=min(s);
 
-maxp=max(sum(G(:,:,1:100)));
+% Find the maximum value
+maxp=max(s);
 
+% Loops over alle possible sums to find the index for the maximum and
+% minimum patient
 for i=1:100
     
+    % If the minimum patient i
     if minp == sum(G(:,:,i))
         minpatient = i;
     end
@@ -246,7 +252,7 @@ ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
 plot(tspan(1:end-1)*min2h,zero_one(:,minpatient)*400,'*r');
 hold on 
-plot(tspan(1:end-1)*min2h,zero_one(:,maxpatient)*150,'*b');
+plot(tspan(1:end-1)*min2h,zero_one(:,maxpatient)*300,'*b');
 legend('minpatient','maxpatient','minpatient','maxpatient');
 
 % Plot meal carbohydrate and the detected meals as points

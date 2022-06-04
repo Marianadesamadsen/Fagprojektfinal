@@ -138,7 +138,7 @@ if flag > 0
  % is set to 0. Therefore, flag is subtracted by -1, such that it will 
  % count down so a meal can be detetected again after 120 min.
     
-    flag = flag -1;
+    flag = flag-1;
     zero_one = 0;
 
 elseif flag == 0 && zero_one == 1
