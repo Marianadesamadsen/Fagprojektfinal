@@ -52,7 +52,7 @@ title('Clinical patient glucose conc. over 3 days')
 xlabel('Time')
 ylabel('Blood glucose concentration')
 
-%% Number of control steps
+%% Step between control steps
 Ts = 5;         % min - step size 
 
 %% Detecting meals using GRID algorithm
@@ -104,19 +104,12 @@ detectedmeals=sum(zero_one);
 %% Visualize 
 
 % Create figure with absolute size for reproducibility
-figure;
+figure (2);
 
 % Plot blood glucose concentration and the detected meals as points
-subplot(211);
 plot(t, G);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
 plot(t(1:end-1),zero_one*150,'r.');
 
-% Plot detected Meals
-subplot(212);
-plot(t(1:end-1),zero_one,'b-');
-ylabel({'detected meal'}); 
-xlabel('Time [h]'); 
- 
 
