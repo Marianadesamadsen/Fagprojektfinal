@@ -243,7 +243,7 @@ hold on
 plot((T(:,:,maxpatient)*min2h), G(:,:,maxpatient),'b');
 xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
-legend({'minpatient,maxpatient'});
+legend({'minpatient'},{'maxpatient'});
 hold on 
 plot(tspan(1:end-1)*min2h,zero_one(:,minpatient)*150,'r.');
 hold on 
@@ -256,7 +256,7 @@ hold on
 stem(tspan(1:end-1)*min2h, Ts*D(1,:,maxpatient), 'MarkerSize', 0.1);
 xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
-legend({'minpatient,maxpatient'});
+legend({'minpatient'},{'maxpatient'});
 hold on 
 plot(tspan(1:end-1)*min2h,zero_one(:,minpatient)*100,'r.');
 hold on 
