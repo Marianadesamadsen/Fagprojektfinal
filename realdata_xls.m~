@@ -56,9 +56,9 @@ ylabel('Blood glucose concentration')
 
 time_vector = datevec(t); % Datetime given as matrix/vectors
 
-% t0 =  0;        % min - start time
-% tf = 3*24*60; % min - end time
-% Ts = 5;         % min - step size 
+t0 =  0;        % min - start time
+tf = 3*24*60; % min - end time
+Ts = 5;         % min - step size 
 
 %% Detecting meals using GRID algorithm
 
@@ -73,8 +73,9 @@ tau            = 6;                  % From the article
 flag           = 0;                  % No detected meal to begin with
 Gmin           = [120 0.8 0.65];     % Gmin accepts intensity up to 6
 
-% Other tries
 %Gmin           = [90 0.5 0.5];       % For meal under 50 considered
+
+% Other tries
 %Gmin = [ 130 1.5 1.6 ]; % Their meals
 %Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 
@@ -114,8 +115,10 @@ figure;
 % Plot blood glucose concentration and the detected meals as points
 subplot(511);
 plot(t, G);
+%xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
+plot(tspan(1:end-1)*min2h,zero_one*200,'r.');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(512);
