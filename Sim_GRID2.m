@@ -89,7 +89,7 @@ idxSnack2        = tSnack2 /Ts + 1;
 
 bolus = 0;
 meal  = randi([50,150],1,90);
-snack = 20;
+snack = randi([20,45],1,60);
 
 %% Inserting the meal sizes at the different hours/indicies
 
@@ -105,9 +105,9 @@ for i = 0:29
         U(2, (idxMeal3+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
         
     % Inserting the different meal sizes at the indcies 
-        D(1, (idxSnack1+24*h2min/Ts*i))   = snack     /Ts;       % [g CHO/min]
+        D(1, (idxSnack1+24*h2min/Ts*i))   = snack(1+2*i)     /Ts;       % [g CHO/min]
         U(2, (idxSnack1+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
-        D(1, (idxSnack2+24*h2min/Ts*i))   = snack    /Ts;       % [g CHO/min]
+        D(1, (idxSnack2+24*h2min/Ts*i))   = snack(1+2*i)   /Ts;       % [g CHO/min]
         U(2, (idxSnack2+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
         
 end
