@@ -127,21 +127,21 @@ ylabel({'CGM measurements', '[mg/dL]'});
 % Plot meal carbohydrate
 subplot(412);
 stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
-%xlim([t0, tf]*min2h);
+xlim([t0, tf]*min2h);
 ylim([0 100])
 ylabel({'Meal carbohydrates', '[g CHO]'});
 
 % Plot basal insulin flow rate
 subplot(413);
-stairs(tspan2, U(1, [1:end, end]));
-%xlim([t0, tf]*min2h);
+stairs(tspan*min2h, U(1, [1:end, end]));
+xlim([t0, tf]*min2h);
 ylim([20 50])
 ylabel({'Basal insulin', '[mU/min]'});
 
 % Plot bolus insulin
 subplot(414);
-stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
-%xlim([t0, tf]*min2h);
+stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :), 'MarkerSize', 1);
+xlim([t0, tf]*min2h);
 ylim([-1 1])
 ylabel({'Bolus insulin', '[U]'});
 xlabel('Time [h]');
