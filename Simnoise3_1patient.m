@@ -118,7 +118,7 @@ t_vec          = [5,10,15];          % The respective sampling times
 filt_prev(1,:) = [G(1),G(1)];        % Inserting the previous filtered value as the not filtered values
 tau            = 6;                  % From the article
 flag           = 0;                  % No detected meal to begin with
-Gmin           = [120 0.8 0.65];     % Gmin accepts intensity up to 6
+Gmin           = [90 0.5 0.5];     % Gmin accepts intensity up to 6
 
 % Gmin = [90 0.5 0.5] % For no meal under 50 considered
 % Other tries
