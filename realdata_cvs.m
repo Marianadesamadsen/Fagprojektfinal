@@ -4,7 +4,6 @@
 % by using the GRID algorithm
 
 %%
-
 clear all 
 clc 
 close all 
@@ -107,16 +106,10 @@ detectedmeals=sum(zero_one);
 figure;
 
 % Plot blood glucose concentration and the detected meals as points
-subplot(211);
 plot(t, G);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
 plot(t(1:end-1),zero_one*150,'r.');
 
-% Plot detected Meals
-subplot(212);
-plot(t(1:end-1),zero_one,'b-');
-ylabel({'detected meal'}); 
-xlabel('Time [h]'); 
  
 
