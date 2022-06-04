@@ -71,7 +71,7 @@ for k=1:Nk
     fk = feval(f, tk, xk, u, d, p);
     
     gt=zeros(size(xk));
-    gt(6)=7;
+    gt(6)=6;
 
     % Euler Maruyama step
     xkp1 = xk + fk*dt + gt*(W(k+1)-W(k));

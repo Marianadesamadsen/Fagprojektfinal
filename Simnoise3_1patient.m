@@ -81,7 +81,6 @@ idxMeal3         = tMeal3  /Ts + 1;
 
 bolus = 0;
 meal  = randi([50,150],1,90);
-snack = 20;
 
 %% Inserting the meal sizes at the different hours/indicies
 
