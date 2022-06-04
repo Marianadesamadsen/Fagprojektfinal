@@ -27,7 +27,9 @@ set(groot, 'DefaultStemLineWidth',  lw);
 h2min = 60;      % Convert from h   to min 
 min2h = 1/h2min; % Convert from min to h 
 U2mU  = 1e3;     % Convert from U   to mU 
-mU2U  = 1/U2mU;  % Convert from mU  to U 
+mU2U  = 1/U2mU;  % Convert from mU  to U
+min2sec = h2min; % Convert from min to sec
+sec2min = 1/h2min;% Convert from sec to min
 
 %% Inizializing parameters
 
@@ -167,40 +169,33 @@ sum(zero_one)
 % Create figure with absolute size for reproducibility
 figure;
 
-% Plot blood glucose concentration and the detected meals as points
-subplot(511);
-plot(T*min2h, G);
-xlim([t0, tf]*min2h);
-ylabel({'Blood glucose concentration', '[mg/dL]'});
-hold on 
-plot(tspan(1:end-1)*min2h,zero_one*200,'r.');
+% Converting data
+T2=datetime(T*min2sec,'ConvertFrom','posixtime');
+tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
-% Plot meal carbohydrate and the detected meals as points
-subplot(512);
-stem(tspan(1:end-1)*min2h, Ts*D(1, :), 'MarkerSize', 0.1);
-xlim([t0, tf]*min2h);
+% Plot blood glucose concentration
+subplot(411);
+plot(T2, G);
+%xlim([t0, tf]*min2h);
+ylabel({'Blood glucose concentration', '[mg/dL]'});
+
+% Plot meal carbohydrate
+subplot(412);
+stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
+%xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
-hold on 
-plot(tspan(1:end-1)*min2h,zero_one*100,'r.');
 
 % Plot basal insulin flow rate
-subplot(513);
-stairs(tspan*min2h, U(1, [1:end, end]));
-xlim([t0, tf]*min2h);
+subplot(413);
+stairs(tspan2, U(1, [1:end, end]));
+%xlim([t0, tf]*min2h);
 ylabel({'Basal insulin', '[mU/min]'});
 
 % Plot bolus insulin
-subplot(514);
-stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :), 'MarkerSize', 1);
-xlim([t0, tf]*min2h);
+subplot(414);
+stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
+%xlim([t0, tf]*min2h);
 ylabel({'Bolus insulin', '[U]'}); 
-xlabel('Time [h]');
-
-% Plot detected Meals
-subplot(515);
-plot(tspan(1:end-1)*min2h,zero_one,'b-');
-xlim([t0, tf]*min2h);
-ylabel({'detected meal'}); 
 xlabel('Time [h]'); 
  
 

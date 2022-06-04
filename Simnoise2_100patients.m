@@ -266,18 +266,13 @@ legend('minpatient','maxpatient','minpatient','maxpatient');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(412);
-stemmin = Ts*D(1,:,minpatient);
-stemmax = Ts*D(1,:,maxpatient);
-stem(tspan2(1:end-1),stemmin,stemmax, 'MarkerSize', 0.1);
-% hold on 
-% stem(tspan2(1:end-1), Ts*D(1,:,maxpatient), 'MarkerSize', 0.1);
-%xlim([t0, tf]*min2h);
+stem(tspan2(1:end-1),Ts*D(1,:,1), 'MarkerSize', 0.1);
 ylabel({'Meal carbohydrates', '[g CHO]'});
 hold on 
 plot(tspan2(1:end-1),zero_one(:,minpatient)*150,'*r');
 hold on 
 plot(tspan2(1:end-1),zero_one(:,maxpatient)*100,'*b');
-legend('minpatient','maxpatient','minpatient','maxpatient');
+legend('minpatient','maxpatient','minpatient','maxatient');
 
 % Plot basal insulin flow rate
 subplot(413);
