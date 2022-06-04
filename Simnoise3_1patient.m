@@ -1,10 +1,9 @@
-%% Simulation test of the GRID algorithm 30 days, 3 meals with noise
+%% Simulation test of the GRID algorithm 30 days, 3 meals and two snacks with noise
 
 % Simulating 3 meals on 30 days, and detecting the meals
 % by using the GRID algorithm
 
 %%
-
 clear all 
 clc 
 close all 
@@ -48,7 +47,7 @@ t0 =  0;        % min - start time
 tf = 720*h2min; % min - end time
 Ts = 5;         % min - step size 
 
-%% Number of contral intervals
+%% Number of control intervals
 
 N = (tf - t0)/5; % [#]
 
@@ -72,17 +71,22 @@ D = zeros(1, N); % No meal assumed
 % Time meals
 tMeal1           = 7*h2min;         
 tMeal2           = 12*h2min;
-tMeal3           = 18*h2min; 
+tMeal3           = 18*h2min;
+tSnack1          = 15*h2min;
+tSnack2          = 10*h2min;  
 
 % Index meals
 idxMeal1         = tMeal1  /Ts + 1;   
 idxMeal2         = tMeal2  /Ts + 1;   
 idxMeal3         = tMeal3  /Ts + 1;   
+idxSnack1        = tSnack1 /Ts + 1;   
+idxSnack2        = tSnack2 /Ts + 1;
 
 %% Making meal sizes 
 
 bolus = 0;
 meal  = randi([50,150],1,90);
+snack = 20; 
 
 %% Inserting the meal sizes at the different hours/indicies
 
@@ -97,15 +101,21 @@ for i = 0:29
         D(1, (idxMeal3+24*h2min/Ts*i))   = meal(3+3*i)     /Ts;       % [g CHO/min]
         U(2, (idxMeal3+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
         
+         % Inserting the different meal sizes at the indcies 
+        D(1, (idxSnack1+24*h2min/Ts*i))   = snack     /Ts;            % [g CHO/min]
+        U(2, (idxSnack1+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
+        D(1, (idxSnack2+24*h2min/Ts*i))   = snack    /Ts;             % [g CHO/min]
+        U(2, (idxSnack2+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
+        
 end 
 
 %% Simulating the control states based on x0, the steady state.
 
-[T, X] = OpenLoopSimulation(x0, tspan, U, D, p, @MVPmodel, @ExplicitEuler, Nk);
+[T, X] = OpenLoopSimulation(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk);
 
 %% Blood glucose concentration 
 
-G = CGMsensor(X, p); % [mg/dL] 
+G = CGMsensor_withnoise(X, p); % [mg/dL] 
 
 %% Detecting meals using GRID algorithm
 
@@ -118,13 +128,12 @@ t_vec          = [5,10,15];          % The respective sampling times
 filt_prev(1,:) = [G(1),G(1)];        % Inserting the previous filtered value as the not filtered values
 tau            = 6;                  % From the article
 flag           = 0;                  % No detected meal to begin with
-Gmin           = [120 0.8 0.65];     % Gmin accepts intensity up to 6
+Gmin           = [125 0.6 0.8];      % Gmin accepts intensity up to 6
 
 % Gmin = [90 0.5 0.5] % For no meal under 50 considered
 % Other tries
-% Gmin = [ 130 1.5 1.6 ]; % Their meals
+% Gmin = [ 130 1 1.1 ]; % Their mins
 % Gmin = [ 110 1 1.5 ]; % For no meal under 50 
-
 
 % Computing the first two detections
 [ Gfm_vec(2,:) , filt_prev(2,:) , flag, zero_one(2) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
@@ -151,7 +160,37 @@ for i = 3 : length(G)-1
 end
 
 % The total amount of detected meals
-sum(zero_one)
+detectedmeals = sum(zero_one);
+fprintf('number of detected meals: %detectedmeals',detectedmeals);
+
+%% Checking for false positve or false negative values
+
+falsenegative = 0;
+falsepositive  = 0;
+
+for i = 1: length(detectedmeals)
+    
+    if detectedmeals(i) == 1 && D(1,i:30/5) > 0
+       true = true + 1;
+    else 
+        falsenegative = falsenegative + 1;
+        true = true + 0;
+    end
+    
+    if detectedmeals(i) == 0 && D(1,i:30/5) == 0
+        true = true + 0;
+        falsepositive = falsepositive +1;
+    else 
+        true = true +1;
+    end
+     
+end
+
+true1 = sum(true);
+falsepositive1 = sum(falsepositive);
+falsenegative1 = sum(falsenegative);
+fprintf('number of false positive: %d',falsepositive1);
+fprintf('number of false negative: %d',falsenegative1);
 
 %% Visualize 
 
