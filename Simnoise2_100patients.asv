@@ -257,11 +257,9 @@ legend('minpatient','maxpatient','minpatient','maxpatient');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(412);
-stemmin = Ts*D(1,:,minpatient);
-stemmax = Ts*D(1,:,maxpatient);
-stem(tspan2(1:end-1),stemmin,stemmax, 'MarkerSize', 0.1);
-% hold on 
-% stem(tspan2(1:end-1), Ts*D(1,:,maxpatient), 'MarkerSize', 0.1);
+stem(tspan2(1:end-1), Ts*D(1,:,minpatient), 'MarkerSize', 0.1);
+hold on 
+stem(tspan2(1:end-1), Ts*D(1,:,maxpatient), 'MarkerSize', 0.1);
 %xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
 hold on 
