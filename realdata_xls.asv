@@ -45,12 +45,8 @@ for i = 1:length(date)
     t(i)= datetime(str,'InputFormat','yyyy-MM-dd HH:mm:ss'); 
 end
 
-% Plot over real patient's glucose levels over 3 days
-figure
+% Plot over real patient's glucos
 plot(t, CGM)
-title('Clinical patient glucose conc. over 3 days')
-xlabel('Time')
-ylabel('Blood glucose concentration')
 
 
 %% Detecting meals using GRID algorithm

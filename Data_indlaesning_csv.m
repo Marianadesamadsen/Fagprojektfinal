@@ -46,3 +46,8 @@ end
 % %% EVENTUELT BRUG DEN HER NEDENSTÅENDE FOR DER BEHØVES MAN IKKE FJERNE T
 % !!!!!!
 % t = datetime(date_char,'InputFormat','uuuu-MM-dd HH:mm:ss''T''HH:mmXXX','TimeZone','UTC')
+
+%%
+XDates = [datetime(2021,6,1:30) datetime(2021,7,1:31)];
+YNumsForXDates = sin(rand(1,length(t)));
+plot(t,YNumsForXDates)
