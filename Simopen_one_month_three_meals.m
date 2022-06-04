@@ -26,6 +26,8 @@ h2min = 60;      % Convert from h   to min
 min2h = 1/h2min; % Convert from min to h 
 U2mU  = 1e3;     % Convert from U   to mU 
 mU2U  = 1/U2mU;  % Convert from mU  to U 
+min2sec = h2min; % Convert from min to sec
+sec2min = 1/h2min; %Convert from sec to min
 
 %% Inizializing parameters
 
@@ -109,28 +111,32 @@ G = CGMsensor(X, p); % [mg/dL]
 % Create figure with absolute size for reproducibility
 figure;
 
+% Converting data
+T2=datetime(T*min2sec,'ConvertFrom','posixtime');
+tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
+
 % Plot blood glucose concentration
 subplot(411);
-plot(T*min2h, G);
-xlim([t0, tf]*min2h);
+plot(T2, G);
+%xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 
 % Plot meal carbohydrate
 subplot(412);
-stem(tspan(1:end-1)*min2h, Ts*D(1, :), 'MarkerSize', 0.1);
-xlim([t0, tf]*min2h);
+stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
+%xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
 
 % Plot basal insulin flow rate
 subplot(413);
-stairs(tspan*min2h, U(1, [1:end, end]));
-xlim([t0, tf]*min2h);
+stairs(tspan2, U(1, [1:end, end]));
+%xlim([t0, tf]*min2h);
 ylabel({'Basal insulin', '[mU/min]'});
 
 % Plot bolus insulin
 subplot(414);
-stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :), 'MarkerSize', 1);
-xlim([t0, tf]*min2h);
+stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
+%xlim([t0, tf]*min2h);
 ylabel({'Bolus insulin', '[U]'}); 
 xlabel('Time [h]'); 
  
