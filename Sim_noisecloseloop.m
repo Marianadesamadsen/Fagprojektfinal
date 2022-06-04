@@ -65,7 +65,7 @@ ctrlAlgorithm = @PIDControl;
 simModel = @MVPmodel;
 
 % Observed variables
-observationModel = @CHMsensor;
+observationModel = @CGMsensor_withnoise;
 
 % Simulation method/function
 simMethod = @EulerM;
@@ -98,17 +98,21 @@ D = zeros(1, N);
 % Time meals
 tMeal1           = 7*h2min;         
 tMeal2           = 12*h2min;
-tMeal3           = 18*h2min; 
+tMeal3           = 18*h2min;
+tSnack1          = 15*h2min;
+tSnack2          = 10*h2min; 
 
 % Index meals
 idxMeal1         = tMeal1  /Ts + 1;   
 idxMeal2         = tMeal2  /Ts + 1;   
-idxMeal3         = tMeal3  /Ts + 1;   
+idxMeal3         = tMeal3  /Ts + 1;
+idxSnack1        = tSnack1 /Ts + 1;   
+idxSnack2        = tSnack2 /Ts + 1;
 
 %% Making meal sizes 
 
 meal  = randi([50,150],1,90);
-snack = 20;
+snack = 40;
 
 %% Inserting the meal sizes at the different hours/indicies
 
@@ -119,6 +123,10 @@ for i = 0:29
         D(1, (idxMeal1+24*h2min/Ts*i))   = meal(1+3*i)     /Ts;       % [g CHO/min]
         D(1, (idxMeal2+24*h2min/Ts*i))   = meal(2+3*i)     /Ts;       % [g CHO/min]
         D(1, (idxMeal3+24*h2min/Ts*i))   = meal(3+3*i)     /Ts;       % [g CHO/min]
+       
+    % Inserting the different meal sizes at the indcies 
+        D(1, (idxSnack1+24*h2min/Ts*i))   = snack        /Ts;       % [g CHO/min] 
+        D(1, (idxSnack2+24*h2min/Ts*i))   = snack        /Ts;       % [g CHO/min]
         
 end 
 
@@ -141,9 +149,10 @@ t_vec          = [5,10,15];          % The respective sampling times
 filt_prev(1,:) = [Gsc(1),Gsc(1)];        % Inserting the previous filtered value as the not filtered values
 tau            = 6;                  % From the article
 flag           = 0;                  % No detected meal to begin with
-Gmin           = [90 0.5 0.5];       % For meal under 50 considered
+Gmin           = [120 0.8 0.65];     % For meal under 50 considered
 
 % Other tries
+%Gmin           = [90 0.5 0.5];
 %Gmin = [ 130 1.5 1.6 ]; % Their meals
 %Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 

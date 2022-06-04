@@ -26,8 +26,6 @@ h2min = 60;      % Convert from h   to min
 min2h = 1/h2min; % Convert from min to h 
 U2mU  = 1e3;     % Convert from U   to mU 
 mU2U  = 1/U2mU;  % Convert from mU  to U 
-min2sec = h2min;
-sec2min = 1/h2min;
 
 %% Inizializing parameters
 
@@ -158,11 +156,9 @@ sum(zero_one)
 % Create figure with absolute size for reproducibility
 figure;
 
-T2=datetime(T*min2sec,'ConvertFrom','posixtime');
-
 % Plot blood glucose concentration and the detected meals as points
 subplot(511);
-plot(T2, G);
+plot(T*min2h, G);
 xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
@@ -196,7 +192,9 @@ xlim([t0, tf]*min2h);
 ylabel({'detected meal'}); 
 xlabel('Time [h]'); 
  
+%%
 
+T(1+i*12:12*i)
 
 
 
