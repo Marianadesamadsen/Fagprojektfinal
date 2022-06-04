@@ -171,13 +171,23 @@ count = 0;
 
 for i = 1:length(zero_one)-30/5
     
-    if sum(zero_one(i:i+30/5)) == 0 && sum(D(1,i)) > 0 && count == 0
+    % 50 because of the snack meals
+    if sum(zero_one(i:i+30/5)) == 0 && (D(1,i)) > 50 && count == 0
         falsenegative = falsenegative + 1;
         count = 6;
     
     elseif sum(zero_one(i:i+30/5)) == 1 && (D(1,i)) == 0 && count == 0
         falsepositive = falsepositive + 1;
         count = 6;
+        
+    elseif sum(zero_one(i:i+30/5)) == 1 && (D(1,i)) > 0
+        
+        for j=i:i+30/5
+            if zero_one(j) == 1
+                idxrestart=j;
+            end
+        end
+        count = i-idxrestart;
         
     elseif count > 0 
         count = count - 1;
