@@ -121,7 +121,7 @@ Gmin           = [120 0.8 0.65];     % Gmin accepts intensity up to 6
 % Gmin = [90 0.5 0.5] % For no meal under 50 considered
 % Other tries
 % Gmin = [ 130 1.5 1.6 ]; % Their meals
-%Gmin = [ 110 1 1.5 ]; % For no meal under 50 
+% Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 
 
 % Computing the first two detections
