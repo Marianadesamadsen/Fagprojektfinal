@@ -67,7 +67,7 @@ simModel = @MVPmodel;
 observationModel = @CHMsensor;
 
 % Simulation method/function
-simMethod = @ExplicitEuler;
+simMethod = @EulerM;
 
 %% Controller parameters and state
 ctrlPar = [
