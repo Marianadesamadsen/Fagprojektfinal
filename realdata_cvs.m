@@ -38,9 +38,6 @@ date_temp = data.textdata(2:780,4);
 
 date = regexprep(date_temp, 'T', ' '); % Removes the T's in the dates and replaces with a space such that it gets the right format in datetime
 
-t = zeros(length(date));
-
-
 % We loop over the cell array and convert it to a string such that it gets
 % the right format for datetime
 for i = 1:length(date)
