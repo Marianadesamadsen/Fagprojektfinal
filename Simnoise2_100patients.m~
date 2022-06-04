@@ -246,7 +246,7 @@ ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
 plot(tspan(1:end-1)*min2h,zero_one(:,minpatient)*400,'*r');
 hold on 
-plot(tspan(1:end-1)*min2h,zero_one(:,maxpatient)*300,'*b');
+plot(tspan(1:end-1)*min2h,zero_one(:,maxpatient)*150,'*b');
 legend('minpatient','maxpatient','minpatient','maxpatient');
 
 % Plot meal carbohydrate and the detected meals as points
