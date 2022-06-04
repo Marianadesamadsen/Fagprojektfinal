@@ -1,5 +1,6 @@
 %% Sim closed loop
-% Perform a closed-loop simulation with a PID controller with a single meal for the Medtronic
+% Perform a closed-loop simulation with a PID controller with a 3 meals 
+% and 2 snacks over 30 days for the Medtronic with stochastic noise
 %%
 
 clear all 
