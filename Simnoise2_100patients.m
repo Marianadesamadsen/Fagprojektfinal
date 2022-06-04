@@ -26,6 +26,8 @@ h2min = 60;      % Convert from h   to min
 min2h = 1/h2min; % Convert from min to h 
 U2mU  = 1e3;     % Convert from U   to mU 
 mU2U  = 1/U2mU;  % Convert from mU  to U 
+min2sec = h2min; % Convert from min to sec
+sec2min = 1/h2min;% Convert from sec to min
 
 %% Inizializing parameters
 
@@ -249,45 +251,51 @@ reset(groot);
 % Create figure with absolute size for reproducibility
 figure;
 
+% Converting data
+T2=datetime(T*min2sec,'ConvertFrom','posixtime');
+tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
+
 % Plot blood glucose concentration and the detected meals as points
 subplot(411);
-plot((T(:,:,minpatient)*min2h), G(:,:,minpatient),'r');
+plot((T2(:,:,minpatient)), G(:,:,minpatient),'r');
 hold on 
-plot((T(:,:,maxpatient)*min2h), G(:,:,maxpatient),'b');
-xlim([t0, tf]*min2h);
+plot((T2(:,:,maxpatient)), G(:,:,maxpatient),'b');
+%xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
-plot(tspan(1:end-1)*min2h,zero_one(:,minpatient)*400,'*r');
+plot(tspan2(1:end-1),zero_one(:,minpatient)*400,'*r');
 hold on 
-plot(tspan(1:end-1)*min2h,zero_one(:,maxpatient)*300,'*b');
+plot(tspan2(1:end-1),zero_one(:,maxpatient)*300,'*b');
 legend('minpatient','maxpatient','minpatient','maxpatient');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(412);
-stem(tspan(1:end-1)*min2h, Ts*D(1,:,minpatient), 'MarkerSize', 0.1);
-hold on 
-stem(tspan(1:end-1)*min2h, Ts*D(1,:,maxpatient), 'MarkerSize', 0.1);
-xlim([t0, tf]*min2h);
+stemmin = Ts*D(1,:,minpatient);
+stemmax = Ts*D(1,:,maxpatient);
+stem(tspan2(1:end-1),stemmin,stemmax, 'MarkerSize', 0.1);
+% hold on 
+% stem(tspan2(1:end-1), Ts*D(1,:,maxpatient), 'MarkerSize', 0.1);
+%xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
 hold on 
-plot(tspan(1:end-1)*min2h,zero_one(:,minpatient)*150,'*r');
+plot(tspan2(1:end-1),zero_one(:,minpatient)*150,'*r');
 hold on 
-plot(tspan(1:end-1)*min2h,zero_one(:,maxpatient)*100,'*b');
+plot(tspan2(1:end-1),zero_one(:,maxpatient)*100,'*b');
 legend('minpatient','maxpatient','minpatient','maxpatient');
 
 % Plot basal insulin flow rate
 subplot(413);
-stairs(tspan*min2h, U(1, [1:end, end],minpatient));
-stairs(tspan*min2h, U(1, [1:end, end],maxpatient));
+stairs(tspan2, U(1, [1:end, end],minpatient));
+stairs(tspan2, U(1, [1:end, end],maxpatient));
 legend('minpatient','maxpatient');
-xlim([t0, tf]*min2h);
+%xlim([t0, tf]*min2h);
 ylabel({'Basal insulin', '[mU/min]'});
 
 % Plot bolus insulin
 subplot(414);
-stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :,minpatient), 'MarkerSize', 1);
-stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :,maxpatient), 'MarkerSize', 1);
-xlim([t0, tf]*min2h);
+stem(tspan2(1:end-1), Ts*mU2U*U(2, :,minpatient), 'MarkerSize', 1);
+stem(tspan2(1:end-1), Ts*mU2U*U(2, :,maxpatient), 'MarkerSize', 1);
+%xlim([t0, tf]*min2h);
 ylabel({'Bolus insulin', '[U]'}); 
 xlabel('Time [h]');
 
