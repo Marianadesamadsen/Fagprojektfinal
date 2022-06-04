@@ -33,7 +33,7 @@ clear
 
 data=importdata('Control-IQ_Sample_Tconnect.csv');
 
-G =data.data;
+G = data.data;
 date_temp = data.textdata(2:780,4);
 
 date = regexprep(date_temp, 'T', ' '); % Removes the T's in the dates and replaces with a space such that it gets the right format in datetime
@@ -52,12 +52,7 @@ title('Clinical patient glucose conc. over 3 days')
 xlabel('Time')
 ylabel('Blood glucose concentration')
 
-%% Intital and final time for the simulation over 30 days
-
-time_vector = datevec(t); % Datetime given as matrix/vectors
-
-t0 =  0;        % min - start time
-tf = 720*h2min; % min - end time
+%% Number of control steps
 Ts = 5;         % min - step size 
 
 %% Detecting meals using GRID algorithm
@@ -71,9 +66,10 @@ t_vec          = [5, 10,15];   % The respective sampling times
 filt_prev(1,:) = [G(1),G(1)];        % Inserting the previous filtered value as the not filtered values
 tau            = 6;                  % From the article
 flag           = 0;                  % No detected meal to begin with
-Gmin           = [90 0.5 0.5];       % For meal under 50 considered
+Gmin           = [120 0.8 0.65];     % Gmin accepts intensity up to 6
 
 % Other tries
+%Gmin           = [90 0.5 0.5];       % For meal under 50 considered
 %Gmin = [ 130 1.5 1.6 ]; % Their meals
 %Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 
@@ -112,24 +108,22 @@ figure;
 
 % Plot blood glucose concentration and the detected meals as points
 subplot(511);
-plot(T*min2h, G);
-xlim([t0, tf]*min2h);
+plot(t, G);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
-plot(tspan(1:end-1)*min2h,zero_one*200,'r.');
+plot(t(1:end-1),zero_one*200,'r.');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(512);
-stem(tspan(1:end-1)*min2h, Ts*D(1, :), 'MarkerSize', 0.1);
-xlim([t0, tf]*min2h);
+stem(t(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
 ylabel({'Meal carbohydrates', '[g CHO]'});
 hold on 
-plot(tspan(1:end-1)*min2h,zero_one*100,'r.');
+plot(t(1:end-1)),zero_one*100,'r.');
 
 % Plot basal insulin flow rate
 subplot(513);
 stairs(tspan*min2h, U(1, [1:end, end]));
-xlim([t0, tf]*min2h);
+%xlim([t0, tf]*min2h);
 ylabel({'Basal insulin', '[mU/min]'});
 
 % Plot bolus insulin

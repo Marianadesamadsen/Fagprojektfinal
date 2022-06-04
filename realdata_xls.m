@@ -25,7 +25,7 @@ set(groot, 'DefaultStemLineWidth',  lw);
 h2min = 60;      % Convert from h   to min 
 min2h = 1/h2min; % Convert from min to h 
 U2mU  = 1e3;     % Convert from U   to mU 
-mU2U  = 1/U2mU;  % Convert from mU  to U 
+mU2U  = 1/U2mU;  % Convert from mU  to U
 
 %% Loading data 
 clc 
@@ -37,6 +37,9 @@ G = data.data;
 date_temp = data.textdata(2:780,4);
 
 date = regexprep(date_temp, 'T', ' '); % Removes the T's in the dates and replaces with a space such that it gets the right format in datetime
+
+t = zeros(length(date));
+
 
 % We loop over the cell array and convert it to a string such that it gets
 % the right format for datetime
@@ -52,13 +55,8 @@ title('Clinical patient glucose conc. over 3 days')
 xlabel('Time')
 ylabel('Blood glucose concentration')
 
-%% Intital and final time for the simulation over 30 days
-
-time_vector = datevec(t); % Datetime given as matrix/vectors
-
-% t0 =  0;        % min - start time
-% tf = 3*24*60; % min - end time
-% Ts = 5;         % min - step size 
+%% Number of control steps
+Ts = 5;         % min - step size 
 
 %% Detecting meals using GRID algorithm
 
@@ -112,36 +110,15 @@ detectedmeals=sum(zero_one);
 figure;
 
 % Plot blood glucose concentration and the detected meals as points
-subplot(511);
+subplot(211);
 plot(t, G);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
-
-% Plot meal carbohydrate and the detected meals as points
-subplot(512);
-stem(tspan(1:end-1)*min2h, Ts*D(1, :), 'MarkerSize', 0.1);
-%xlim([t0, tf]*min2h);
-ylabel({'Meal carbohydrates', '[g CHO]'});
-hold on 
-plot(tspan(1:end-1)*min2h,zero_one*100,'r.');
-
-% Plot basal insulin flow rate
-subplot(513);
-stairs(tspan*min2h, U(1, [1:end, end]));
-%xlim([t0, tf]*min2h);
-ylabel({'Basal insulin', '[mU/min]'});
-
-% Plot bolus insulin
-subplot(514);
-stem(tspan(1:end-1)*min2h, Ts*mU2U*U(2, :), 'MarkerSize', 1);
-xlim([t0, tf]*min2h);
-ylabel({'Bolus insulin', '[U]'}); 
-xlabel('Time [h]');
+plot(t(1:end-1),zero_one*150,'r.');
 
 % Plot detected Meals
-subplot(515);
-plot(tspan(1:end-1)*min2h,zero_one,'b-');
-xlim([t0, tf]*min2h);
+subplot(212);
+plot(t(1:end-1),zero_one,'b-');
 ylabel({'detected meal'}); 
 xlabel('Time [h]'); 
  
