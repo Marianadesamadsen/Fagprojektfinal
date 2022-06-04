@@ -158,9 +158,11 @@ sum(zero_one)
 % Create figure with absolute size for reproducibility
 figure;
 
+T2=datetime(T*min2sec,'ConvertFrom','posixtime');
+
 % Plot blood glucose concentration and the detected meals as points
 subplot(511);
-plot(T*min2h, G);
+plot(T2, G);
 xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
