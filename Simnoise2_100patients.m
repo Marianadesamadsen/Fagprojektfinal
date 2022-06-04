@@ -230,6 +230,7 @@ for i=1:100
     % patient
     if minp == sum(G(:,:,i))
         minpatient = i;
+        minpatient = i; % The index for the max patient
     end
     
     % If the ith patient has the maximum patient sum then it is the maximum
