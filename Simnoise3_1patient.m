@@ -161,36 +161,36 @@ end
 
 % The total amount of detected meals
 detectedmeals = sum(zero_one);
-fprintf('number of detected meals: %detectedmeals',detectedmeals);
+fprintf('number of detected meals: %d\n',detectedmeals);
 
 %% Checking for false positve or false negative values
 
 falsenegative = 0;
 falsepositive  = 0;
+count = 0;
 
-for i = 1: length(detectedmeals)
+for i = 1:length(zero_one)-30/5
     
-    if detectedmeals(i) == 1 && D(1,i:30/5) > 0
-       true = true + 1;
-    else 
+    if sum(zero_one(i:i+30/5)) == 0 && sum(D(1,i)) > 0 && count == 0
         falsenegative = falsenegative + 1;
-        true = true + 0;
-    end
+        count = 6;
     
-    if detectedmeals(i) == 0 && D(1,i:30/5) == 0
-        true = true + 0;
-        falsepositive = falsepositive +1;
-    else 
-        true = true +1;
+    elseif sum(zero_one(i:i+30/5)) == 1 && (D(1,i)) == 0 && count == 0
+        falsepositive = falsepositive + 1;
+        count = 6;
+        
+    elseif count > 0 
+        count = count - 1;
+    
     end
      
 end
 
 true1 = sum(true);
-falsepositive1 = sum(falsepositive);
-falsenegative1 = sum(falsenegative);
-fprintf('number of false positive: %d',falsepositive1);
-fprintf('number of false negative: %d',falsenegative1);
+falsepositive1 = falsepositive;
+falsenegative1 = falsenegative;
+fprintf('number of false positive: %d \n',falsepositive1);
+fprintf('number of false negative: %d\n',falsenegative1);
 
 %% Visualize 
 
