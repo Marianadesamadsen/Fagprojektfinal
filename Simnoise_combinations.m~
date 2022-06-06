@@ -143,29 +143,25 @@ Gmin_combinations=[Gmin1(:),Gmin2(:),Gmin3(:)];
 %%
 
 number_combinations     = size(Gmin_combinations); 
+D_detected              = zeros(length(D(1,:)),number_combinations(2));
 number_detectedmeals    = zeros(1,number_combinations(2));
-truepositive            = zeros(1,number_combinations(2));
-falsepositive           = zeros(1,number_combinations(2));
-falsenegative           = zeros(1,number_combinations(2));
 
 stride = 90/Ts; % min
 
 for i = 1 : number_combinations(1)
 
-D_detected = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+D_detected(:,i) = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
-number_detectedmeals(i) = sum(D_detected);
+number_detectedmeals(i) = sum(D_detected(:,i));
 
-[truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
+[truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts);
 
 
 end
 
 %% Calculating how many true detected meals there has been, false detected and not detected meals
 
-% står ovenfor alligevel 
-
-
+% står ovenfor all
 %% Visualize 
 
 % Create figure with absolute size for reproducibility
