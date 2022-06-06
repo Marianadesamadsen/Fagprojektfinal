@@ -1,4 +1,4 @@
-function D_detected = GRIDalgorithmSimulation(G,Gmin,tau,delta_G,t_vec,Ts)
+function D_detected = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts)
 
 % Inisializing 
 filt_prev      = zeros(length(G),2); % The vector of previous filtered values

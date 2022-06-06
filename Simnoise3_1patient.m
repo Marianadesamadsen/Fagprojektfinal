@@ -131,7 +131,7 @@ Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6
 % Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 % The total amount of detected meals
 
-D_detected = GRIDalgorithmSimulation(G,Gmin,tau,delta_G,t_vec,Ts);
+D_detected = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
 
 number_detectedmeals = sum(D_detected);
 

@@ -174,7 +174,7 @@ delta_G          = 15;
 t_vec            = [5,10,15]; 
   
          
-D_detected(:,p) = GRIDalgorithmSimulation(G,Gmin,tau,delta_G,t_vec,Ts);
+D_detected(:,p) = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
 
 % The total amount of detected meals for each patient in vector
 number_detectedmeals(p)=sum(D_detected(:,p));
