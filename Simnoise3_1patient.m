@@ -141,7 +141,7 @@ fprintf('number of detected meals: %d\n',number_detectedmeals);
 
 stride = 90/Ts; % min
 
-[truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts);
+[truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts);
 
 fprintf('number of false positive: %d \n',falsepositive);
 fprintf('number of false negative: %d\n',falsenegative);

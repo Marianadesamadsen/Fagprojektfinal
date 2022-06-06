@@ -123,30 +123,27 @@ G = CGMsensor_withnoise(X, p); % [mg/dL]
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
 tau            = 6;                  % From the article
-Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6
 
-% Gmin = [90 0.5 0.5] % For no meal under 50 considered
-% Other tries
-% Gmin = [ 130 1 1.1 ]; % Their mins
-% Gmin = [ 110 1 1.5 ]; % For no meal under 50 
-% The total amount of detected meals
+% Range for gmin try outs 
+gmin1range = (120:130);
+gmin2range = (0.2:0.1:1.2);
+gmin3range = (0.2:0.1:1.2);
 
-
-gmin1range = (115:130);
-gmin2range = (0:0.1:1.5);
-gmin3range = (0:0.1:1.5);
-
+% Making the combinations using meshgrid
 [Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
 
-Gmin_combinations=[Gmin1(:),Gmin2(:),Gmin3(:)];
+% Types of combinations
+Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
 
 %%
 
+% Initialising
 number_combinations     = size(Gmin_combinations); 
 number_detectedmeals    = zeros(1,number_combinations(2));
 truepositive            = zeros(1,number_combinations(2));
 falsepositive           = zeros(1,number_combinations(2));
 falsenegative           = zeros(1,number_combinations(2));
+truenegative            = zeros(1,number_combinations(2));
 
 stride = 90/Ts; % min
 
@@ -156,62 +153,25 @@ D_detected = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_
 
 number_detectedmeals(i) = sum(D_detected);
 
-[truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
-
+[truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
 
 end
 
-%% Calculating how many true detected meals there has been, false detected and not detected meals
+%% Calculating false positive and false negative rates 
 
-% står ovenfor alligevel 
+
+
+falsep_rate = 
+falsen_rate =
 
 
 %% Visualize 
 
-% Create figure with absolute size for reproducibility
-figure;
+figure 
 
-% Converting data
-T2=datetime(T*min2sec,'ConvertFrom','posixtime');
-tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
-
-% Plot blood glucose concentration and the detected meals as points
-subplot(511);
-plot(T2, G);
-%xlim([t0, tf]*min2h);
-ylabel({'Blood glucose concentration', '[mg/dL]'});
-hold on 
-plot(tspan2(1:end-1),D_detected*200,'r.');
-
-% Plot meal carbohydrate and the detected meals as points
-subplot(512);
-stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
-%xlim([t0, tf]*min2h);
-ylabel({'Meal carbohydrates', '[g CHO]'});
-hold on 
-plot(tspan2(1:end-1),D_detected*100,'r.');
-
-% Plot basal insulin flow rate
-subplot(513);
-stairs(tspan2, U(1, [1:end, end]));
-%xlim([t0, tf]*min2h);
-ylabel({'Basal insulin', '[mU/min]'});
-
-% Plot bolus insulin
-subplot(514);
-stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
-%xlim([t0, tf]*min2h);
-ylabel({'Bolus insulin', '[U]'}); 
-xlabel('Time [h]');
-
-% Plot detected Meals
-subplot(515);
-plot(tspan2(1:end-1),D_detected,'b-');
-%xlim([t0, tf]*min2h);
-ylabel({'detected meal'}); 
-xlabel('Time [h]'); 
- 
-
-
+plot(falsenegative,falsepositive,'*')
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC for Classification by Logistic Regression')
 
 

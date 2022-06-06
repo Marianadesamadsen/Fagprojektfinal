@@ -1,4 +1,4 @@
-function [truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts)
+function [truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts)
 
 falsenegative   = 0;
 falsepositive   = 0;
@@ -34,6 +34,14 @@ end
 idxdetecmeals = find(tempmealdetec);
 idxtruemeals = find(truemealdetec);
 
+for i = 1:idxtruemeals
+
+    k = idxtruemeals(
+idxtrue_notmeals = 
+
+end
+
+
 for i = 1:length(idxtruemeals)
    
     k = idxtruemeals(i);
@@ -60,24 +68,6 @@ for i = 1:length(idxdetecmeals)
         truepositive = truepositive + 1;
     end  
 end
-
-% FINDING true negatives 
-
-% removing idices
-for i = 1:idxtruemeals
-
-    k = idxtruemeals(i);
-    
-    D(1,k) =[];
-
-end
-
-for i = 1:length(idxtruemeals)
-    
-    if sum(D_detected(k:k+stride)) == 0 
-        truenegative = truenegative + 1;
-    end  
-end 
 
 
 end
