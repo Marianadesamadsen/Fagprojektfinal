@@ -131,11 +131,28 @@ Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6
 % Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 % The total amount of detected meals
 
-D_detected = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
 
-number_detectedmeals = sum(D_detected);
+gmin1range = (115:130);
+gmin2range = (0:0.1:1.5);
+gmin3range = (0:0.1:1.5);
 
-fprintf('number of detected meals: %d\n',number_detectedmeals);
+[Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
+
+Gmin_combinations=[Gmin1(:),Gmin2(:),Gmin3(:)];
+
+%%
+
+number_combinations     = size(Gmin_combinations); 
+D_detected              = zeros(length(D(1,:)),number_combinations(2));
+number_detectedmeals    = zeros(1,number_combinations(2));
+
+for i = 1 : number_combinations(1)
+
+D_detected(:,i) = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+
+number_detectedmeals(i) = sum(D_detected(:,i));
+
+end
 
 %% Calculating how many true detected meals there has been, false detected and not detected meals
 
