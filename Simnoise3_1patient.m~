@@ -128,7 +128,7 @@ t_vec          = [5,10,15];          % The respective sampling times
 filt_prev(1,:) = [G(1),G(1)];        % Inserting the previous filtered value as the not filtered values
 tau            = 6;                  % From the article
 flag           = 0;                  % No detected meal to begin with
-Gmin           = [125 0.6 0.8];      % Gmin accepts intensity up to 6
+Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6
 
 % Gmin = [90 0.5 0.5] % For no meal under 50 considered
 % Other tries
@@ -136,13 +136,13 @@ Gmin           = [125 0.6 0.8];      % Gmin accepts intensity up to 6
 % Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 
 % Computing the first two detections
-[ Gfm_vec(2,:) , filt_prev(2,:) , flag, zero_one(2) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
+[ Gfm_vec(2,:) , filt_prev(2,:) , flag, D_detected(2) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
                                     filt_prev(1,:) , Gmin, Gfm_vec(1,:) , t_vec ,flag );
                                 
                                 % Updating G_vec
                                 G_vec=[G(1),G(1),G(2)];
                                 
-[ Gfm_vec(3,:) , filt_prev(3,:) , flag, zero_one(3) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
+[ Gfm_vec(3,:) , filt_prev(3,:) , flag, D_detected(3) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
                                     filt_prev(2,:) , Gmin, Gfm_vec(2,:) , t_vec, flag );
                                 
                                 % Updating G_vec
@@ -151,7 +151,7 @@ Gmin           = [125 0.6 0.8];      % Gmin accepts intensity up to 6
 % Computing the last detections
 for i = 3 : length(G)-1
     
-[ Gfm_vec(i+1,:) , filt_prev(i+1,:) , flag, zero_one(i) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
+[ Gfm_vec(i+1,:) , filt_prev(i+1,:) , flag, D_detected(i) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
                                     filt_prev(i,:) , Gmin, Gfm_vec(i,:) , t_vec , flag );
                                 
                                 % Updating G_vec
@@ -160,78 +160,18 @@ for i = 3 : length(G)-1
 end
 
 % The total amount of detected meals
-detectedmeals = sum(zero_one);
+detectedmeals = sum(D_detected);
 fprintf('number of detected meals: %d\n',detectedmeals);
 
-%% Changing data type to binary
-% 1 if meal has been detected 0 if not or if it is a snack meal
+%% Calculating how many true detected meals there has been, false detected and 
 
-for i = 1:length(D(1,:))
-    
-    if D(1,i) >= 50/Ts
-        D(1,i) = 1;
-        
-    else
-        D(1,i) = 0;
-    end 
-    
-end 
+stride = 90/Ts; % min
 
-falsenegative   = 0;
-falsepositive   = 0;
-truepositive    = 0;
-truemealdetec   = zeros(1,length(D(1,:)));
-tempmealdetec   = zeros(1,length(zero_one));
-stride = 90 / Ts; 
-
-for i = 1 : length(D(1,:))
-    if D(1,i) == 1
-        truemealdetec(i) = i;
-    end 
-end
-
-for i = 1 : length(D(1,:))
-    if zero_one(i) == 1
-        tempmealdetec(i) = i;
-    end 
-end
-
-idxdetecmeals = find(tempmealdetec);
-idxtruemeals = find(truemealdetec);
-
-
-for i = 1:length(idxtruemeals)
-   
-    k = idxtruemeals(i);
-    
-    if sum(zero_one(k:k+stride)) == 0 
-        falsenegative = falsenegative + 1;
-    end  
-end
-
-for i = 1:length(idxdetecmeals)
-   
-    k = idxdetecmeals(i);
-    
-    if sum(D(1,k-stride:k)) == 0 
-        falsepositive = falsepositive + 1;
-    end  
-end
-
-for i = 1:length(idxdetecmeals)
-   
-    k = idxdetecmeals(i);
-    
-    if sum(D(1,k-stride:k)) == 1 
-        truepositive = truepositive + 1;
-    end  
-end
-
+[truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts);
 
 fprintf('number of false positive: %d \n',falsepositive);
 fprintf('number of false negative: %d\n',falsenegative);
 fprintf('number of true positive: %d\n',truepositive);
-
 
 %% Visualize 
 
@@ -248,7 +188,7 @@ plot(T2, G);
 %xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 hold on 
-plot(tspan2(1:end-1),zero_one*200,'r.');
+plot(tspan2(1:end-1),D_detected*200,'r.');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(512);
@@ -256,7 +196,7 @@ stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
 %xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
 hold on 
-plot(tspan2(1:end-1),zero_one*100,'r.');
+plot(tspan2(1:end-1),D_detected*100,'r.');
 
 % Plot basal insulin flow rate
 subplot(513);
@@ -273,7 +213,7 @@ xlabel('Time [h]');
 
 % Plot detected Meals
 subplot(515);
-plot(tspan2(1:end-1),zero_one,'b-');
+plot(tspan2(1:end-1),D_detected,'b-');
 %xlim([t0, tf]*min2h);
 ylabel({'detected meal'}); 
 xlabel('Time [h]'); 

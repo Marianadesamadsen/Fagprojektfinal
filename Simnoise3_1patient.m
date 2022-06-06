@@ -163,8 +163,7 @@ end
 detectedmeals = sum(D_detected);
 fprintf('number of detected meals: %d\n',detectedmeals);
 
-%% Changing data type to binary
-% 1 if meal has been detected 0 if not or if it is a snack meal
+%% Calculating how many true detected meals there has been, false detected and not detected meals
 
 stride = 90/Ts; % min
 
