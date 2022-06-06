@@ -158,8 +158,8 @@ sum(zero_one)
 % Create figure with absolute size for reproducibility
 figure;
 
-T2=datetime(T*min2sec,'ConvertFrom','posixtime');
-tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
+T2=datetime(T*min2sec,'ConvertFrom','datenum');
+tspan2=datetime(tspan*min2sec,'ConvertFrom','datenum');
 
 % Plot blood glucose concentration and the detected meals as points
 subplot(511);

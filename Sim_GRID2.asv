@@ -164,7 +164,7 @@ end
 % The total amount of detected meals
 sum(zero_one)
 
-%% How many correct snacks are detected? - test
+%% How many correct snacks are detected?
 % D is the correct data
 % zero_one are the detected. 
 % We denote 
@@ -173,20 +173,17 @@ sum(zero_one)
 % D = 0, zero_one = 0 as true negative
 % D = 0, zero_one = 1 as false positive
 
-% true_post = zeros(1,N);
-% false_neg = zeros(1,N);
-% true_neg = zeros(1,N);
-% false_post = zeros(1,N);
-% 
-% % Make a range, perhaps (i-10:i,i:10)
-% 
-% for i = 1:N-9
-% true_post(i) = sum(D(i:i+9) ~= 0) && sum(zero_one(i:i+9) == 1); % sum this
-% false_neg(i) = D(i) ~= 0 && zero_one(i) == 0; % sum this
-% true_neg(i) = D(i) == 0 && zero_one(i) == 0;
-% false_post(i) = D(i) == 0 && zero_one(i) == 1;
-% end
+true_post = zeros(1,N);
+false_neg = zeros(1,N);
+true_neg = zeros(1,N);
+false_post = zeros(1,N);
 
+
+for i = 1:N
+true_post = D(i) ~= 0 && zero_one(i) == 1 % sum this
+false_neg = D(i) ~= 0 && zero_one(i) == 0 % sum this
+true_neg = D(i) == 0 && zero_one(i) == 0
+false_post = D(i) == 0 && zero_one(i) == 1
 
 %% Visualize 
 
@@ -194,8 +191,8 @@ sum(zero_one)
 figure;
 
 % Converting data
-T2=datetime(T*min2sec,'ConvertFrom','datenum');
-tspan2=datetime(tspan*min2sec,'ConvertFrom','datenum');
+T2=datetime(T*min2sec,'ConvertFrom','posixtime');
+tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
 % Plot blood glucose concentration
 subplot(411);
