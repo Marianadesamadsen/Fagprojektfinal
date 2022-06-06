@@ -163,45 +163,75 @@ end
 detectedmeals = sum(zero_one);
 fprintf('number of detected meals: %d\n',detectedmeals);
 
-%% Checking for false positve or false negative values
+%% Changing data type to binary
+% 1 if meal has been detected 0 if not or if it is a snack meal
+
+for i = 1:length(D(1,:))
+    
+    if D(1,i) >= 50/Ts
+        D(1,i) = 1;
+        
+    else
+        D(1,i) = 0;
+    end 
+    
+end 
 
 falsenegative   = 0;
 falsepositive   = 0;
 truepositive    = 0;
-count           = 0;
-
+truemealdetec   = zeros(1,length(D(1,:)));
+tempmealdetec   = zeros(1,length(zero_one));
 stride = 90 / Ts; 
-max    = 50 / Ts;
 
-i = 1;
-
-while i < length(zero_one) - stride
-
-    if D(1,i) < max && sum(zero_one(i:i+stride)) == 1 && sum(D(1,i:i+stride)) < max 
-        falsepositive = falsepositive + 1; 
-        i = i + stride;
-        
-    elseif D(1,i) >= max && sum(zero_one(i:i+stride)) == 0 
-        falsenegative = falsenegative + 1;
-        i = i + stride;
-        
-    elseif D(1,i) >= max && sum(zero_one(i:i+stride)) == 1
-       truepositive = truepositive + 1;
-       i = i + stride;
-        
-    else
-        i = i + 1;
+for i = 1 : length(D(1,:))
+    if D(1,i) == 1
+        truemealdetec(i) = i;
     end 
-    
-    
 end
+
+for i = 1 : length(D(1,:))
+    if zero_one(i) == 1
+        tempmealdetec(i) = i;
+    end 
+end
+
+idxdetecmeals = find(tempmealdetec);
+idxtruemeals = find(truemealdetec);
+
+
+for i = 1:length(idxtruemeals)
+   
+    k = idxtruemeals(i);
     
-falsepositive1 = falsepositive;
-falsenegative1 = falsenegative;
-truepositive1 = truepositive;
-fprintf('number of false positive: %d \n',falsepositive1);
-fprintf('number of false negative: %d\n',falsenegative1);
-fprintf('number of true positive: %d\n',truepositive1);
+    if sum(zero_one(k:k+stride)) == 0 
+        falsenegative = falsenegative + 1;
+    end  
+end
+
+for i = 1:length(idxdetecmeals)
+   
+    k = idxdetecmeals(i);
+    
+    if sum(D(1,k-stride:k)) == 0 
+        falsepositive = falsepositive + 1;
+    end  
+end
+
+for i = 1:length(idxdetecmeals)
+   
+    k = idxdetecmeals(i);
+    
+    if sum(D(1,k-stride:k)) == 1 
+        truepositive = truepositive + 1;
+    end  
+end
+
+
+fprintf('number of false positive: %d \n',falsepositive);
+fprintf('number of false negative: %d\n',falsenegative);
+fprintf('number of true positive: %d\n',truepositive);
+
 
 %% Visualize 
 
