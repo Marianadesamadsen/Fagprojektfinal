@@ -164,90 +164,35 @@ detectedmeals = sum(zero_one);
 fprintf('number of detected meals: %d\n',detectedmeals);
 
 %% Checking for false positve or false negative values
-% 
-% falsenegative = 0;
-% falsepositive  = 0;
-% truepositive=0;
-% count = 0;
-% 
-% for i = 1:length(zero_one)-30/5
-%     
-%     % 50 because of the snack meals
-%     if D(1,i) >= 50/Ts && sum(zero_one(i:i+30/5)) == 0 && count == 0
-%         falsenegative = falsenegative + 1;
-%         count = 6;
-%     
-%     elseif  sum(zero_one(i:i+30/5)) == 1 && sum(D(1,i-30/5:i+30/5)) < 50/Ts && count == 0 
-%             falsepositive = falsepositive + 1;
-%             count = 6;
-%             
-%     elseif sum(zero_one(i:i+30/5)) == 1 && (D(1,i)) >= 50/Ts && count == 0
-%         
-%         for j=i:i+30/5
-%             if zero_one(j) == 1
-%                 idxrestart=j;
-%             end
-%         end
-%         
-%         truepositive = truepositive + 1;
-%         count = idxrestart-i;
-%         
-%     elseif count > 0 
-%         count = - 1;
-%     
-%     end
-%      
-% end
-% 
-% falsepositive1 = falsepositive;
-% falsenegative1 = falsenegative;
-% truepositive1 = truepositive;
-% fprintf('number of false positive: %d \n',falsepositive1);
-% fprintf('number of false negative: %d\n',falsenegative1);
-% fprintf('number of true positive: %d\n',truepositive1);
 
-%% rewrtiting to logical array 
+falsenegative   = 0;
+falsepositive   = 0;
+truepositive    = 0;
+count           = 0;
 
-max = 50 / Ts;
+stride = 90 / Ts; 
+max    = 50 / Ts;
 
-for i = 1:length(D(1,:))
-    if D(1,i) >= max 
-        D(1,i) = 1;
-    elseif D(1,i) < max 
-        D(1,i) = 0;
-    end 
-end
+i = 1;
 
+while i < length(zero_one) - stride
 
-%%
-
-falsenegative = 0;
-falsepositive  = 0;
-truepositive = 0;
-count = 0;
-
-stride = 30 / 5;
-max = 50 / Ts;
-
-for i = 1:length(zero_one)-stride
-
-    if D(1,i) == 0 && sum(zero_one(i:i+stride)) == 1 && sum(D(1,i:i+stride)) == 0  && count == 0
+    if D(1,i) < max && sum(zero_one(i:i+stride)) == 1 && sum(D(1,i:i+stride)) < max 
         falsepositive = falsepositive + 1; 
-        count = stride;
-        % i = i + stride;
+        i = i + stride;
         
-    elseif D(1,i) == 1 && sum(zero_one(i:i+stride)) == 0 && count == 0
+    elseif D(1,i) >= max && sum(zero_one(i:i+stride)) == 0 
         falsenegative = falsenegative + 1;
-        count = stride;
-        % i = i + stride;
+        i = i + stride;
         
-    %elseif D(1,i) >= max && sum(zero_one(i:i+stride)) > 0
-     %   truepositive = truepositive + 1;
-        % i = i + stride;
+    elseif D(1,i) >= max && sum(zero_one(i:i+stride)) == 1
+       truepositive = truepositive + 1;
+       i = i + stride;
         
-    elseif count > 0 
-        count = count - 1 ;
+    else
+        i = i + 1;
     end 
+    
     
 end
     
