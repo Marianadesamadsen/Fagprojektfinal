@@ -1,5 +1,18 @@
 
 clear
+
+%% Loading all folders
+
+fprintf('Loading diabetes library .. ');
+
+% Add real thermodynamics functions
+addpath(genpath(fullfile(pwd, './Other')));
+
+% Let the user know that the library is being loaded
+fprintf('Done\n');
+
+%% Script start
+
 tspank = linspace(0, 5, 10+1);
 Nk = numel(tspank) - 1;
 
