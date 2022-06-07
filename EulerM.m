@@ -64,7 +64,7 @@ dt = (tspank(end)-tspank(1))/Nk;
 xk = x0;
 
 % The simulation of noise
-W=brownianmotion2(Nk+1,tspank); % Snak med hjælpelærerne 
+W=brownianmotion(Nk+1,tspank); 
 
 for k=1:Nk
     

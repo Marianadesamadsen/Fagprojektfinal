@@ -160,51 +160,23 @@ end
 %% GRID
 
 % Inisializing
-filt_prev      = zeros(length(G(:,:,1)),2,numpatients); % The vector of previous filtered values
-Gfm_vec        = zeros(length(G),2,numpatients);        % The vector of previous derivatives
-detectedmeals  = zeros(1,numpatients);                  % Detected meals for each patient in matrix
+number_detectedmeals  = zeros(1,numpatients);            
+D_detected            = zeros(length(G)-1,numpatients);     
 
 for p = 1:numpatients 
 
-G_vec            = [G(:,1,p),G(:,1,p),G(:,1,p)]; % Inserting the start previous glucose measurements as the same value
-delta_G          = 15;                           % From article  
-t_vec            = [5,10,15];                    % The respective sampling times
-filt_prev(1,:,p) = [G(:,1,p),G(:,1,p)];          % Inserting the previous filtered value as the not filtered values
-tau              = 6;                            % From article
-flag             = 0;                            % No detected meals to begin with 
-Gmin             = [90 0.5 0.5];                 % For meal no meals under 50 considered
+% Initializing
+G_vec            = G(1,:,p);     % The current person
+Gmin             = [90 0.5 0.5]; % Temperaly chosen
+tau              = 6;            % From article   
+delta_G          = 15;           % From article   
+t_vec            = [5,10,15];    % The time is the same for each
+  
+% Computing the detected meals
+D_detected(:,p) = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
 
-% Other tries
-% Gmin = [ 130 1.5 1.6 ]; % Their meals
-% Gmin = [ 110 1 1.5 ]; % For no meal under 50 
-
-% Computing the first two detections
-[ Gfm_vec(2,:,p) , filt_prev(2,:,p) , flag, zero_one(2) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    filt_prev(1,:,p) , Gmin, Gfm_vec(1,:,p) , t_vec ,flag );
-                                
-                                % Updating G_vec
-                                G_vec=[G(:,1,p),G(:,1,p),G(:,2,p)];
-                                
-[ Gfm_vec(3,:,p) , filt_prev(3,:,p) , flag, zero_one(3) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    filt_prev(2,:,p) , Gmin, Gfm_vec(2,:,p) , t_vec, flag );
-                                
-                                % Updating G_vec
-                                G_vec=[G(:,1,p),G(:,2,p),G(:,3,p)];
-
-        % Comptuing the last detections                               
-        for i = 3 : length(G)-1
-
-         [ Gfm_vec(i+1,:,p) , filt_prev(i+1,:,p) , flag, zero_one(i,p) ]= ...
-             GRID_func( delta_G , G_vec , tau, Ts , ...
-             filt_prev(i,:,p) , Gmin, Gfm_vec(i,:,p) , t_vec , flag );
-                   
-         % Updating G_vec
-         G_vec=[G(i-1),G(i),G(i+1)];
-                                
-        end
-         
 % The total amount of detected meals for each patient in vector
-detectedmeals(p)=sum(zero_one(:,p));
+number_detectedmeals(p)=sum(D_detected(:,p));
 
 end
 

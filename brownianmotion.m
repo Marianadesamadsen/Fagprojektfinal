@@ -1,24 +1,46 @@
-function W=brownianmotion(N,tspan)
+function W = brownianmotion(Nk,tspan)
+% brownianmotion()
+% 
+% DESCRIPTION:
+% This function simulates a Wiener process. That is making a random walk
+% around 0. This function will simulate the noise of a brownian motion that
+% will be used for Euler Maruyama. 
+%
+% INPUT:
+% Nk     - Number of time steps in each control/sampling interval
+% tspan  - points in time where the solution is approximated.
+%
+% OUTPUT:
+% W      - The brownian motion path
+% 
+% PROJECT:
+% Fagprojekt 2022
+% A diabetes case study - Meal detection
+%
+% GENEREL:
+% BSc                       : Mathematics and technology 
+% University                : The Technical University of Denmark (DTU)
+% Department                : Applied Mathematics and Computer Science 
+% 
+% AUTHORS:
+% Emma Victoria Lind
+% Mariana de Sá Madsen 
+% Mona Saleem
+% 
+% CONTACT INFORMATION
+% s201205@student.dtu.dk
+% s191159@student.dtu.dk
+% s204226@student.dtu.dk
+%
 
-h2min = 60;   
-min2h = 1/h2min;
 
-T=tspan(end)*min2h; 
+tk=(tspan(end)-tspan(1))/Nk;
 
-% Simulation of brownianmotion noise that is gaussian distributed
-% increments in the concentration of glucose.
+%randn('state',100) % set the state of randn. Det gør at vi får de samme
+%random tal hver gang 
 
-randn('state',100) % set the state of randn
+dt = tk/Nk;
+dW = sqrt(dt)*randn(1,Nk); % increments
+W = cumsum(dW); % cumulative sum
 
-dt = T/N; 
-dW = zeros(1,N);        % preallocate arrays ...
-W = zeros(1,N);         % for efficiency
-dW(1) = sqrt(dt)*randn; % first approximation outside the loop ...
-W(1) = dW(1);           % since W(0) = 0 is not allowed
-
-    for j = 2:N
-    dW(j) = sqrt(dt)*randn; % general increment
-    W(j) = W(j-1) + dW(j); % Glucose niveauet stiger gang hvis man plusser med noget her.
-    end
-       
 end

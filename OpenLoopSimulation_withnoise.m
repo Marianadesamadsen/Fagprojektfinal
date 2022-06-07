@@ -5,10 +5,9 @@ function [T,X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, simModel, simM
 % Function peforms an open-loop simulation for given initial condition of
 % the state vector, time, intervals, disturbance variables, parameters, and 
 % simulation model and methods. The open-loop simulation uses the MVPmodel
-% and ExplicitEuler to compute both the subcutaneous glucose concentration,
+% and EulerM to compute both the subcutaneous glucose concentration,
 % Gsc(t), the blood glucose concentration G(t) and the statevector x(t) for
 % each time step. 
-%
 %
 % INPUT:
 % x0             - initial state vector                         (dimension: 7)
@@ -44,8 +43,6 @@ function [T,X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, simModel, simM
 % s191159@student.dtu.dk
 % s204226@student.dtu.dk
 %
-
-
 
 % Number of control steps 
 N = numel(tspan) - 1; 

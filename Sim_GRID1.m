@@ -114,8 +114,8 @@ G = CGMsensor(X, p); % [mg/dL]
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
 tau            = 6;                  % From the article
-%Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6 
-Gmin = [90 0.5 0.5]; % For no meal under 50 considered
+%Gmin           = [100 0.2 0.8];     % Gmin accepts intensity up to 6 
+Gmin = [90 0.5 0.5];                 % For no meal under 50 considered
 % Other tries
 % Gmin = [ 130 1 1.1 ]; % Their mins
 % Gmin = [ 110 1 1.5 ]; % For no meal under 50 
