@@ -1,7 +1,7 @@
-%% Simulation test of the GRID algorithm 30 days, 3 meals and two snacks with noise
+%% Simulation test of the GRID algorithm 30 days, 3 meals and 2 snacks with different value combinations of Gmin
 
 % Simulating 3 meals on 30 days, and detecting the meals
-% by using the GRID algorithm
+% by using the GRID algorithm with different value combinations of Gmin.
 
 %%
 clear all 
@@ -117,40 +117,43 @@ end
 
 G = CGMsensor(X, p); % [mg/dL] 
 
-%% Detecting meals using GRID algorithm
-
-% Inisializing 
-delta_G        = 15;                 % From article
-t_vec          = [5,10,15];          % The respective sampling times
-tau            = 6;                  % From the article
+%% Compting the different combinations of Gmin value based on their different rates
 
 % Range for gmin try outs 
 gmin1range = (125:135);
 gmin2range = (0.5:0.1:1.5);
 gmin3range = (0.5:0.1:1.5);
 
-% Making the combinations using meshgrid
+% Computing the combinations using meshgrid
 [Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
 
-% Types of combinations
+% All types of combinations
 Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
 
-%%
+%% Detecting meals using GRID algorithm and computing the number of FP,TP,TN,FN
+
+% Inisializing 
+delta_G        = 15;                 % From article
+t_vec          = [5,10,15];          % The respective sampling times
+tau            = 6;                  % From the article
 
 % Initialising
-number_combinations     = size(Gmin_combinations); 
-number_detectedmeals    = zeros(1,number_combinations(1));
-truepositive            = zeros(1,number_combinations(1));
-falsepositive           = zeros(1,number_combinations(1));
-falsenegative           = zeros(1,number_combinations(1));
-truenegative            = zeros(1,number_combinations(1));
+number_combinations     = lenth(Gmin_combinations); 
+number_detectedmeals    = zeros(1,number_combinations);
+truepositive            = zeros(1,number_combinations);
+falsepositive           = zeros(1,number_combinations);
+falsenegative           = zeros(1,number_combinations);
+truenegative            = zeros(1,number_combinations);
 
-stride = 90/Ts; % min
+stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
 
+% Looping over all the different combinations of Gmin values
 for i = 1 : number_combinations(1)
 
+% Detecting meals
 D_detected = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
+% Total number of detected meals for the current Gmin values.
 number_detectedmeals(i) = sum(D_detected);
 
 [truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
@@ -162,7 +165,7 @@ end
 falsepositive_rate = falsepositive ./ (falsepositive + truenegative);
 truepositive_rate = truepositive ./ (truepositive + falsenegative);
 
-%% Visualize 
+%% Visualize the ROC curve
 
 figure 
 
@@ -172,7 +175,7 @@ xlabel('False positive rate')
 ylabel('True positive rate')
 title('ROC curve')
 
-%% 
+%% Finding the indices for the optimal Gmin value, such that AUC = 1, meaning FPR=0 and TPR=1.
 
 gmin_idx=zeros(1,length(falsepositive_rate));
 
@@ -184,20 +187,25 @@ for i = 1 : length(falsepositive_rate)
     
 end
 
-gmin_idx_best=find(gmin_idx);
+% Indices for optimal gmin values
+gmin_idx_optimal=find(gmin_idx);
 
-%%
+%% Extracing the optimal Gmin values. 
 
-Gmin_optimal = zeros(length(gmin_idx_best),3);
+Gmin_optimal = zeros(length(gmin_idx_optimal),3);
 
-for i = 1 : length(gmin_idx_best)
+for i = 1 : length(gmin_idx_optimal)
     
-   k=gmin_idx_best(i);
+   k=gmin_idx_optimal(i);
    
    Gmin_optimal(i,:) = Gmin_combinations(k,:);
         
 end
 
+% Saving the values. 
+
+% It is in a comment since it is already done once, and
+% will change for every time it is being runned. 
 
 % save('Gminoptimal1patient','Gmin_optimal');
 

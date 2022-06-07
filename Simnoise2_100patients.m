@@ -1,7 +1,7 @@
 %% Simulation test of the GRID algorithm on 100 patients with stochastic measurement noise
 
 % Simulating 3 meals and 2 snacks on 30 days on 100 patients at a time
-% using the GRID algorithm with updated stochastic measurement noise
+% using the GRID algorithm with noise. 
 
 %% 
 
@@ -138,6 +138,8 @@ end
 % Inisializing 
 T         = zeros(1,N+1,numpatients); 
 X         = zeros(7,N+1,numpatients); 
+
+% Intensity value
 intensity = 5;
 
 % Looping over all patients 
@@ -162,18 +164,19 @@ end
 %% GRID
 
 % Inisializing
-number_detectedmeals  = zeros(1,numpatients);                  % Detected meals for each patient in matrix
-D_detected            = zeros(length(G)-1,numpatients);
+number_detectedmeals  = zeros(1,numpatients);            
+D_detected            = zeros(length(G)-1,numpatients);     
 
 for p = 1:numpatients 
 
-G_vec            = G(:,1,p);
-Gmin             = [90 0.5 0.5];  
-tau              = 6;  
-delta_G          = 15; 
-t_vec            = [5,10,15]; 
+% Initializing
+G_vec            = G(1,:,p);     % The current person
+Gmin             = [90 0.5 0.5]; % Temperaly chosen
+tau              = 6;            % From article   
+delta_G          = 15;           % From article   
+t_vec            = [5,10,15];    % The time is the same for each
   
-         
+% Computing the detected meals
 D_detected(:,p) = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
 
 % The total amount of detected meals for each patient in vector

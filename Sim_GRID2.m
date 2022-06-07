@@ -123,70 +123,24 @@ G = CGMsensor(X, p); % [mg/dL]
 %% Detecting meals using GRID algorithm
 
 % Inisializing 
-filt_prev      = zeros(length(G),2); % The vector of previous filtered values
-Gfm_vec        = zeros(length(G),2); % The vector of previous derivatives
-G_vec          = [G(1),G(1),G(1)];   % Inserting the start previous glucose measurements as the same value
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
-filt_prev(1,:) = [G(1),G(1)];        % Inserting the previous filtered value as the not filtered values
 tau            = 6;                  % From the article
-flag           = 0;                  % No detected meal to begin with
-Gmin           = [90 0.5 0.5];       % For meal under 50 considered
-
+%Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6 
+Gmin = [90 0.5 0.5]; % For no meal under 50 considered
 % Other tries
-%Gmin = [ 130 1.5 1.6 ]; % Their meals
-%Gmin = [ 110 1 1.5 ]; % For no meal under 50 
-
-
-% Computing the first two detections
-[ Gfm_vec(2,:) , filt_prev(2,:) , flag, zero_one(2) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    filt_prev(1,:) , Gmin, Gfm_vec(1,:) , t_vec ,flag );
-                                
-                                % Updating G_vec
-                                G_vec=[G(1),G(1),G(2)];
-                                
-[ Gfm_vec(3,:) , filt_prev(3,:) , flag, zero_one(3) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    filt_prev(2,:) , Gmin, Gfm_vec(2,:) , t_vec, flag );
-                                
-                                % Updating G_vec
-                                G_vec=[G(1),G(2),G(3)];
-% Computing the last detections
-for i = 3 : length(G)-1
-    
-[ Gfm_vec(i+1,:) , filt_prev(i+1,:) , flag, zero_one(i) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    filt_prev(i,:) , Gmin, Gfm_vec(i,:) , t_vec , flag );
-                                
-                                % Updating G_vec
-                                G_vec=[G(i-1),G(i),G(i+1)];
-                                
-end
-
+% Gmin = [ 130 1 1.1 ]; % Their mins
+% Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 % The total amount of detected meals
-sum(zero_one)
 
-%% How many correct snacks are detected? - test
-% D is the correct data
-% zero_one are the detected. 
-% We denote 
-% D = 1, zero_one = 1 as true positive
-% D = 1, zero_one = 0 as false negative
-% D = 0, zero_one = 0 as true negative
-% D = 0, zero_one = 1 as false positive
+% Computing the detected meals
+D_detected = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
 
-% true_post = zeros(1,N);
-% false_neg = zeros(1,N);
-% true_neg = zeros(1,N);
-% false_post = zeros(1,N);
-% 
-% % Make a range, perhaps (i-10:i,i:10)
-% 
-% for i = 1:N-9
-% true_post(i) = sum(D(i:i+9) ~= 0) && sum(zero_one(i:i+9) == 1); % sum this
-% false_neg(i) = D(i) ~= 0 && zero_one(i) == 0; % sum this
-% true_neg(i) = D(i) == 0 && zero_one(i) == 0;
-% false_post(i) = D(i) == 0 && zero_one(i) == 1;
-% end
+% The total number of detected meals
+number_detectedmeals = sum(D_detected);
 
+% Printing the value of detected meals
+fprintf('number of detected meals: %d\n',number_detectedmeals);
 
 %% Visualize 
 

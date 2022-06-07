@@ -17,8 +17,9 @@ function [T,X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, simModel, simM
 % D              - meal rate (disturbance)                      (dimension nd x N)
 % p              - parameter values                             (dimension np)
 % simModel       - simulation model, MVPmodel                   (function handle)
-% simMethod      - simulation method, ExplicitEuler             (function handle)
+% simMethod      - simulation method, Euler Maruyama            (function handle)
 % NK             - Number of timesteps in each time interval 
+% intensity      - The intensity value used for Euler Maruyama
 %
 % OUTPUT:
 % T - The control state of time for each step                             (dimension:      N+1)

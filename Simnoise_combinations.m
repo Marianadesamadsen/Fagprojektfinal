@@ -1,7 +1,8 @@
-%% Simulation test of the GRID algorithm 30 days, 3 meals and two snacks with noise
+%% Simulation test of the GRID algorithm 30 days, 3 meals and two snacks while testing different values of Gmin and noise intensities.
 
 % Simulating 3 meals on 30 days, and detecting the meals
-% by using the GRID algorithm
+% by using the GRID algorithm based on different values of Gmin and noise
+% intensities.
 
 %%
 clear all 
@@ -66,7 +67,7 @@ U = repmat(us, 1, N); % The same bolus and base rate for all
 %% Disturbance variables
 D = zeros(1, N); % No meal assumed
 
-%% Meal and meal bolus at 7, 12, 18 hours
+%% Meal and meal bolus at 7, 12, 18 hours and snacks at 10, 15 hours
 
 % Time meals
 tMeal1           = 7*h2min;         
@@ -82,7 +83,7 @@ idxMeal3         = tMeal3  /Ts + 1;
 idxSnack1        = tSnack1 /Ts + 1;   
 idxSnack2        = tSnack2 /Ts + 1;
 
-%% Making meal sizes 
+%% Making meal sizes and snack size. No bolus since goal is to detect all meals 
 
 bolus = 0;
 meal  = randi([50,150],1,90);
@@ -109,53 +110,65 @@ for i = 0:29
         
 end 
 
-%% Simulating the control states based on x0, the steady state over different types of intensities
+%% Simulating the control states based on x0 using different values of noise intensities. 
 
-intensity_range = (1:10);
-T         = zeros(1,length(tspan),length(intensity_range));
-X         = zeros(7,length(tspan),length(intensity_range));
-G         = zeros(1,length(tspan),length(intensity_range));
+intensity_range = (1:10);                                           % Noise intensity range
 
+% Initialising
+T               = zeros(1,length(tspan),length(intensity_range));   % Three dimension. The third being for the different intensities.
+X               = zeros(7,length(tspan),length(intensity_range));   % Three dimension. The third being for the different intensities.
+G               = zeros(1,length(tspan),length(intensity_range));   % Three dimension. The third being for the different intensities.
+
+
+% Looping over alle the values of intensities
 for i = 1:length(intensity_range)
     
     [T(:,:,i), X(:,:,i)] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity_range(i));
     
-    % Blood glucose concentration 
+    % Extracting the blood glucose concentration 
     G(:,:,i) = CGMsensor_withnoise(X(:,:,i),p); % [mg/dL] 
 
 end
 
-%% Loading in the optimal values for Gmin
+%% Loading in the optimal values for Gmin based on the test from the deterministic simulation. 
 
 Gmin_values       = load('Gminoptimal1patient.mat');
-Gmin_combinations = Gmin_values.Gmin_optimal;
+Gmin_combinations = Gmin_values.Gmin_optimal;           % All the optimal combination of Gmin values
 
-%%
+%% GRID algorithm test of different intensities and Gmin values.
 
 % Initialising
-delta_G        = 15;                 % From article
-t_vec          = [5,10,15];          % The respective sampling times
-tau            = 6;                  % From the article
+delta_G                      = 15;                                              % From article
+t_vec                        = [5,10,15];                                       % The respective sampling times
+tau                          = 6;                                               % From the article
+intensity_number             = length(intensity_range);                         % Number of possibles intensity values
+Gmin_number_combinations     = length(Gmin_combinations);                       % Number of combinations 
+number_detectedmeals         = zeros(1,Gmin_number_combinations);               % Number of detected meals for each combination of Gmin
 
-Gmin_number_combinations     = size(Gmin_combinations); 
-number_detectedmeals         = zeros(1,Gmin_number_combinations(1));
-truepositive                 = zeros(1,Gmin_number_combinations(1));
-falsepositive                = zeros(1,Gmin_number_combinations(1));
-falsenegative                = zeros(1,Gmin_number_combinations(1));
-truenegative                 = zeros(1,Gmin_number_combinations(1));
+truepositive                 = zeros(intensity_number,Gmin_number_combinations);% True positives for each Gmin and intensity value
+falsepositive                = zeros(intensity_number,Gmin_number_combinations);% False positives for each Gmin and intensity value
+falsenegative                = zeros(intensity_number,Gmin_number_combinations);% False negative for each Gmin and intensity value
+truenegative                 = zeros(intensity_number,Gmin_number_combinations);% True negative for each Gmin and intensity value
 
-stride = 90/Ts; % min
+stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
 
-
-for j = 1 : length(intensity_range)
+% Looping over possible intensities 
+for j = 1 : intensity_number
     
-    for i = 1 : Gmin_number_combinations(1)
-
-        D_detected = GRIDalgorithm_mealdetection(G(:,:,j),Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
-
-        number_detectedmeals(j,i) = sum(D_detected);
-
-       [truenegative(j,i),truepositive(j,i),falsepositive(j,i),falsenegative(j,i)] = detectionrates(stride,D,D_detected,Ts);
+    % Looping over all possible Gmin values for each possible intensity
+    % value
+    for i = 1 : Gmin_number_combinations
+        
+        % Detected meal for current Gmin value at current intensity
+        D_detected_temp = GRIDalgorithm_mealdetection(G(:,:,j),Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+        
+        % The total number of detected meals at current intensity and Gmin
+        % value
+        number_detectedmeals(j,i) = sum(D_detected_temp);
+        
+        % Computing all the true detected meals, false detected meals, and
+        % not detected meals and true not detected meals. 
+       [truenegative(j,i),truepositive(j,i),falsepositive(j,i),falsenegative(j,i)] = detectionrates(stride,D,D_detected_temp,Ts);
 
     end
     
