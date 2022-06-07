@@ -36,7 +36,7 @@ end
 idxdetecmeals = find(mealdetec);
 idxtruemeals = find(truemeals);
 
-% Examine if there are no detected meals where there are true meals
+% Examine if there are dt
 for i = 1:length(idxtruemeals)
    
     k = idxtruemeals(i);
@@ -46,7 +46,7 @@ for i = 1:length(idxtruemeals)
     end  
 end
 
-% Examine if there are no true meals where there are detected meals 
+% Examine if there are detected meals 
 for i = 1:length(idxdetecmeals)
    
     k = idxdetecmeals(i);
@@ -56,7 +56,6 @@ for i = 1:length(idxdetecmeals)
     end  
 end
 
-% Examine if there are true meals where there are detected meals
 for i = 1:length(idxdetecmeals)
    
     k = idxdetecmeals(i);
