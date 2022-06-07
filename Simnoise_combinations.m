@@ -162,7 +162,6 @@ end
 falsepositive_rate = falsepositive ./ (falsepositive + truenegative);
 truepositive_rate = truepositive ./ (truepositive + falsenegative);
 
-
 %% Visualize 
 
 figure 
@@ -191,13 +190,13 @@ gmin_idx_best=find(gmin_idx);
 
 %%
 
- Gmin_chosen = zeros(length(gmin_idx_best),3);
+Gmin_optimal = zeros(length(gmin_idx_best),3);
 
-for i = 850 : length(gmin_idx_best)
+for i = 1 : length(gmin_idx_best)
     
    k=gmin_idx_best(i);
    
-   Gmin_chosen(k,:) = Gmin_combinations(k,:);
+   Gmin_optimal(k,:) = Gmin_combinations(k,:);
         
 end
 
