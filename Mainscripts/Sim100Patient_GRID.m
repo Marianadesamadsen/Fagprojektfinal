@@ -1,13 +1,23 @@
-%% Simulation test of the GRID algorithm on 100 patients with stochastic measurement noise 
+%% Simulation test of the GRID algorithm on 100 patients
 
 % Simulating 3 meals and 2 snacks on 30 days on 100 patients at a time
-% using the GRID algorithm with updated stochastic measurement noise
+% using the GRID algorithm
 
 %% 
 
 clear all 
 clc 
 close all 
+
+%% Loading all folders
+fprintf('Loading diabetes library .. ');
+
+% Add real thermodynamics functions
+addpath(genpath(fullfile(pwd, './other')));
+
+% Let the user know that the library is being loaded
+fprintf('Done\n');
+
 
 %% Formatting the plots 
 
@@ -27,7 +37,7 @@ min2h = 1/h2min; % Convert from min to h
 U2mU  = 1e3;     % Convert from U   to mU 
 mU2U  = 1/U2mU;  % Convert from mU  to U
 min2sec = h2min; % Convert from min to sec
-sec2min = 1/h2min; %Convert from sec to min
+sec2min = 1/h2min;% Convert from sec to min
 
 %% Inizializing parameters
 
@@ -153,13 +163,13 @@ G=zeros(1,N+1,numpatients);
 % Looping over all patients
 for p=1:numpatients
 
-G(:,:,p) = CGMsensor_withnoise(X(:,:,p), pf(:,p)); % [mg/dL] 
+G(:,:,p) = CGMsensor(X(:,:,p), pf(:,p)); % [mg/dL] 
 
 end
 
 %% GRID
 
-% Inisializing 
+% Inisializing
 number_detectedmeals  = zeros(1,numpatients);            
 D_detected            = zeros(length(G)-1,numpatients);     
 

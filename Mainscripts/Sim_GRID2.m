@@ -1,11 +1,22 @@
-%% Simulation openloop
+%% Simulation test of the GRID algorithm 30 days, 3 meals, 2 snacks
 
-% Simulate a single meal response in the MVP model
-% by using x0 based on the steadystate vector
+% Simulating 3 meals and 2 snacks on 30 days, and detecting the meals
+% by using the GRID algortihm
+
+%%
 
 clear all 
 clc 
 close all 
+
+%% Loading all folders
+fprintf('Loading diabetes library .. ');
+
+% Add real thermodynamics functions
+addpath(genpath(fullfile(pwd, './other')));
+
+% Let the user know that the library is being loaded
+fprintf('Done\n');
 
 %% Formatting the plots 
 
@@ -25,11 +36,11 @@ set(groot, 'DefaultStemLineWidth',  lw);
 h2min = 60;      % Convert from h   to min 
 min2h = 1/h2min; % Convert from min to h 
 U2mU  = 1e3;     % Convert from U   to mU 
-mU2U  = 1/U2mU;  % Convert from mU  to U 
+mU2U  = 1/U2mU;  % Convert from mU  to U
 min2sec = h2min; % Convert from min to sec
-sec2min = 1/h2min; %Convert from sec to min
+sec2min = 1/h2min;% Convert from sec to min
 
-%% Inizializing parameters
+%% Initializing parameters
 
 p = [49,47,20.1,0.0106,0.0081,0.0022,1.33,253,47,5]; % Parameters at steady state
 Gs = 108; % [mg/dL]: Steady state blood glucose concentration
@@ -42,7 +53,7 @@ ts = [];
 % If fsolve did not converge, throw an error
 if(flag ~= 1), error ('fsolve did not converge!'); end
 
-%% Intital and final time for the simulation over 18 hours
+%% Intital and final time for the simulation over 30 days
 
 t0 =  0;       % min - start time
 tf = 720*h2min; % min - end time
@@ -67,35 +78,47 @@ U = repmat(us, 1, N); % The same bolus and base rate for all
 %% Disturbance variables
 D = zeros(1, N); % No meal assumed
 
-%% Meal and meal bolus at hours 7,12,18
+%% Meals and snacks at hours 7,12,18 and 10,15 hours
+
+% Time meals
 tMeal1           = 7*h2min;          % [min]
 tMeal2           = 12*h2min;
 tMeal3           = 18*h2min;
+tSnack1          = 15*h2min;
+tSnack2          = 10*h2min;   
+
+% Index meals
 idxMeal1         = tMeal1  /Ts + 1;   % [#]
 idxMeal2         = tMeal2  /Ts + 1;   % [#]
 idxMeal3         = tMeal3  /Ts + 1;   % [#]
+idxSnack1        = tSnack1 /Ts + 1;   
+idxSnack2        = tSnack2 /Ts + 1;
 
 %% Making meal sizes with respectivly bolus sizes
 
-meals=[50,70,10,120,40,80,110,90,60];
-bolus=[6,8,2,12,5,9,12,10,7];
+bolus = 0;
+meal  = randi([50,150],1,90);
+snack = randi([20,45],1,60);
 
-%% Inserting the meal sizes at the different hours/index
+%% Inserting the meal sizes at the different hours/indicies
 
 % Lopping over 30 days (one month)
-
 for i = 0:29
     
-    % Making new random number for the index of different meal sizes.
-    k=randi(length(meals)-2);
-    
     % Inserting the different meal sizes at the indcies 
-        D(1, (idxMeal1+24*h2min/Ts*i))   = meals(k)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal1+24*h2min/Ts*i))   = bolus(k)*U2mU/Ts;  
-        D(1, (idxMeal2+24*h2min/Ts*i))   = meals(k+1)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal2+24*h2min/Ts*i))   = bolus(k+1)*U2mU/Ts;  
-        D(1, (idxMeal3+24*h2min/Ts*i))   = meals(k+2)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal3+24*h2min/Ts*i))   = bolus(k+2)*U2mU/Ts;  
+        D(1, (idxMeal1+24*h2min/Ts*i))   = meal(1+3*i)     /Ts;       % [g CHO/min]
+        U(2, (idxMeal1+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
+        D(1, (idxMeal2+24*h2min/Ts*i))   = meal(2+3*i)     /Ts;       % [g CHO/min]
+        U(2, (idxMeal2+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
+        D(1, (idxMeal3+24*h2min/Ts*i))   = meal(3+3*i)     /Ts;       % [g CHO/min]
+        U(2, (idxMeal3+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
+        
+    % Inserting the different meal sizes at the indcies 
+        D(1, (idxSnack1+24*h2min/Ts*i))   = snack(1+2*i)     /Ts;       % [g CHO/min]
+        U(2, (idxSnack1+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
+        D(1, (idxSnack2+24*h2min/Ts*i))   = snack(1+2*i)   /Ts;       % [g CHO/min]
+        U(2, (idxSnack2+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
+        
 end
 
 %% Simulating the control states
@@ -106,14 +129,36 @@ end
 
 G = CGMsensor(X, p); % [mg/dL] 
 
+%% Detecting meals using GRID algorithm
+
+% Inisializing 
+delta_G        = 15;                 % From article
+t_vec          = [5,10,15];          % The respective sampling times
+tau            = 6;                  % From the article
+%Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6 
+Gmin = [90 0.5 0.5]; % For no meal under 50 considered
+% Other tries
+% Gmin = [ 130 1 1.1 ]; % Their mins
+% Gmin = [ 110 1 1.5 ]; % For no meal under 50 
+% The total amount of detected meals
+
+% Computing the detected meals
+D_detected = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
+
+% The total number of detected meals
+number_detectedmeals = sum(D_detected);
+
+% Printing the value of detected meals
+fprintf('number of detected meals: %d\n',number_detectedmeals);
+
 %% Visualize 
 
 % Create figure with absolute size for reproducibility
 figure;
 
 % Converting data
-T2=datetime(T*min2sec,'ConvertFrom','posixtime');
-tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
+T2=datetime(T*min2sec,'ConvertFrom','datenum');
+tspan2=datetime(tspan*min2sec,'ConvertFrom','datenum');
 
 % Plot blood glucose concentration
 subplot(411);

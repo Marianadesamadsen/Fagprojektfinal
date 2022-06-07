@@ -3,8 +3,14 @@ clear all
 clc 
 close all
 
-%% Making path
-% addpath(genpath(fullfile(pwd, './src')));
+%% Loading all folders
+fprintf('Loading diabetes library .. ');
+
+% Add real thermodynamics functions
+addpath(genpath(fullfile(pwd, './other')));
+
+% Let the user know that the library is being loaded
+fprintf('Done\n');
 
 %% Formatting the plots 
 
