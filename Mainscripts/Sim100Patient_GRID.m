@@ -1,13 +1,23 @@
-%% Simulation test of the GRID algorithm on 100 patients with stochastic measurement noise
+%% Simulation test of the GRID algorithm on 100 patients
 
 % Simulating 3 meals and 2 snacks on 30 days on 100 patients at a time
-% using the GRID algorithm with updated stochastic measurement noise
+% using the GRID algorithm
 
 %% 
 
 clear all 
 clc 
 close all 
+
+%% Loading all folders
+fprintf('Loading diabetes library .. ');
+
+% Add real thermodynamics functions
+addpath(genpath(fullfile(pwd, './other')));
+
+% Let the user know that the library is being loaded
+fprintf('Done\n');
+
 
 %% Formatting the plots 
 
@@ -27,7 +37,7 @@ min2h = 1/h2min; % Convert from min to h
 U2mU  = 1e3;     % Convert from U   to mU 
 mU2U  = 1/U2mU;  % Convert from mU  to U
 min2sec = h2min; % Convert from min to sec
-sec2min = 1/h2min; %Convert from sec to min
+sec2min = 1/h2min;% Convert from sec to min
 
 %% Inizializing parameters
 
@@ -153,59 +163,30 @@ G=zeros(1,N+1,numpatients);
 % Looping over all patients
 for p=1:numpatients
 
-G(:,:,p) = CGMsensor_withnoise(X(:,:,p), pf(:,p)); % [mg/dL] 
+G(:,:,p) = CGMsensor(X(:,:,p), pf(:,p)); % [mg/dL] 
 
 end
 
 %% GRID
 
 % Inisializing
-filt_prev      = zeros(length(G(:,:,1)),2,numpatients); % The vector of previous filtered values
-Gfm_vec        = zeros(length(G),2,numpatients);        % The vector of previous derivatives
-detectedmeals  = zeros(1,numpatients);                  % Detected meals for each patient in matrix
-zero_one       = zeros(length(G)-1,numpatients);        % Detected meals and not detected meals 
+number_detectedmeals  = zeros(1,numpatients);            
+D_detected            = zeros(length(G)-1,numpatients);     
 
 for p = 1:numpatients 
 
-G_vec            = [G(:,1,p),G(:,1,p),G(:,1,p)]; % Inserting the start previous glucose measurements as the same value
-delta_G          = 15;                           % From article  
-t_vec            = [5,10,15];                    % The respective sampling times
-filt_prev(1,:,p) = [G(:,1,p),G(:,1,p)];          % Inserting the previous filtered value as the not filtered values
-tau              = 6;                            % From article
-flag             = 0;                            % No detected meals to begin with 
-Gmin             = [90 0.5 0.5];                 % For meal under 50 considered
+% Initializing
+G_vec            = G(1,:,p);     % The current person
+Gmin             = [90 0.5 0.5]; % Temperaly chosen
+tau              = 6;            % From article   
+delta_G          = 15;           % From article   
+t_vec            = [5,10,15];    % The time is the same for each
+  
+% Computing the detected meals
+D_detected(:,p) = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
 
-% Other tries
-% Gmin = [ 130 1.5 1.6 ]; % Their meals
-% Gmin = [ 110 1 1.5 ]; % For no meal under 50 
-
-% Computing the first two detections
-[ Gfm_vec(2,:,p) , filt_prev(2,:,p) , flag, zero_one(1,p) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    filt_prev(1,:,p) , Gmin, Gfm_vec(1,:,p) , t_vec ,flag );
-                                
-                                % Updating G_vec
-                                G_vec=[G(:,1,p),G(:,1,p),G(:,2,p)];
-                                
-[ Gfm_vec(3,:,p) , filt_prev(3,:,p) , flag, zero_one(2,p) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    filt_prev(2,:,p) , Gmin, Gfm_vec(2,:,p) , t_vec, flag );
-                                
-                                % Updating G_vec
-                                G_vec=[G(:,1,p),G(:,2,p),G(:,3,p)];
-
-        % Comptuing the last detections                               
-        for i = 3 : length(G)-1
-
-         [ Gfm_vec(i+1,:,p) , filt_prev(i+1,:,p) , flag, zero_one(i,p) ]= ...
-             GRID_func( delta_G , G_vec , tau, Ts , ...
-             filt_prev(i,:,p) , Gmin, Gfm_vec(i,:,p) , t_vec , flag );
-                   
-         % Updating G_vec
-         G_vec=[G(i-1),G(i),G(i+1)];
-                                
-        end
-         
 % The total amount of detected meals for each patient in vector
-detectedmeals(p)=sum(zero_one(:,p));
+number_detectedmeals(p)=sum(D_detected(:,p));
 
 end
 

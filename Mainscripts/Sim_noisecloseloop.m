@@ -7,6 +7,16 @@ clear all
 clc 
 close all 
 
+%% Loading all folders
+fprintf('Loading diabetes library .. ');
+
+% Add real thermodynamics functions
+addpath(genpath(fullfile(pwd, './other')));
+
+% Let the user know that the library is being loaded
+fprintf('Done\n');
+
+
 %% Formatting the plots 
 
 fs = 11; % Font size 
@@ -133,9 +143,12 @@ for i = 0:29
 end 
 
 %% Simulate
+
+intensity = 5;
+
 % Closed-loop simulation
-[T, X, Y, U] = ClosedLoopSimulation(tspan,x0,D,p, ... 
-    ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk);
+[T, X, Y, U] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, ... 
+    ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
 
 % Blood glucose concentration
 Gsc = Y; % [mg/dL]
@@ -143,14 +156,9 @@ Gsc = Y; % [mg/dL]
 %% Detecting meals using GRID algorithm
 
 % Inisializing 
-filt_prev      = zeros(length(Gsc),2); % The vector of previous filtered values
-Gfm_vec        = zeros(length(Gsc),2); % The vector of previous derivatives
-G_vec          = [Gsc(1),Gsc(1),Gsc(1)];   % Inserting the start previous glucose measurements as the same value
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
-filt_prev(1,:) = [Gsc(1),Gsc(1)];        % Inserting the previous filtered value as the not filtered values
 tau            = 6;                  % From the article
-flag           = 0;                  % No detected meal to begin with
 Gmin           = [120 0.8 0.65];     % For meal under 50 considered
 
 % Other tries
@@ -158,33 +166,14 @@ Gmin           = [120 0.8 0.65];     % For meal under 50 considered
 %Gmin = [ 130 1.5 1.6 ]; % Their meals
 %Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 
-
-% Computing the first two detections
-[ Gfm_vec(2,:) , filt_prev(2,:) , flag, zero_one(2) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    filt_prev(1,:) , Gmin, Gfm_vec(1,:) , t_vec ,flag );
-                                
-                                % Updating G_vec
-                                G_vec=[Gsc(1),Gsc(1),Gsc(2)];
-                                
-[ Gfm_vec(3,:) , filt_prev(3,:) , flag, zero_one(3) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    filt_prev(2,:) , Gmin, Gfm_vec(2,:) , t_vec, flag );
-                                
-                                % Updating G_vec
-                                G_vec=[Gsc(1),Gsc(2),Gsc(3)];
-                                
-% Computing the last detections
-for i = 3 : length(Gsc)-1
-    
-[ Gfm_vec(i+1,:) , filt_prev(i+1,:) , flag, zero_one(i) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
-                                    filt_prev(i,:) , Gmin, Gfm_vec(i,:) , t_vec , flag );
-                                
-                                % Updating G_vec
-                                G_vec=[Gsc(i-1),Gsc(i),Gsc(i+1)];
-                                
-end
+% Computing detected meals
+D_detected = GRIDalgorithm_mealdetection(Gsc,Gmin,tau,delta_G,t_vec,Ts);
 
 % The total amount of detected meals
-sum(zero_one)
+Number_detectedmeals = sum(D_detected);
+
+% Printing the number of detected meals
+fprintf('number of detected meals: %d\n',Number_detectedmeals);
 
 %% Visualize
 % Create figure with absolute size for reproducibility
@@ -201,7 +190,7 @@ plot(T2, Gsc);
 ylim([0 600])
 ylabel({'CGM measurements', '[mg/dL]'});
 hold on 
-plot(tspan2(1:end-1),zero_one*200,'r.');
+plot(tspan2(1:end-1),D_detected*200,'r.');
 
 % Plot meal carbohydrate
 subplot(412);
@@ -210,7 +199,7 @@ stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
 ylim([-5 200])
 ylabel({'Meal carbohydrates', '[g CHO]'});
 hold on 
-plot(tspan2(1:end-1),zero_one*100,'r.');
+plot(tspan2(1:end-1),D_detected*100,'r.');
 
 % Plot basal insulin flow rate
 subplot(413);

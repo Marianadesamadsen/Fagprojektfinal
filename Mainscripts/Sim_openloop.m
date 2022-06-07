@@ -7,6 +7,15 @@ clear all
 clc 
 close all 
 
+%% Loading all folders
+fprintf('Loading diabetes library .. ');
+
+% Add real thermodynamics functions
+addpath(genpath(fullfile(pwd, './other')));
+
+% Let the user know that the library is being loaded
+fprintf('Done\n');
+
 %% Formatting the plots 
 
 fs = 11; % Font size 
@@ -25,9 +34,9 @@ set(groot, 'DefaultStemLineWidth',  lw);
 h2min = 60;      % Convert from h   to min 
 min2h = 1/h2min; % Convert from min to h 
 U2mU  = 1e3;     % Convert from U   to mU 
-mU2U  = 1/U2mU;  % Convert from mU  to U 
+mU2U  = 1/U2mU;  % Convert from mU  to U
 min2sec = h2min; % Convert from min to sec
-sec2min = 1/h2min; %Convert from sec to min
+sec2min = 1/h2min;% Convert from sec to min
 
 %% Inizializing parameters
 
@@ -45,7 +54,7 @@ if(flag ~= 1), error ('fsolve did not converge!'); end
 %% Intital and final time for the simulation over 18 hours
 
 t0 =  0;       % min - start time
-tf = 720*h2min; % min - end time
+tf = 18*h2min; % min - end time
 Ts = 5;        % min - sampling time
 
 %% Number of contral intervals
@@ -67,36 +76,11 @@ U = repmat(us, 1, N); % The same bolus and base rate for all
 %% Disturbance variables
 D = zeros(1, N); % No meal assumed
 
-%% Meal and meal bolus at hours 7,12,18
-tMeal1           = 7*h2min;          % [min]
-tMeal2           = 12*h2min;
-tMeal3           = 18*h2min;
-idxMeal1         = tMeal1  /Ts + 1;   % [#]
-idxMeal2         = tMeal2  /Ts + 1;   % [#]
-idxMeal3         = tMeal3  /Ts + 1;   % [#]
-
-%% Making meal sizes with respectivly bolus sizes
-
-meals=[50,70,10,120,40,80,110,90,60];
-bolus=[6,8,2,12,5,9,12,10,7];
-
-%% Inserting the meal sizes at the different hours/index
-
-% Lopping over 30 days (one month)
-
-for i = 0:29
-    
-    % Making new random number for the index of different meal sizes.
-    k=randi(length(meals)-2);
-    
-    % Inserting the different meal sizes at the indcies 
-        D(1, (idxMeal1+24*h2min/Ts*i))   = meals(k)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal1+24*h2min/Ts*i))   = bolus(k)*U2mU/Ts;  
-        D(1, (idxMeal2+24*h2min/Ts*i))   = meals(k+1)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal2+24*h2min/Ts*i))   = bolus(k+1)*U2mU/Ts;  
-        D(1, (idxMeal3+24*h2min/Ts*i))   = meals(k+2)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal3+24*h2min/Ts*i))   = bolus(k+2)*U2mU/Ts;  
-end
+%% Meal and meal bolus after 1 hour
+tMeal           = 1*h2min;          % [min]
+idxMeal         = tMeal  /Ts + 1;   % [#]
+D(1, idxMeal)   = 90     /Ts;       % [g CHO/min]
+U(2, idxMeal)   = 10*U2mU/Ts;       % [mU/min]
 
 %% Simulating the control states
 

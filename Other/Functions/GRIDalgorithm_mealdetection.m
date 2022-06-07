@@ -1,4 +1,42 @@
 function D_detected = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts)
+% GRIDalgorithm_mealdetection()
+% 
+% DESCRIPTION:
+% This function takes in the G, that is consists of severeal control steps
+% and computes the whole meal detection part of the GRID algorithm. This
+% means it is extended to several datapoints not only 1. 
+%
+% INPUT:
+% G             - The glucose concentration for several datapoints
+% Gmin          - Vector of Gmin values for the detection part
+% tau           - Filter time constant 
+% delta_ G      - From article 
+% t_vec         - The current time and the two previous time points 
+% Ts            - The step size between control steps. 
+%
+% OUTPUT:
+% D_detected    - The vector with 0 or 1. 1 meaning meal is detected. 
+% 
+% PROJECT:
+% Fagprojekt 2022
+% A diabetes case study - Meal detection
+%
+% GENEREL:
+% BSc                       : Mathematics and technology 
+% University                : The Technical University of Denmark (DTU)
+% Department                : Applied Mathematics and Computer Science 
+% 
+% AUTHORS:
+% Emma Victoria Lind
+% Mariana de Sá Madsen 
+% Mona Saleem
+% 
+% CONTACT INFORMATION
+% s201205@student.dtu.dk
+% s191159@student.dtu.dk
+% s204226@student.dtu.dk
+%
+
 
 % Inisializing 
 filt_prev      = zeros(length(G),2); % The vector of previous filtered values

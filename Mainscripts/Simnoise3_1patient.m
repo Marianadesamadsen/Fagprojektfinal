@@ -1,12 +1,22 @@
-%% Simulation test of the GRID algorithm 30 days, 3 meals and two snacks with noise
+%% Simulation test of the GRID algorithm 30 days, 3 meals and 2 snacks with noise
 
 % Simulating 3 meals on 30 days, and detecting the meals
-% by using the GRID algorithm
+% by using the GRID algorithm with noise and computing the number of true
+% positive, false positive, true negative and false negative
 
 %%
 clear all 
 clc 
 close all 
+
+%% Loading all folders
+fprintf('Loading diabetes library .. ');
+
+% Add real thermodynamics functions
+addpath(genpath(fullfile(pwd, './other')));
+
+% Let the user know that the library is being loaded
+fprintf('Done\n');
 
 %% Formatting the plots 
 
@@ -93,7 +103,7 @@ snack = 20;
 % Lopping over 30 days (one month)
 for i = 0:29
     
-    % Inserting the different meal sizes at the indcies 
+        % Inserting the different meal sizes at the indcies 
         D(1, (idxMeal1+24*h2min/Ts*i))   = meal(1+3*i)     /Ts;       % [g CHO/min]
         U(2, (idxMeal1+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
         D(1, (idxMeal2+24*h2min/Ts*i))   = meal(2+3*i)     /Ts;       % [g CHO/min]
@@ -101,7 +111,7 @@ for i = 0:29
         D(1, (idxMeal3+24*h2min/Ts*i))   = meal(3+3*i)     /Ts;       % [g CHO/min]
         U(2, (idxMeal3+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
         
-         % Inserting the different meal sizes at the indcies 
+        % Inserting the different meal sizes at the indcies 
         D(1, (idxSnack1+24*h2min/Ts*i))   = snack     /Ts;            % [g CHO/min]
         U(2, (idxSnack1+24*h2min/Ts*i))   = bolus*U2mU/Ts;  
         D(1, (idxSnack2+24*h2min/Ts*i))   = snack    /Ts;             % [g CHO/min]
@@ -111,9 +121,12 @@ end
 
 %% Simulating the control states based on x0, the steady state.
 
-[T, X] = OpenLoopSimulation(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk);
+% The noise intensity
+intensity = 7;
 
-%% Blood glucose concentration 
+[T, X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity);
+
+%% Extractign the blood glucose concentration 
 
 G = CGMsensor_withnoise(X, p); % [mg/dL] 
 
@@ -123,29 +136,34 @@ G = CGMsensor_withnoise(X, p); % [mg/dL]
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
 tau            = 6;                  % From the article
-Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6
-
-% Gmin = [90 0.5 0.5] % For no meal under 50 considered
+%Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6 
+Gmin = [90 0.5 0.5]; % For no meal under 50 considered
 % Other tries
 % Gmin = [ 130 1 1.1 ]; % Their mins
 % Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 % The total amount of detected meals
 
+% Computing the detected meals
 D_detected = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
 
+% The total number of detected meals
 number_detectedmeals = sum(D_detected);
 
+% Printing the value of detected meals
 fprintf('number of detected meals: %d\n',number_detectedmeals);
 
 %% Calculating how many true detected meals there has been, false detected and not detected meals
 
-stride = 90/Ts; % min
+stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
 
+% Computing 
 [truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts);
 
+% Printing all the values
 fprintf('number of false positive: %d \n',falsepositive);
 fprintf('number of false negative: %d\n',falsenegative);
 fprintf('number of true positive: %d\n',truepositive);
+fprintf('number of true negative: %d\n',truenegative);
 
 %% Visualize 
 
