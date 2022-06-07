@@ -111,14 +111,14 @@ end
 
 %% Simulating the control states based on x0, the steady state over different types of intensities
 
-intensity = (1:10);
-T         = zeros(1,length(tspan),length(intensity));
-X         = zeros(7,length(tspan),length(intensity));
-G         = zeros(1,length(tspan),length(intensity));
+intensity_range = (1:10);
+T         = zeros(1,length(tspan),length(intensity_range));
+X         = zeros(7,length(tspan),length(intensity_range));
+G         = zeros(1,length(tspan),length(intensity_range));
 
-for i = 1:lenth(intensity)
+for i = 1:length(intensity_range)
     
-    [T(:,:,i), X(:,:,i)] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity(i));
+    [T(:,:,i), X(:,:,i)] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity_range(i));
     
     % Blood glucose concentration 
     G(:,:,i) = CGMsensor_withnoise(X(:,:,i),p); % [mg/dL] 
@@ -133,25 +133,29 @@ Gmin_combinations = Gmin_values.Gmin_optimal;
 %%
 
 % Initialising
+delta_G        = 15;                 % From article
+t_vec          = [5,10,15];          % The respective sampling times
+tau            = 6;                  % From the article
+
 Gmin_number_combinations     = size(Gmin_combinations); 
-number_detectedmeals         = zeros(1,Gmin_number_combinations(2));
-truepositive                 = zeros(1,Gmin_number_combinations(2));
-falsepositive                = zeros(1,Gmin_number_combinations(2));
-falsenegative                = zeros(1,Gmin_number_combinations(2));
-truenegative                 = zeros(1,Gmin_number_combinations(2));
+number_detectedmeals         = zeros(1,Gmin_number_combinations(1));
+truepositive                 = zeros(1,Gmin_number_combinations(1));
+falsepositive                = zeros(1,Gmin_number_combinations(1));
+falsenegative                = zeros(1,Gmin_number_combinations(1));
+truenegative                 = zeros(1,Gmin_number_combinations(1));
 
 stride = 90/Ts; % min
 
 
-for j = 1 : 
+for j = 1 : length(intensity_range)
     
     for i = 1 : Gmin_number_combinations(1)
 
         D_detected = GRIDalgorithm_mealdetection(G(:,:,j),Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
-        number_detectedmeals(i) = sum(D_detected);
+        number_detectedmeals(j,i) = sum(D_detected);
 
-        [truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
+        [truenegative(j,i),truepositive(j,i),falsepositive(j,i),falsenegative(j,i)] = detectionrates(stride,D,D_detected,Ts);
 
     end
     
@@ -160,32 +164,47 @@ end
 
 %% Calculating false positive and false negative rates 
 
-falsepositive_rate = falsepositive ./ (falsepositive + truenegative);
-truepositive_rate  = truepositive ./ (truepositive + falsenegative);
+falsepositive_rate = zeros(length(intensity_range),Gmin_number_combinations(1));
+truepositive_rate  = zeros(length(intensity_range),Gmin_number_combinations(1));
+
+for j = 1 : length(intensity_range)
+
+falsepositive_rate(j,:) = falsepositive(j,:) ./ (falsepositive(j,:) + truenegative(j,:));
+truepositive_rate(j,:)  = truepositive(j,:) ./ (truepositive(j,:) + falsenegative(j,:));
+
+end
 
 %% Visualize 
 
 figure 
 
-plot(falsepositive_rate,truepositive_rate,'*')
+plot(falsepositive_rate(1,:),truepositive_rate(1,:),'*')
 xlim([0 1.2*10^(-4)])
+ylim([0 1])
 xlabel('False positive rate') 
 ylabel('True positive rate')
 title('ROC curve')
 
-%% 
+%% Finding the optimal index for intensity and gmin 
 
-gmin_idx=zeros(1,length(falsepositive_rate));
+gmin_idx        = zeros(1,length(falsepositive_rate));
+intensity_idx   = zeros(1,length(intensity_range));
 
-for i = 1 : length(falsepositive_rate)
+for j = 1 : length(intensity_range)
+    
+    for i = 1 : length(falsepositive_rate)
    
-    if falsepositive_rate(i) == 0 && truepositive_rate(i) == 1
-        gmin_idx(i) = i; 
-    end 
+        if falsepositive_rate(j,i) == 0 && truepositive_rate(j,i) == 1
+            gmin_idx(i)      = i; 
+            intensity_idx(j) = j;
+        end 
+        
+    end
     
 end
 
-gmin_idx_best=find(gmin_idx);
+gmin_idx_best     = find(gmin_idx);
+itensity_idx_best = find(gmin_idx);
 
 %%
 

@@ -139,11 +139,11 @@ Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
 
 % Initialising
 number_combinations     = size(Gmin_combinations); 
-number_detectedmeals    = zeros(1,number_combinations(2));
-truepositive            = zeros(1,number_combinations(2));
-falsepositive           = zeros(1,number_combinations(2));
-falsenegative           = zeros(1,number_combinations(2));
-truenegative            = zeros(1,number_combinations(2));
+number_detectedmeals    = zeros(1,number_combinations(1));
+truepositive            = zeros(1,number_combinations(1));
+falsepositive           = zeros(1,number_combinations(1));
+falsenegative           = zeros(1,number_combinations(1));
+truenegative            = zeros(1,number_combinations(1));
 
 stride = 90/Ts; % min
 

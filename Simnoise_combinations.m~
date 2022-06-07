@@ -109,66 +109,95 @@ for i = 0:29
         
 end 
 
-%% Simulating the control states based on x0, the steady state.
+%% Simulating the control states based on x0, the steady state over different types of intensities
 
-intensity = [1:10];
-T = zeros(length(
+intensity_range = (1:10);
+T         = zeros(1,length(tspan),length(intensity_range));
+X         = zeros(7,length(tspan),length(intensity_range));
+G         = zeros(1,length(tspan),length(intensity_range));
 
-for i = 1:lenth(intensity)
+for i = 1:length(intensity_range)
     
-    [T(:,:,i), X(:,:,i)] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity(i));
+    [T(:,:,i), X(:,:,i)] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity_range(i));
+    
+    % Blood glucose concentration 
+    G(:,:,i) = CGMsensor_withnoise(X(:,:,i),p); % [mg/dL] 
 
 end
 
-%% Blood glucose concentration 
-
-G = CGMsensor_withnoise(X, p); % [mg/dL] 
-
 %% Loading in the optimal values for Gmin
 
-Gmin_values = load('Gminoptimal1patient.mat');
+Gmin_values       = load('Gminoptimal1patient.mat');
 Gmin_combinations = Gmin_values.Gmin_optimal;
 
 %%
 
 % Initialising
-number_combinations     = size(Gmin_combinations); 
-number_detectedmeals    = zeros(1,number_combinations(2));
-truepositive            = zeros(1,number_combinations(2));
-falsepositive           = zeros(1,number_combinations(2));
-falsenegative           = zeros(1,number_combinations(2));
-truenegative            = zeros(1,number_combinations(2));
+delta_G        = 15;                 % From article
+t_vec          = [5,10,15];          % The respective sampling times
+tau            = 6;                  % From the article
+
+Gmin_number_combinations     = size(Gmin_combinations); 
+number_detectedmeals         = zeros(1,Gmin_number_combinations(1));
+truepositive                 = zeros(1,Gmin_number_combinations(1));
+falsepositive                = zeros(1,Gmin_number_combinations(1));
+falsenegative                = zeros(1,Gmin_number_combinations(1));
+truenegative                 = zeros(1,Gmin_number_combinations(1));
 
 stride = 90/Ts; % min
 
-for i = 1 : number_combinations(1)
 
-D_detected = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+for j = 1 : length(intensity_range)
+    
+    for i = 1 : Gmin_number_combinations(1)
 
-number_detectedmeals(i) = sum(D_detected);
+        D_detected = GRIDalgorithm_mealdetection(G(:,:,j),Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
-[truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
+        number_detectedmeals(j,i) = sum(D_detected);
 
+        [truenegative(j,i),truepositive(j,i),falsepositive(j,i),falsenegative(j,i)] = detectionrates(stride,D,D_detected,Ts);
+
+    end
+    
 end
+
 
 %% Calculating false positive and false negative rates 
 
-falsepositive_rate = falsepositive ./ (falsepositive + truenegative);
-truepositive_rate = truepositive ./ (truepositive + falsenegative);
+falsepositive_rate = zeros(length(intensity_range),Gmin_number_combinations(1));
+truepositive_rate  = zeros(length(intensity_range),Gmin_number_combinations(1));
+
+for j = 1 : length(intensity_range)
+
+falsepositive_rate(j,:) = falsepositive(j,:) ./ (falsepositive(j,:) + truenegative(j,:));
+truepositive_rate(j,:)  = truepositive(j,:) ./ (truepositive(j,:) + falsenegative(j,:));
+
+end
 
 %% Visualize 
 
 figure 
 
-plot(falsepositive_rate,truepositive_rate,'*')
+plot(falsepositive_rate(1,:),truepositive_rate(1,:),'*')
 xlim([0 1.2*10^(-4)])
+ylim([0 1])
 xlabel('False positive rate') 
 ylabel('True positive rate')
 title('ROC curve')
 
 %% 
 
-gmin_idx=zeros(1,length(falsepositive_rate));
+
+
+
+
+
+
+
+
+
+
+gmin_idx=zeros(length(intensity_range),length(falsepositive_rate));
 
 for i = 1 : length(falsepositive_rate)
    
