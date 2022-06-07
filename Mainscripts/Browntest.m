@@ -2,7 +2,7 @@
 clear
 
 %% Loading all folders
-
+% 
 fprintf('Loading diabetes library .. ');
 
 % Add real thermodynamics functions
@@ -19,7 +19,7 @@ Nk = numel(tspank) - 1;
 W=brownianmotion(Nk,tspank);
 
 figure 
-plot(W)
+plot(W,'*')
 
 % Den viser 100 målinger på et sekund. Den viser random gå tur rundt
 % omkring 0. 
