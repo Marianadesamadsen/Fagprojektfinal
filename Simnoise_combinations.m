@@ -170,8 +170,7 @@ plot(falsepositive_rate,truepositive_rate,'*')
 xlim([0 1.2*10^(-4)])
 xlabel('False positive rate') 
 ylabel('True positive rate')
-title('ROC for Classification by Logistic Regression')
-
+title('ROC curve')
 
 %% 
 
@@ -187,7 +186,6 @@ end
 
 gmin_idx_best=find(gmin_idx);
 
-
 %%
 
 Gmin_optimal = zeros(length(gmin_idx_best),3);
@@ -196,10 +194,11 @@ for i = 1 : length(gmin_idx_best)
     
    k=gmin_idx_best(i);
    
-   Gmin_optimal(k,:) = Gmin_combinations(k,:);
+   Gmin_optimal(i,:) = Gmin_combinations(k,:);
         
 end
 
+save('Gminoptimal','Gmin_optimal');
 
 
 
