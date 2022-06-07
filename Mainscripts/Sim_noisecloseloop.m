@@ -144,7 +144,7 @@ end
 
 %% Simulate
 
-intensity = 5;
+intensity = 8;
 
 % Closed-loop simulation
 [T, X, Y, U] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, ... 

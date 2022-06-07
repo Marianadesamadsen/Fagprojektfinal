@@ -10,13 +10,13 @@ clc
 close all 
 
 %% Loading all folders
-fprintf('Loading diabetes library .. ');
+%fprintf('Loading diabetes library .. ');
 
 % Add real thermodynamics functions
-addpath(genpath(fullfile(pwd, './Other')));
+addpath(genpath(fullfile(pwd, '../Other')));
 
 % Let the user know that the library is being loaded
-fprintf('Done\n');
+%fprintf('Done\n');
 
 %% Formatting the plots 
 
@@ -122,7 +122,7 @@ end
 %% Simulating the control states based on x0, the steady state.
 
 % The noise intensity
-intensity = 7;
+intensity = 5;
 
 [T, X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity);
 
