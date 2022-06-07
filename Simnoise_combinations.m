@@ -109,58 +109,59 @@ for i = 0:29
         
 end 
 
-%% Simulating the control states based on x0, the steady state.
+%% Simulating the control states based on x0, the steady state over different types of intensities
 
-[T, X] = OpenLoopSimulation(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk);
+intensity = (1:10);
+T         = zeros(1,length(tspan),length(intensity));
+X         = zeros(7,length(tspan),length(intensity));
+G         = zeros(1,length(tspan),length(intensity));
 
-%% Blood glucose concentration 
+for i = 1:lenth(intensity)
+    
+    [T(:,:,i), X(:,:,i)] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity(i));
+    
+    % Blood glucose concentration 
+    G(:,:,i) = CGMsensor_withnoise(X(:,:,i),p); % [mg/dL] 
 
-G = CGMsensor_withnoise(X, p); % [mg/dL] 
+end
 
-%% Detecting meals using GRID algorithm
+%% Loading in the optimal values for Gmin
 
-% Inisializing 
-delta_G        = 15;                 % From article
-t_vec          = [5,10,15];          % The respective sampling times
-tau            = 6;                  % From the article
-
-% Range for gmin try outs 
-gmin1range = (120:130);
-gmin2range = (0.2:0.1:1.2);
-gmin3range = (0.2:0.1:1.2);
-
-% Making the combinations using meshgrid
-[Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
-
-% Types of combinations
-Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
+Gmin_values       = load('Gminoptimal1patient.mat');
+Gmin_combinations = Gmin_values.Gmin_optimal;
 
 %%
 
 % Initialising
-number_combinations     = size(Gmin_combinations); 
-number_detectedmeals    = zeros(1,number_combinations(2));
-truepositive            = zeros(1,number_combinations(2));
-falsepositive           = zeros(1,number_combinations(2));
-falsenegative           = zeros(1,number_combinations(2));
-truenegative            = zeros(1,number_combinations(2));
+Gmin_number_combinations     = size(Gmin_combinations); 
+number_detectedmeals         = zeros(1,Gmin_number_combinations(2));
+truepositive                 = zeros(1,Gmin_number_combinations(2));
+falsepositive                = zeros(1,Gmin_number_combinations(2));
+falsenegative                = zeros(1,Gmin_number_combinations(2));
+truenegative                 = zeros(1,Gmin_number_combinations(2));
 
 stride = 90/Ts; % min
 
-for i = 1 : number_combinations(1)
 
-D_detected = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+for j = 1 : 
+    
+    for i = 1 : Gmin_number_combinations(1)
 
-number_detectedmeals(i) = sum(D_detected);
+        D_detected = GRIDalgorithm_mealdetection(G(:,:,j),Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
-[truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
+        number_detectedmeals(i) = sum(D_detected);
 
+        [truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
+
+    end
+    
 end
+
 
 %% Calculating false positive and false negative rates 
 
 falsepositive_rate = falsepositive ./ (falsepositive + truenegative);
-truepositive_rate = truepositive ./ (truepositive + falsenegative);
+truepositive_rate  = truepositive ./ (truepositive + falsenegative);
 
 %% Visualize 
 
@@ -198,7 +199,7 @@ for i = 1 : length(gmin_idx_best)
         
 end
 
-save('Gminoptimal','Gmin_optimal');
+
 
 
 

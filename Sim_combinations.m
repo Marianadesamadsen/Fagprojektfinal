@@ -111,13 +111,11 @@ end
 
 %% Simulating the control states based on x0, the steady state.
 
-intensity = 7;
-
-[T, X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity);
+[T, X] = OpenLoopSimulation(x0, tspan, U, D, p, @MVPmodel, @ExplicitEuler, Nk);
 
 %% Blood glucose concentration 
 
-G = CGMsensor_withnoise(X, p); % [mg/dL] 
+G = CGMsensor(X, p); % [mg/dL] 
 
 %% Detecting meals using GRID algorithm
 
@@ -125,70 +123,88 @@ G = CGMsensor_withnoise(X, p); % [mg/dL]
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
 tau            = 6;                  % From the article
-%Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6 
-Gmin = [90 0.5 0.5]; % For no meal under 50 considered
-% Other tries
-% Gmin = [ 130 1 1.1 ]; % Their mins
-% Gmin = [ 110 1 1.5 ]; % For no meal under 50 
-% The total amount of detected meals
 
-D_detected = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
+% Range for gmin try outs 
+gmin1range = (125:135);
+gmin2range = (0.5:0.1:1.5);
+gmin3range = (0.5:0.1:1.5);
 
-number_detectedmeals = sum(D_detected);
+% Making the combinations using meshgrid
+[Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
 
-fprintf('number of detected meals: %d\n',number_detectedmeals);
+% Types of combinations
+Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
 
-%% Calculating how many true detected meals there has been, false detected and not detected meals
+%%
+
+% Initialising
+number_combinations     = size(Gmin_combinations); 
+number_detectedmeals    = zeros(1,number_combinations(2));
+truepositive            = zeros(1,number_combinations(2));
+falsepositive           = zeros(1,number_combinations(2));
+falsenegative           = zeros(1,number_combinations(2));
+truenegative            = zeros(1,number_combinations(2));
 
 stride = 90/Ts; % min
 
-[truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts);
+for i = 1 : number_combinations(1)
 
-fprintf('number of false positive: %d \n',falsepositive);
-fprintf('number of false negative: %d\n',falsenegative);
-fprintf('number of true positive: %d\n',truepositive);
+D_detected = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+
+number_detectedmeals(i) = sum(D_detected);
+
+[truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
+
+end
+
+%% Calculating false positive and false negative rates 
+
+falsepositive_rate = falsepositive ./ (falsepositive + truenegative);
+truepositive_rate = truepositive ./ (truepositive + falsenegative);
 
 %% Visualize 
 
-% Create figure with absolute size for reproducibility
-figure;
+figure 
 
-% Converting data
-T2=datetime(T*min2sec,'ConvertFrom','posixtime');
-tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
+plot(falsepositive_rate,truepositive_rate,'*')
+xlim([0 0.00001])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve')
 
-% Plot blood glucose concentration and the detected meals as points
-subplot(511);
-plot(T2, G);
-%xlim([t0, tf]*min2h);
-ylabel({'Blood glucose concentration', '[mg/dL]'});
-hold on 
-plot(tspan2(1:end-1),D_detected*200,'r.');
+%% 
 
-% Plot meal carbohydrate and the detected meals as points
-subplot(512);
-stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
-%xlim([t0, tf]*min2h);
-ylabel({'Meal carbohydrates', '[g CHO]'});
-hold on 
-plot(tspan2(1:end-1),D_detected*100,'r.');
+gmin_idx=zeros(1,length(falsepositive_rate));
 
-% Plot basal insulin flow rate
-subplot(513);
-stairs(tspan2, U(1, [1:end, end]));
-%xlim([t0, tf]*min2h);
-ylabel({'Basal insulin', '[mU/min]'});
+for i = 1 : length(falsepositive_rate)
+   
+    if falsepositive_rate(i) == 0 && truepositive_rate(i) == 1
+        gmin_idx(i) = i; 
+    end 
+    
+end
 
-% Plot bolus insulin
-subplot(514);
-stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
-%xlim([t0, tf]*min2h);
-ylabel({'Bolus insulin', '[U]'}); 
-xlabel('Time [h]');
+gmin_idx_best=find(gmin_idx);
 
-% Plot detected Meals
-subplot(515);
-plot(tspan2(1:end-1),D_detected,'b-');
-%xlim([t0, tf]*min2h);
-ylabel({'detected meal'}); 
-xlabel('Time [h]'); 
+%%
+
+Gmin_optimal = zeros(length(gmin_idx_best),3);
+
+for i = 1 : length(gmin_idx_best)
+    
+   k=gmin_idx_best(i);
+   
+   Gmin_optimal(i,:) = Gmin_combinations(k,:);
+        
+end
+
+save('Gminoptimal1patient','Gmin_optimal');
+
+
+
+
+
+
+
+
+

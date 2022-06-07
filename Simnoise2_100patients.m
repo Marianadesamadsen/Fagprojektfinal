@@ -136,16 +136,16 @@ end
 %% Simulating the control states for all patients
 
 % Inisializing 
-T=zeros(1,N+1,numpatients); 
-X=zeros(7,N+1,numpatients);  
+T         = zeros(1,N+1,numpatients); 
+X         = zeros(7,N+1,numpatients); 
+intensity = 5;
 
 % Looping over all patients 
 for p=1:numpatients
 
-[T(:,:,p), X(:,:,p)] = OpenLoopSimulation(x0(p,:)', tspan, U(:,:,p), D(:,:,p), pf(:,p), @MVPmodel, @EulerM, Nk);
+[T(:,:,p), X(:,:,p)] = OpenLoopSimulation_withnoise(x0(p,:)', tspan, U(:,:,p), D(:,:,p), pf(:,p), @MVPmodel, @EulerM, Nk,intensity);
 
 end 
-
 
 %% Blood glucose concentration 
 

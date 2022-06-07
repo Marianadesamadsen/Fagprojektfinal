@@ -1,4 +1,4 @@
-function [T,X] = EulerM(f,tspank,x0,u,d,p)
+function [T,X] = EulerM(f,tspank,x0,u,d,p,intensity)
 %
 % EulerM
 %
@@ -8,12 +8,13 @@ function [T,X] = EulerM(f,tspank,x0,u,d,p)
 % problem. The stochastic term will be simulated by brownian motion. 
 %
 % INPUT:
-%   f      - function to handle that computes the derivative (MVP model).
-%   tspank - points in time where the solution is approximated.
-%   x0     - Initial state vector.
-%   u      - manipulated inputs (used for MVP model).
-%   d      - disturbance inputs (used for MVP model).
-%   p      - parameter vector   (used for MVP model).
+%   f            - function to handle that computes the derivative (MVP model).
+%   tspank       - points in time where the solution is approximated.
+%   x0           - Initial state vector.
+%   u            - manipulated inputs (used for MVP model).
+%   d            - disturbance inputs (used for MVP model).
+%   p            - parameter vector   (used for MVP model).
+%   intensity    - the value of the intensity of noise. 
 %
 % OUTPUT:
 %   T - Time steps of control intervals
@@ -71,7 +72,7 @@ for k=1:Nk
     fk = feval(f, tk, xk, u, d, p);
     
     gt=zeros(size(xk));
-    gt(6)=0;
+    gt(6)=intensity;
 
     % Euler Maruyama step
     xkp1 = xk + fk*dt + gt*(W(k+1)-W(k));
