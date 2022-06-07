@@ -36,7 +36,7 @@ function g = CGMsensor_withnoise(X,pg)
 g = X(7, :);
 
 % Computing the Gaussian noise
-std=1;        % standard deviation of 2%
+std=1;        % standard deviation of 1%
 meanValue=0;    % mean=0
 
 % Adding the noise

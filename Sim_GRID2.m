@@ -89,7 +89,7 @@ idxSnack2        = tSnack2 /Ts + 1;
 
 bolus = 0;
 meal  = randi([50,150],1,90);
-snack = randi([20,45],1,60);
+snack = randi([20,45],1, 60);
 
 %% Inserting the meal sizes at the different hours/indicies
 
@@ -122,7 +122,7 @@ G = CGMsensor(X, p); % [mg/dL]
 
 %% Detecting meals using GRID algorithm
 
-% Inisializing 
+% Initializing 
 filt_prev      = zeros(length(G),2); % The vector of previous filtered values
 Gfm_vec        = zeros(length(G),2); % The vector of previous derivatives
 G_vec          = [G(1),G(1),G(1)];   % Inserting the start previous glucose measurements as the same value
@@ -194,8 +194,8 @@ sum(zero_one)
 figure;
 
 % Converting data
-T2=datetime(T*min2sec,'ConvertFrom','datenum');
-tspan2=datetime(tspan*min2sec,'ConvertFrom','datenum');
+T2=datetime(T*min2sec,'ConvertFrom','posixtime');
+tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
 % Plot blood glucose concentration
 subplot(411);

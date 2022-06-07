@@ -24,7 +24,7 @@ h2min = 60;      % Convert from h   to min
 min2h = 1/h2min; % Convert from min to h 
 U2mU  = 1e3;     % Convert from U   to mU 
 mU2U  = 1/U2mU;  % Convert from mU  to U 
-
+min2sec = h2min;
 
 %% Inizializing parameters
 
