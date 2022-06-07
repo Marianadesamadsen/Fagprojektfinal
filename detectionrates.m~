@@ -3,8 +3,9 @@ function [truenegative,truepositive,falsepositive,falsenegative] = detectionrate
 falsenegative   = 0;
 falsepositive   = 0;
 truepositive    = 0;
-truemeals   = zeros(1,length(D(1,:)));
-mealdetec   = zeros(1,length(D_detected));
+truenegative    = 0;
+truemeals       = zeros(1,length(D(1,:)));
+mealdetec       = zeros(1,length(D_detected));
 
 % Chaning datatype to binary
 for i = 1:length(D(1,:))
@@ -36,7 +37,7 @@ end
 idxdetecmeals = find(mealdetec);
 idxtruemeals = find(truemeals);
 
-% Examine if there are dt
+% Examine if there are no detected meals where there are true meals
 for i = 1:length(idxtruemeals)
    
     k = idxtruemeals(i);
@@ -46,7 +47,7 @@ for i = 1:length(idxtruemeals)
     end  
 end
 
-% Examine if there are detected meals 
+% Examine if there are no true meals where there are detected meals 
 for i = 1:length(idxdetecmeals)
    
     k = idxdetecmeals(i);
@@ -56,6 +57,7 @@ for i = 1:length(idxdetecmeals)
     end  
 end
 
+% Examine if there are true meals where there are detected meals
 for i = 1:length(idxdetecmeals)
    
     k = idxdetecmeals(i);
@@ -67,24 +69,16 @@ end
 
 % FINDING true negatives 
 
-% removing idices
-for i = 1:idxtruemeals
-
-    k = idxtruemeals(i);
-    
-    D(1,k) =[];
-
-end
-
 for i = 1:length(D(1,:))
     
-    k = i;
+    if D(1,i) == 0 && D_detected(i) == 0 
+       truenegative = truenegative + 1;
+    end 
     
-    if sum(D_detected(k:k+stride)) == 0 
-        truenegative = truenegative + 1;
-    end  
 end 
 
+% Adding the truepositive since we a
+truenegative = truenegative + truepositive;
 
 end
 
