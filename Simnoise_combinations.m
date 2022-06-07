@@ -159,10 +159,8 @@ end
 
 %% Calculating false positive and false negative rates 
 
-
-
-falsep_rate = 
-falsen_rate =
+%falsep_rate = 
+%falsen_rate =
 
 
 %% Visualize 
