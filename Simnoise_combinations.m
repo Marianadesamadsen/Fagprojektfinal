@@ -155,68 +155,68 @@ for j = 1 : length(intensity_range)
 
         number_detectedmeals(j,i) = sum(D_detected);
 
-        [truenegative(j,i),truepositive(j,i),falsepositive(j,i),falsenegative(j,i)] = detectionrates(stride,D,D_detected,Ts);
+       [truenegative(j,i),truepositive(j,i),falsepositive(j,i),falsenegative(j,i)] = detectionrates(stride,D,D_detected,Ts);
 
     end
     
 end
 
 
-%% Calculating false positive and false negative rates 
-
-falsepositive_rate = zeros(length(intensity_range),Gmin_number_combinations(1));
-truepositive_rate  = zeros(length(intensity_range),Gmin_number_combinations(1));
-
-for j = 1 : length(intensity_range)
-
-falsepositive_rate(j,:) = falsepositive(j,:) ./ (falsepositive(j,:) + truenegative(j,:));
-truepositive_rate(j,:)  = truepositive(j,:) ./ (truepositive(j,:) + falsenegative(j,:));
-
-end
-
-%% Visualize 
-
-figure 
-
-plot(falsepositive_rate(1,:),truepositive_rate(1,:),'*')
-xlim([0 1.2*10^(-4)])
-ylim([0 1])
-xlabel('False positive rate') 
-ylabel('True positive rate')
-title('ROC curve')
-
-%% Finding the optimal index for intensity and gmin 
-
-gmin_idx        = zeros(1,length(falsepositive_rate));
-intensity_idx   = zeros(1,length(intensity_range));
-
-for j = 1 : length(intensity_range)
-    
-    for i = 1 : length(falsepositive_rate)
-   
-        if falsepositive_rate(j,i) == 0 && truepositive_rate(j,i) == 1
-            gmin_idx(i)      = i; 
-            intensity_idx(j) = j;
-        end 
-        
-    end
-    
-end
-
-gmin_idx_best     = find(gmin_idx);
-itensity_idx_best = find(gmin_idx);
-
-%%
-
-Gmin_optimal = zeros(length(gmin_idx_best),3);
-
-for i = 1 : length(gmin_idx_best)
-    
-   k=gmin_idx_best(i);
-   
-   Gmin_optimal(i,:) = Gmin_combinations(k,:);
-        
-end
+% %% Calculating false positive and false negative rates 
+% 
+% falsepositive_rate = zeros(length(intensity_range),Gmin_number_combinations(1));
+% truepositive_rate  = zeros(length(intensity_range),Gmin_number_combinations(1));
+% 
+% for j = 1 : length(intensity_range)
+% 
+% falsepositive_rate(j,:) = falsepositive(j,:) ./ (falsepositive(j,:) + truenegative(j,:));
+% truepositive_rate(j,:)  = truepositive(j,:) ./ (truepositive(j,:) + falsenegative(j,:));
+% 
+% end
+%
+% %% Visualize 
+% 
+% figure 
+% 
+% plot(falsepositive_rate(1,:),truepositive_rate(1,:),'*')
+% xlim([0 1.2*10^(-4)])
+% ylim([0 1])
+% xlabel('False positive rate') 
+% ylabel('True positive rate')
+% title('ROC curve')
+% 
+% %% Finding the optimal index for intensity and gmin 
+% 
+% gmin_idx        = zeros(1,length(falsepositive_rate));
+% intensity_idx   = zeros(1,length(intensity_range));
+% 
+% for j = 1 : length(intensity_range)
+%     
+%     for i = 1 : length(falsepositive_rate)
+%    
+%         if falsepositive_rate(j,i) == 0 && truepositive_rate(j,i) == 1
+%             gmin_idx(i)      = i; 
+%             intensity_idx(j) = j;
+%         end 
+%         
+%     end
+%     
+% end
+% 
+% gmin_idx_best     = find(gmin_idx);
+% itensity_idx_best = find(gmin_idx);
+% 
+% %%
+% 
+% Gmin_optimal = zeros(length(gmin_idx_best),3);
+% 
+% for i = 1 : length(gmin_idx_best)
+%     
+%    k=gmin_idx_best(i);
+%    
+%    Gmin_optimal(i,:) = Gmin_combinations(k,:);
+%         
+% end
 
 
 

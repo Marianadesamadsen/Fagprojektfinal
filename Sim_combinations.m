@@ -198,7 +198,8 @@ for i = 1 : length(gmin_idx_best)
         
 end
 
-save('Gminoptimal1patient','Gmin_optimal');
+
+% save('Gminoptimal1patient','Gmin_optimal');
 
 
 
