@@ -186,15 +186,8 @@ end
 
 %% Calculating percentage error 
 
-actualvalue = 90;
 
-percentage = zeros(size(number_detectedmeals));
 
-for j = 1 : intensity_number
-    for i = 1 : Gmin_number_combinations
-        percentage(j,i) = ( number_detectedmeals(j,i) - actualvalue ) / actualvalue;
-    end
-end
 
 
 

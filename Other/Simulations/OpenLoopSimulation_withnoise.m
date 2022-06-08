@@ -1,4 +1,4 @@
-function [T,X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, simModel, simMethod, NK,intensity)
+function [T,X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, simModel, simMethod, NK,intensity,state)
 % OpenLoopSimulation() 
 % 
 % DESCRIPTION:
@@ -78,7 +78,7 @@ for k = 1:N
     tspank = linspace(tk, tkp1, Nk+1);
     
     % Solve initial value problem 
-    [Tk, Xk] = simMethod(simModel, tspank, xk, uk, dk, p,intensity);
+    [Tk, Xk] = simMethod(simModel, tspank, xk, uk, dk, p,intensity,state+k);
     
     % Update initial condition  
     xk = Xk(end, :)'; 

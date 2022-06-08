@@ -124,7 +124,10 @@ end
 % The noise intensity
 intensity = 5;
 
-[T, X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity);
+% The random number generator parameter 
+state = 1;
+
+[T, X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity,state);
 
 %% Extractign the blood glucose concentration 
 
