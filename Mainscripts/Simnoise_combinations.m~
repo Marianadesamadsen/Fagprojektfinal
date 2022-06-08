@@ -184,10 +184,22 @@ for j = 1 : intensity_number
     
 end
 
+% We can see we really fast get a lot of falsepositives when increasin the
+% intensity
+
+% We 
+
 %% Calculating percentage error 
 
+actualvalue = 90;
 
+percentage = zeros(size(number_detectedmeals));
 
+for j = 1 : intensity_number
+    for i = 1 : Gmin_number_combinations
+        percentage(j,i) = ( number_detectedmeals(j,i) - actualvalue ) / actualvalue;
+    end
+end
 
 
 

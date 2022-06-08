@@ -184,6 +184,12 @@ for j = 1 : intensity_number
     
 end
 
+% We can see we really fast get a lot of falsepositives when increasin the
+% intensity
+
+% We can see that we get more and more falsenegative slower than
+% falsepositives when increasing the intensity
+
 %% Calculating percentage error 
 
 actualvalue = 90;
