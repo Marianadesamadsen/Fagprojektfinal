@@ -190,6 +190,7 @@ end
 % We can see that we get more and more falsenegative slower than
 % falsepositives when increasing the intensity
 
+
 %% Calculating percentage error 
 
 actualvalue = 90;
@@ -202,65 +203,98 @@ for j = 1 : intensity_number
     end
 end
 
+%% Calculating false positive and false negative rates 
 
+for j = 1 : intensity_number
 
-%%
-% %% Calculating false positive and false negative rates 
-% 
-% falsepositive_rate = zeros(length(intensity_range),Gmin_number_combinations(1));
-% truepositive_rate  = zeros(length(intensity_range),Gmin_number_combinations(1));
-% 
-% for j = 1 : length(intensity_range)
-% 
-% falsepositive_rate(j,:) = falsepositive(j,:) ./ (falsepositive(j,:) + truenegative(j,:));
-% truepositive_rate(j,:)  = truepositive(j,:) ./ (truepositive(j,:) + falsenegative(j,:));
-% 
-% end
-%
-% %% Visualize 
-% 
-% figure 
-% 
-% plot(falsepositive_rate(1,:),truepositive_rate(1,:),'*')
-% xlim([0 1.2*10^(-4)])
-% ylim([0 1])
-% xlabel('False positive rate') 
-% ylabel('True positive rate')
-% title('ROC curve')
-% 
-% %% Finding the optimal index for intensity and gmin 
-% 
-% gmin_idx        = zeros(1,length(falsepositive_rate));
-% intensity_idx   = zeros(1,length(intensity_range));
-% 
-% for j = 1 : length(intensity_range)
-%     
-%     for i = 1 : length(falsepositive_rate)
-%    
-%         if falsepositive_rate(j,i) == 0 && truepositive_rate(j,i) == 1
-%             gmin_idx(i)      = i; 
-%             intensity_idx(j) = j;
-%         end 
-%         
-%     end
-%     
-% end
-% 
-% gmin_idx_best     = find(gmin_idx);
-% itensity_idx_best = find(gmin_idx);
-% 
-% %%
-% 
-% Gmin_optimal = zeros(length(gmin_idx_best),3);
-% 
-% for i = 1 : length(gmin_idx_best)
-%     
-%    k=gmin_idx_best(i);
-%    
-%    Gmin_optimal(i,:) = Gmin_combinations(k,:);
-%         
-% end
+    falsepositive_rate(j,:) = falsepositive(j,:) ./ (falsepositive(j,:) + truenegative(j,:));
+    truepositive_rate(j,:) = truepositive(j,:) ./ (truepositive(j,:) + falsenegative(j,:));
 
+end
+
+%% Visualize the ROC curve
+
+figure 
+
+subplot(2,5,1)
+plot(falsepositive_rate(3,:),truepositive_rate(3,:),'*')
+%xlim([0 0.00001])
+ylim([0 1])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve for intensity 1')
+
+subplot(2,5,2)
+plot(falsepositive_rate(2,:),truepositive_rate(2,:),'*')
+xlim([0 1])
+ylim([0 1])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve for intensity 2')
+
+subplot(2,5,3)
+plot(falsepositive_rate(3,:),truepositive_rate(3,:),'*')
+%xlim([0 0.00001])
+ylim([0 1])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve for intensity 3')
+
+subplot(2,5,4)
+plot(falsepositive_rate(4,:),truepositive_rate(4,:),'*')
+%xlim([0 0.00001])
+ylim([0 1])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve for intensity 4')
+
+subplot(2,5,5)
+plot(falsepositive_rate(5,:),truepositive_rate(5,:),'*')
+%xlim([0 0.00001])
+ylim([0 1])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve for intensity 5')
+
+subplot(2,5,6)
+plot(falsepositive_rate(6,:),truepositive_rate(6,:),'*')
+%xlim([0 0.00001])
+ylim([0 1])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve for intensity 6')
+
+subplot(2,5,7)
+plot(falsepositive_rate(7,:),truepositive_rate(7,:),'*')
+%xlim([0 0.00001])
+ylim([0 1])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve for intensity 7')
+
+subplot(2,5,8)
+plot(falsepositive_rate(8,:),truepositive_rate(8,:),'*')
+%xlim([0 0.00001])
+ylim([0 1])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve for intensity 8')
+
+subplot(2,5,9)
+plot(falsepositive_rate(9,:),truepositive_rate(9,:),'*')
+%xlim([0 0.00001])
+ylim([0 1])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve for intensity 9')
+
+subplot(2,5,10)
+plot(falsepositive_rate(10,:),truepositive_rate(10,:),'*')
+%xlim([0 0.00001])
+ylim([0 1])
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC curve for intensity 10')
 
 
 

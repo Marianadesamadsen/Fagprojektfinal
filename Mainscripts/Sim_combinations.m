@@ -148,7 +148,7 @@ t_vec          = [5,10,15];          % The respective sampling times
 tau            = 6;                  % From the article
 
 % Initialising
-number_combinations     = lenth(Gmin_combinations); 
+number_combinations     = length(Gmin_combinations); 
 number_detectedmeals    = zeros(1,number_combinations);
 truepositive            = zeros(1,number_combinations);
 falsepositive           = zeros(1,number_combinations);
