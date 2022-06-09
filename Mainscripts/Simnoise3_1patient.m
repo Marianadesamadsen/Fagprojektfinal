@@ -119,12 +119,42 @@ for i = 0:29
         
 end 
 
+%%
+
+% Calculating the insulin amount for each meal 
+for i = 1 : length(U)
+    if D(1,i) > 50/Ts % because snack
+        U(2,i) = (D(1,i)/10)*U2mU/Ts;
+    end
+end
+
+% Removing bolus insulin from some of the meal indices. 
+% Every 5th day the meal at 7 hour is missed.
+idxmissed = zeros(1,29);
+for i = 1 : 2 : 29 
+    U(2,idxMeal1+24*h2min/Ts*i) = 0;
+    idxmissed(i) = i*h2min/Ts+1;
+end
+
+%idxmissed = find(idxmissed);
+
+% Decreasing the amount of insulin for some of the meal indices. 
+% Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
+idxless = zeros(1,29);
+for i = 2 : 5 : 29
+    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) - 1;
+    idxless(i) =  i*h2min/Ts+1;
+end
+
+%idxless = find(idxless);
+
+
 %% Simulating the control states based on x0, the steady state.
 
 % The noise intensity
-intensity = 5;
+intensity = 2;
 
-[T, X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity);
+[T, X] = OpenLoopSimulation(x0, tspan, U, D, p, @MVPmodel, @ExplicitEuler, Nk);
 
 %% Extractign the blood glucose concentration 
 
@@ -135,13 +165,8 @@ G = CGMsensor_withnoise(X, p); % [mg/dL]
 % Inisializing 
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
-tau            = 6;                  % From the article
-%Gmin           = [100 0.2 0.8];      % Gmin accepts intensity up to 6 
-Gmin = [90 0.5 0.5]; % For no meal under 50 considered
-% Other tries
-% Gmin = [ 130 1 1.1 ]; % Their mins
-% Gmin = [ 110 1 1.5 ]; % For no meal under 50 
-% The total amount of detected meals
+tau            = 6;                  % From the article 
+Gmin = [130 1.5 1.6]; % For no meal under 50 considered
 
 % Computing the detected meals
 D_detected = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
@@ -152,18 +177,18 @@ number_detectedmeals = sum(D_detected);
 % Printing the value of detected meals
 fprintf('number of detected meals: %d\n',number_detectedmeals);
 
-%% Calculating how many true detected meals there has been, false detected and not detected meals
-
-stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
-
-% Computing 
-[truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts);
-
-% Printing all the values
-fprintf('number of false positive: %d \n',falsepositive);
-fprintf('number of false negative: %d\n',falsenegative);
-fprintf('number of true positive: %d\n',truepositive);
-fprintf('number of true negative: %d\n',truenegative);
+% %% Calculating how many true detected meals there has been, false detected and not detected meals
+% 
+% stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
+% 
+% % Computing 
+% [truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts);
+% 
+% % Printing all the values
+% fprintf('number of false positive: %d \n',falsepositive);
+% fprintf('number of false negative: %d\n',falsenegative);
+% fprintf('number of true positive: %d\n',truepositive);
+% fprintf('number of true negative: %d\n',truenegative);
 
 %% Visualize 
 

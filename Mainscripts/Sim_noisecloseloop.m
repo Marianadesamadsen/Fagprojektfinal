@@ -151,7 +151,7 @@ U = zeros(2,length(D(1,:)));
 % Calculating the insulin amount for each meal 
 for i = 1 : length(U)
     if D(1,i) > 50/Ts %because snack
-        U(2,i) = (D(1,i)/15)*U2mU/Ts;
+        U(2,i) = (D(1,i)/10)*U2mU/Ts;
     end
 end
 
