@@ -1,5 +1,5 @@
 function [T, X, Y, U, ctrlState] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, ... 
-    ctrlAlgorithm, simMethod, simModel, observationMethod, ctrlPar,ctrlState0,NK,intensity)
+    ctrlAlgorithm, simMethod, simModel, observationMethod, ctrlPar, ctrlState0, NK,intensity)
 %
 % ClosedLoopSimulation()
 % 
@@ -9,7 +9,7 @@ function [T, X, Y, U, ctrlState] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, 
 % parameters, simulation model, observation model, and control algorithm.
 % Closed-loop is used when the input depends on the output; this function
 % is part of the PID-controller. 
-%
+% 
 % INPUT:
 %   x0                  - initial state                                     (dimension: nx    )
 %   tspan               - boundaries of the control intervals               (dimension: N+1   )
@@ -22,7 +22,7 @@ function [T, X, Y, U, ctrlState] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, 
 %   simMethod           - simulation method                                 (function handle)
 %   NK                  - Number of steps in each control interval
 %   intensity           - The intensity value used for Euler Maruyama
-%
+% 
 % OUTPUT:
 %   T - boundaries of control intervals (=tspan)    (dimension:      N+1)
 %   X - the states in the simulation model          (dimension: nx x N+1)
