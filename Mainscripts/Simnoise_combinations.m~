@@ -133,7 +133,7 @@ G               = zeros(1,length(tspan),length(intensity_range));   % Three dime
 % Looping over alle the values of intensities
 for i = 1:length(intensity_range)
     
-    [T(:,:,i), X(:,:,i)] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity_range(i));
+    [T(:,:,i), X(:,:,i)] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity_range(i),5);
     
     % Extracting the blood glucose concentration 
     G(:,:,i) = CGMsensor_withnoise(X(:,:,i),p); % [mg/dL] 

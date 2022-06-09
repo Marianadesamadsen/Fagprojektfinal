@@ -152,13 +152,10 @@ X         = zeros(7,N+1,numpatients);
 % Intensity value
 intensity = 5;
 
-% Random number generator parameter 
-state = 1;
-
 % Looping over all patients 
 for p=1:numpatients
 
-[T(:,:,p), X(:,:,p)] = OpenLoopSimulation_withnoise(x0(p,:)', tspan, U(:,:,p), D(:,:,p), pf(:,p), @MVPmodel, @EulerM, Nk,intensity,state);
+[T(:,:,p), X(:,:,p)] = OpenLoopSimulation_withnoise(x0(p,:)', tspan, U(:,:,p), D(:,:,p), pf(:,p), @MVPmodel, @EulerM, Nk,intensity);
 
 end 
 

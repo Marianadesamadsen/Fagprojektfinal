@@ -7,7 +7,7 @@
 %%
 clear all 
 clc 
-close all 
+
 
 %% Loading all folders
 %fprintf('Loading diabetes library .. ');
@@ -124,10 +124,7 @@ end
 % The noise intensity
 intensity = 5;
 
-% The random number generator parameter 
-state = 1;
-
-[T, X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity,state);
+[T, X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity);
 
 %% Extractign the blood glucose concentration 
 

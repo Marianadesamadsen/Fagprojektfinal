@@ -144,11 +144,11 @@ end
 
 %% Simulate
 
-intensity = 8;
+intensity = 0;
 
 % Closed-loop simulation
 [T, X, Y, U] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, ... 
-    ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
+    ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity,1);
 
 % Blood glucose concentration
 Gsc = Y; % [mg/dL]
