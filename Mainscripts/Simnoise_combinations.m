@@ -190,7 +190,6 @@ end
 % We can see that we get more and more falsenegative slower than
 % falsepositives when increasing the intensity
 
-
 %% Calculating percentage error 
 
 actualvalue = 90;
@@ -219,6 +218,7 @@ figure
 subplot(2,5,1)
 plot(falsepositive_rate(3,:),truepositive_rate(3,:),'*')
 %xlim([0 0.00001])
+xlim([0 1])
 ylim([0 1])
 xlabel('False positive rate') 
 ylabel('True positive rate')
@@ -235,6 +235,7 @@ title('ROC curve for intensity 2')
 subplot(2,5,3)
 plot(falsepositive_rate(3,:),truepositive_rate(3,:),'*')
 %xlim([0 0.00001])
+xlim([0 1])
 ylim([0 1])
 xlabel('False positive rate') 
 ylabel('True positive rate')
