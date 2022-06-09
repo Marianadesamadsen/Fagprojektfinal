@@ -27,6 +27,7 @@ set(groot, 'DefaultAxesFontSize',   fs); % Set default font size
 set(groot, 'DefaultLineLineWidth',  lw);
 set(groot, 'DefaultStairLineWidth', lw);
 set(groot, 'DefaultStemLineWidth',  lw);
+reset(groot)
 
 %%  Conversion factors 
 
@@ -71,7 +72,7 @@ x0 = xs;
 
 %% Inizialising the function to handles 
 % Control algorithm
-ctrlAlgorithm = @PIDControl;
+ctrlAlgorithm = @PIDControl2;
 
 % Simulation model
 simModel = @MVPmodel;
@@ -149,8 +150,8 @@ U = zeros(2,length(D(1,:)));
 
 % Calculating the insulin amount for each meal 
 for i = 1 : length(U)
-    if D(1,i) > 0
-        U(2,i) = D(1,i)*Ts/10;
+    if D(1,i) > 50/Ts %because snack
+        U(2,i) = (D(1,i)/15)*U2mU/Ts;
     end
 end
 
@@ -169,10 +170,10 @@ end
 
 %% Simulate
 
-intensity = 0;
+intensity = 9;
 
 % Closed-loop simulation
-[T, X, Y, U] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, ... 
+[T, X, Y, U] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,p, ... 
     ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
 
 % Blood glucose concentration
@@ -212,7 +213,7 @@ tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 subplot(411);
 plot(T2, Gsc);
 %xlim([t0, tf]*min2h);
-ylim([0 600])
+ylim([0 250])
 ylabel({'CGM measurements', '[mg/dL]'});
 hold on 
 plot(tspan2(1:end-1),D_detected*200,'r.');
@@ -235,9 +236,9 @@ ylabel({'Basal insulin', '[mU/min]'});
 
 % Plot bolus insulin
 subplot(414);
-stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
+stem(tspan2(1:end-1),Ts*mU2U*U(2, :), 'MarkerSize', 1);
 %xlim([t0, tf]*min2h);
-ylim([-1 1])
+ylim([0 5])
 ylabel({'Bolus insulin', '[U]'});
 xlabel('Time [h]');
 
