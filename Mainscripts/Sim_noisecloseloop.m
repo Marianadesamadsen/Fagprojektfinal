@@ -38,13 +38,13 @@ mU2U  = 1/U2mU;  % Convert from mU  to U
 min2sec = h2min; % Convert from min to sec
 sec2min = 1/h2min;% Convert from sec to min
 
-%% Inizializing parameters
+%% Initializing parameters
 
 p = [49,47,20.1,0.0106,0.0081,0.0022,1.33,253,47,5]; % Parameters at steady state
 Gs = 108; % [mg/dL]: Steady state blood glucose concentration
 ts = [];
 
-%% Computing steadty state
+%% Computing steady state
 
 [xs, us, flag] = computeSteadyStateMVPModel(ts, p, Gs);
 
@@ -143,9 +143,7 @@ for i = 0:29
 
 end
 
-%%
-
-% Test
+%% Removing bolus insulin every 5th day at 7 AM and decreasing bolus insulin every 5th day starting from day 3 at 7 AM
 
 % Insulin vector
 U = zeros(2,length(D(1,:)));
@@ -206,9 +204,7 @@ Number_detectedmeals = sum(D_detected);
 % Printing the number of detected meals
 fprintf('number of detected meals: %d\n',Number_detectedmeals);
 
-%% Visualize
-% Create figure with absolute size for reproducibility
-figure;
+%% Vectors with length of time of when bolus is missed and lessened
 
 % Converting data
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
@@ -226,6 +222,9 @@ for i = 1:length(idx_less)
     less_vector(k) = 1;
 end
 
+%% Visualize
+% Create figure with absolute size for reproducibility
+figure;
 % Plot blood glucose concentration
 subplot(411);
 plot(T2, Gsc);
@@ -234,6 +233,11 @@ ylim([0 250])
 ylabel({'CGM measurements', '[mg/dL]'});
 hold on
 plot(tspan2(1:end-1),D_detected*200,'r.');
+hold on
+plot(tspan2(1:end-1),missed_vector*150,'b *');
+hold on
+plot(tspan2(1:end-1),less_vector*150,'g *');
+
 
 % Plot meal carbohydrate
 subplot(412);
