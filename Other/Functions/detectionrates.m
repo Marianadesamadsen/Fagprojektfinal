@@ -1,4 +1,4 @@
-function [truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts)
+function [truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts,U)
 % detectionrates()
 % 
 % DESCRIPTION:
@@ -16,6 +16,7 @@ function [truenegative,truepositive,falsepositive,falsenegative] = detectionrate
 % D                 - The true vector of real meals.
 % D_detected        - The estimated vecor of 0 or 1. 1 meaning meals is
 % detected
+% U                 - Bolus insulin
 % 
 % Ts                - The time between control steps
 %
@@ -52,7 +53,7 @@ mealdetec       = zeros(1,length(D_detected));
 % Changing datatype of D to binary
 for i = 1:length(D(1,:))
     
-    if D(1,i) >= 50/Ts % Not considering the snackmeals
+    if D(1,i) >= 50/Ts % Not considering the snackmeals 
         D(1,i) = 1;
         
     else

@@ -234,12 +234,6 @@ ylim([0 250])
 ylabel({'CGM measurements', '[mg/dL]'});
 hold on
 plot(tspan2(1:end-1),D_detected*200,'r.');
-hold on
-plot(tspan2(1:end-1), missed_vector*150, 'g *')
-hold on
-plot(tspan2(1:end-1), less_vector*150, 'b *')
-
-
 
 % Plot meal carbohydrate
 subplot(412);
