@@ -35,9 +35,9 @@ min2h = 1/h2min;     % Convert from min to h
 U2mU  = 1e3;         % Convert from U to mU 
 
 %% Converting the measurements to correct units
-CGM = CGM*mmolLiter2mgDl;    % Glucose measurements are given in mmol/L and we convert to mg/dL
-uba = uba*U2mU*min2h;        % Insulin measurements are given in U/h and we convert to mU/min
-ubo = ubo*U2mU*min2h;        % Insulin measurements are given in U/h and we convert to mU/min
+CGM = CGM * mmolLiter2mgDl;    % Glucose measurements are given in mmol/L and we convert to mg/dL
+uba = uba * U2mU*min2h;        % Insulin measurements are given in U/h and we convert to mU/min
+ubo = ubo * U2mU*min2h;        % Insulin measurements are given in U/h and we convert to mU/min
 %% Time format conversion
 
 % We loop over the cell array and convert it to a string such that it gets
@@ -139,3 +139,6 @@ D_detected = GRIDalgorithm_mealdetection(CGM_month,Gmin,tau,delta_G,t_vec,Ts);
 number_detectedmeals = sum(D_detected);
 
 fprintf('number of detected meals: %d\n',number_detectedmeals);
+
+
+
