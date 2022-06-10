@@ -185,12 +185,7 @@ Gsc = Y; % [mg/dL]
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
 tau            = 6;                  % From the article
-Gmin           = [120 0.8 0.65];     % For meal under 50 considered
-
-% Other tries
-%Gmin           = [90 0.5 0.5];
-%Gmin = [ 130 1.5 1.6 ]; % Their meals
-%Gmin = [ 110 1 1.5 ]; % For no meal under 50 
+Gmin           = [130 1.6 1.5];     % For meal under 50 considered
 
 % Computing detected meals
 D_detected = GRIDalgorithm_mealdetection(Gsc,Gmin,tau,delta_G,t_vec,Ts);
