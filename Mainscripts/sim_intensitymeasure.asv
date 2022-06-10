@@ -1,11 +1,13 @@
 %% Sim closed loop
 % Perform a closed-loop simulation with a PID controller with a 3 meals 
 % and 2 snacks over 30 days for the Medtronic with stochastic noise
+
+% Used to find the optimal intensity to the Brownian motion
 %%
 
 clear all 
 clc 
-close all 
+%close all 
 
 %% Loading all folders
 fprintf('Loading diabetes library .. ');
@@ -168,85 +170,35 @@ for i = 3 : 5 : 29
 end
 
 
-%% Simulate
+%% Simulate and visualize
 
-intensity = 9;
+% Create figure with absolute size for reproducibility
+figure;
+
+i = 1;
+
+for k = 0:5:20
+
+intensity = k;
 
 % Closed-loop simulation
 [T, X, Y, U] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,p, ... 
     ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
 
-% Blood glucose concentration
-Gsc = Y; % [mg/dL]
-
-%% Detecting meals using GRID algorithm
-
-% Inisializing 
-delta_G        = 15;                 % From article
-t_vec          = [5,10,15];          % The respective sampling times
-tau            = 6;                  % From the article
-Gmin           = [130 1.5 1.6];      % For meal under 50 considered
-
-% Other tries
-%Gmin           = [90 0.5 0.5];
-%Gmin = [ 130 1.5 1.6 ]; % Their meals
-%Gmin = [ 110 1 1.5 ]; % For no meal under 50 
-
-% Computing detected meals
-D_detected = GRIDalgorithm_mealdetection(Gsc,Gmin,tau,delta_G,t_vec,Ts);
-
-% The total amount of detected meals
-Number_detectedmeals = sum(D_detected);
-
-% Printing the number of detected meals
-fprintf('number of detected meals: %d\n',Number_detectedmeals);
-
-%% Visualize
-% Create figure with absolute size for reproducibility
-figure;
-
-% Converting data
+% Converting data for axis
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
+% Blood glucose concentration
+Gsc = Y; % [mg/dL]
+
 % Plot blood glucose concentration
-subplot(411);
-plot(T2, Gsc);
+subplot(length(0:5:20),1,i);
+plot(T2(1:720), Gsc(1:720)); %visualizing three day 
 %xlim([t0, tf]*min2h);
-ylim([0 250])
+ylim([0 400])
 ylabel({'CGM measurements', '[mg/dL]'});
-hold on 
-plot(tspan2(1:end-1),D_detected*200,'r.');
+title(sprintf('Intensity %d',k))
 
-% Plot meal carbohydrate
-subplot(412);
-stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
-%xlim([t0, tf]*min2h);
-ylim([-5 250])
-ylabel({'Meal carbohydrates', '[g CHO]'});
-hold on 
-plot(tspan2(1:end-1),D_detected*100,'r.');
-
-% Plot basal insulin flow rate
-subplot(413);
-stairs(tspan2, U(1, [1:end, end]));
-%xlim([t0, tf]*min2h);
-ylim([-5 100])
-ylabel({'Basal insulin', '[mU/min]'});
-
-% Plot bolus insulin
-subplot(414);
-stem(tspan2(1:end-1),Ts*mU2U*U(2, :), 'MarkerSize', 1);
-%xlim([t0, tf]*min2h);
-ylim([0 15])
-ylabel({'Bolus insulin', '[U]'});
-xlabel('Time [h]');
-
-
-
-
-
-
-
-
-
+i = i+1;
+end
