@@ -108,7 +108,7 @@ for k = 1:N
     %%%% Start computing 
     
     % Compute manipulated inputs after the PID control
-    [uk, ctrlStatekp1] = ctrlAlgorithm(yk, U(2,k), ctrlPar, ctrlStatek);
+    [uk, ctrlStatekp1] = ctrlAlgorithm(yk, U(2 ,k), ctrlPar, ctrlStatek);
     
     % Solving the differential equation with euler maruyama
     [Tk, Xk] = simMethod(simModel, tspank, xk, uk, dk, p,intensity);
