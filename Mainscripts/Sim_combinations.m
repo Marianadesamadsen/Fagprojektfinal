@@ -130,8 +130,8 @@ G = CGMsensor(X, p); % [mg/dL]
 
 % Range for gmin try outs 
 gmin1range = (125:5:135);
-gmin2range = (1.2:0.4:2.2);
-gmin3range = (1.2:0.4:2.2);
+gmin2range = (1.2:0.5:2.2);
+gmin3range = (1.2:0.5:2.2);
 
 % Computing the combinations using meshgrid
 [Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
