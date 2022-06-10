@@ -7,7 +7,7 @@
 
 clear all 
 clc 
-%close all 
+close all 
 
 %% Loading all folders
 fprintf('Loading diabetes library .. ');
