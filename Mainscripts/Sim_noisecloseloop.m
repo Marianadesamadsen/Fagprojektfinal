@@ -145,6 +145,10 @@ end
 
 %% 
 
+% Test
+idx_missed = zeros(1,28);
+idx_
+
 % Insulin vector 
 U = zeros(2,length(D(1,:)));
 
@@ -159,6 +163,7 @@ end
 % Every 5th day the meal at 7 hour is missed.
 for i = 1 : 5 : 29 
     U(2,idxMeal1+24*h2min/Ts*i) = 0;
+    idx_missed(i);
 end
 
 % Decreasing the amount of insulin for some of the meal indices. 
