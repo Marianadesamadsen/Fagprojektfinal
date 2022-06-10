@@ -213,9 +213,18 @@ figure;
 % Converting data
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
-missedvector=datetime(idx_missed_temp*min2sec,'ConvertFrom','posixtime');
-lessvector=datetime(idx_less_temp*min2sec,'ConvertFrom','posixtime');
 
+missed_vector = zeros(1,length(T2)-1);
+for i = 1:length(idx_missed)
+    k = idx_missed(i);
+    missed_vector(k) = 1;
+end
+
+less_vector = zeros(1,length(T2)-1);
+for i = 1:length(idx_less)
+    k = idx_less(i);
+    less_vector(k) = 1;
+end
 
 % Plot blood glucose concentration
 subplot(411);
