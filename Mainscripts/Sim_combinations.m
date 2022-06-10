@@ -129,9 +129,9 @@ G = CGMsensor(X, p); % [mg/dL]
 %% Compting the different combinations of Gmin value based on their different rates
 
 % Range for gmin try outs 
-gmin1range = (125:135);
-gmin2range = (0.5:0.1:1.5);
-gmin3range = (0.5:0.1:1.5);
+gmin1range = (125:5:135);
+gmin2range = (0.5:0.4:1.5);
+gmin3range = (0.5:0.4:1.5);
 
 % Computing the combinations using meshgrid
 [Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
