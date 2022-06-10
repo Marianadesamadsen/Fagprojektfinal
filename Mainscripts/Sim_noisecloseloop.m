@@ -147,6 +147,8 @@ end
 
 % Insulin vector 
 U = zeros(2,length(D(1,:)));
+idxmissed_temp = zeros(1,26);
+idxless_temp   = zeros(1,28);
 
 % Calculating the insulin amount for each meal 
 for i = 1 : length(U)
@@ -158,15 +160,20 @@ end
 % Removing bolus insulin from some of the meal indices. 
 % Every 5th day the meal at 7 hour is missed.
 for i = 1 : 5 : 29 
-    U(2,idxMeal1+24*h2min/Ts*i) = 0;
+    U(2,idxMeal2+24*h2min/Ts*i) = 0;
+    idxmissed_temp(i) = idxMeal2+24*h2min/Ts*i;
 end
 
 % Decreasing the amount of insulin for some of the meal indices. 
 % Every 5th day starting at day 3 the bolus insulin is 0.5 too low. 
 for i = 3 : 5 : 29
-    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.5;
+    U(2,idxMeal1+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.5;
+    idxless_temp(i) = idxMeal1+24*h2min/Ts*i;
 end
 
+% Removing all zeros
+idxmissed=nonzeros(idxmissed_temp)';
+idxless=nonzeros(idxless_temp)';
 
 %% Simulate
 
