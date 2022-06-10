@@ -5,7 +5,7 @@
 
 clear all
 clc
-close all
+%close all
 
 %% Loading all folders
 fprintf('Loading diabetes library .. ');
@@ -192,7 +192,7 @@ Gsc = Y; % [mg/dL]
 % Inisializing
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
-tau            = 6;                  % From the article
+tau            = 12;                  % From the article
 Gmin           = [130 1.6 1.5];     % For meal under 50 considered
 
 % Computing detected meals
