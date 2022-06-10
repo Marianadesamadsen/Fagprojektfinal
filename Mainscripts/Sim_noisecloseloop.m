@@ -149,6 +149,8 @@ end
 
 % Insulin vector
 U = zeros(2,length(D(1,:)));
+idx_missed_temp = zeros(1,26);
+idx_less_temp = zeros(1,28);
 
 % Calculating the insulin amount for each meal
 for i = 1 : length(U)
@@ -212,6 +214,7 @@ figure;
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 missedvector=datetime(idx_missed_temp*min2sec,'ConvertFrom','posixtime');
+lessvector=datetime(idx_less_temp*min2sec,'ConvertFrom','posixtime');
 
 
 % Plot blood glucose concentration
@@ -222,6 +225,8 @@ ylim([0 250])
 ylabel({'CGM measurements', '[mg/dL]'});
 hold on
 plot(tspan2(1:end-1),D_detected*200,'r.');
+plot(
+
 
 % Plot meal carbohydrate
 subplot(412);
