@@ -163,19 +163,14 @@ end
 % Every 5th day the meal at 7 hour is missed.
 for i = 1 : 5 : 29 
     U(2,idxMeal1+24*h2min/Ts*i) = 0;
-    idx_missed_temp(i) = idxMeal1+24*h2min/Ts*i ;
+    idx_missed_temp(i) = ;
 end
-
-idx_missed = nonzeros(idx_missed_temp)';
 
 % Decreasing the amount of insulin for some of the meal indices. 
 % Every 5th day starting at day 3 the bolus insulin is 0.5 too low. 
 for i = 3 : 5 : 29
     U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.5;
-    idx_less_temp(i) = idxMeal2+24*h2min/Ts*i;
 end
-
-idx_less = nonzeros(idx_less_temp)';
 
 
 %% Simulate
@@ -213,7 +208,6 @@ figure;
 % Converting data
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
-
 
 % Plot blood glucose concentration
 subplot(411);
