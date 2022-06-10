@@ -151,7 +151,7 @@ U = zeros(2,length(D(1,:)));
 % Calculating the insulin amount for each meal 
 for i = 1 : length(U)
     if D(1,i) > 50/Ts %because snack
-        U(2,i) = (D(1,i)*Ts/10)*U2mU/Ts; % ICR
+        U(2,i) = (D(1,i)*Ts/10)*U2mU/Ts;
     end
 end
 
@@ -185,7 +185,12 @@ Gsc = Y; % [mg/dL]
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
 tau            = 6;                  % From the article
-Gmin           = [130 1.6 1.5];     % For meal under 50 considered
+Gmin           = [130 1.5 ];     % For meal under 50 considered
+
+% Other tries
+%Gmin           = [90 0.5 0.5];
+%Gmin = [ 130 1.5 1.6 ]; % Their meals
+%Gmin = [ 110 1 1.5 ]; % For no meal under 50 
 
 % Computing detected meals
 D_detected = GRIDalgorithm_mealdetection(Gsc,Gmin,tau,delta_G,t_vec,Ts);
@@ -217,7 +222,7 @@ plot(tspan2(1:end-1),D_detected*200,'r.');
 subplot(412);
 stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
 %xlim([t0, tf]*min2h);
-ylim([-5 200])
+ylim([-5 250])
 ylabel({'Meal carbohydrates', '[g CHO]'});
 hold on 
 plot(tspan2(1:end-1),D_detected*100,'r.');
@@ -233,7 +238,7 @@ ylabel({'Basal insulin', '[mU/min]'});
 subplot(414);
 stem(tspan2(1:end-1),Ts*mU2U*U(2, :), 'MarkerSize', 1);
 %xlim([t0, tf]*min2h);
-ylim([0 5])
+ylim([0 15])
 ylabel({'Bolus insulin', '[U]'});
 xlabel('Time [h]');
 
