@@ -151,7 +151,7 @@ U = zeros(2,length(D(1,:)));
 % Calculating the insulin amount for each meal 
 for i = 1 : length(U)
     if D(1,i) > 50/Ts %because snack
-        U(2,i) = (D(1,i)/10)*U2mU/Ts;
+        U(2,i) = (D(1,i)*Ts/10)*U2mU/Ts; % ICR
     end
 end
 
@@ -164,7 +164,7 @@ end
 % Decreasing the amount of insulin for some of the meal indices. 
 % Every 5th day starting at day 3 the bolus insulin is 0.5 too low. 
 for i = 3 : 5 : 29
-    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) - 0.5;
+    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.5;
 end
 
 
