@@ -77,8 +77,8 @@ for i = 1 : length(D(1,:))
 end
 
 % Removing all the zeros so there is only the indices left
-idxdetecmeals = nonzero(mealdetec)';
-idxtruemeals = nonzero(truemeals)';
+idxdetecmeals = nonzeros(mealdetec)';
+idxtruemeals = nonzeros(truemeals)';
 
 % Examine if there are no detected meals where there are true meals
 for i = 1:length(idxtruemeals)
