@@ -105,10 +105,7 @@ for k = 1:N
     dk = D(:, k);
     
     
-    %%%% Start computing
-    
-    % The ubolus saved
-    %us = U(k,2);
+    %%%% Start computing 
     
     % Compute manipulated inputs after the PID control
     [uk, ctrlStatekp1] = ctrlAlgorithm(yk, U(2 ,k), ctrlPar, ctrlStatek);

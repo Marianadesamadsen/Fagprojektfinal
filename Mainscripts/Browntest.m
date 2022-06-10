@@ -16,7 +16,7 @@ fprintf('Done\n');
 tspank = linspace(0, 5, 10+1);
 Nk = numel(tspank) - 1;
 
-W=brownianmotion(Nk,tspank);
+W=brownianmotion(Nk,tspank,11);
 
 figure 
 plot(W)

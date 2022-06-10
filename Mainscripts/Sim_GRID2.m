@@ -74,7 +74,6 @@ x0 = xs;
 
 %% Manipulated inputs
 U = repmat(us, 1, N); % The same bolus and base rate for all
-
 %% Disturbance variables
 D = zeros(1, N); % No meal assumed
 
