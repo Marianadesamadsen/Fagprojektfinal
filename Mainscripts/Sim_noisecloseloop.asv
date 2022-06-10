@@ -143,7 +143,7 @@ for i = 0:29
 
 end
 
-%% Removing bolus insulin every 5th day at 7 AM and decreasing bolus insulin every 5th day starting from day 3 at 7 AM
+%% Removing bolus insulin every 5th day e
 
 % Insulin vector
 U = zeros(2,length(D(1,:)));
@@ -204,7 +204,9 @@ Number_detectedmeals = sum(D_detected);
 % Printing the number of detected meals
 fprintf('number of detected meals: %d\n',Number_detectedmeals);
 
-%% Vectors with length of time of when bolus is missed and lessened
+%% Visualize
+% Create figure with absolute size for reproducibility
+figure;
 
 % Converting data
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
@@ -222,9 +224,6 @@ for i = 1:length(idx_less)
     less_vector(k) = 1;
 end
 
-%% Visualize
-% Create figure with absolute size for reproducibility
-figure;
 % Plot blood glucose concentration
 subplot(411);
 plot(T2, Gsc);

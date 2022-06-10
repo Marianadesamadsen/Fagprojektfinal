@@ -1,5 +1,4 @@
 function [truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts,U)
-%
 % detectionrates()
 % 
 % DESCRIPTION:
@@ -13,6 +12,7 @@ function [truenegative,truepositive,falsepositive,falsenegative] = detectionrate
 % INPUT:
 % stride            - The maximal time period it takes from the meal to be
 % detected 
+% 
 % D                 - The true vector of real meals.
 % D_detected        - The estimated vecor of 0 or 1. 1 meaning meals is
 % detected
@@ -77,8 +77,8 @@ for i = 1 : length(D(1,:))
 end
 
 % Removing all the zeros so there is only the indices left
-idxdetecmeals = nonzero(mealdetec)';
-idxtruemeals = nonzero(truemeals)';
+idxdetecmeals = find(mealdetec);
+idxtruemeals = find(truemeals);
 
 % Examine if there are no detected meals where there are true meals
 for i = 1:length(idxtruemeals)
