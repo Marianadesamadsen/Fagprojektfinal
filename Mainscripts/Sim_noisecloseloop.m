@@ -213,9 +213,18 @@ figure;
 % Converting data
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
-missedvector=datetime(idx_missed_temp*min2sec,'ConvertFrom','posixtime');
-lessvector=datetime(idx_less_temp*min2sec,'ConvertFrom','posixtime');
 
+missed_vector = zeros(1,length(T2)-1);
+for i = 1:length(idx_missed)
+    k = idx_missed(i);
+    missed_vector(k) = 1;
+end
+
+less_vector = zeros(1,length(T2)-1);
+for i = 1:length(idx_less)
+    k = idx_less(i);
+    less_vector(k) = 1;
+end
 
 % Plot blood glucose concentration
 subplot(411);
@@ -225,7 +234,11 @@ ylim([0 250])
 ylabel({'CGM measurements', '[mg/dL]'});
 hold on
 plot(tspan2(1:end-1),D_detected*200,'r.');
-plot(
+hold on
+plot(tspan2(1:end-1), missed_vector*150, 'g *')
+hold on
+plot(tspan2(1:end-1), less_vector*150, 'b *')
+
 
 
 % Plot meal carbohydrate
