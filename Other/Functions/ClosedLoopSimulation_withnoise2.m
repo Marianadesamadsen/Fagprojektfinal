@@ -1,5 +1,5 @@
-function [T, X, Y, U, ctrlState] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, ... 
-    ctrlAlgorithm, simMethod, simModel, observationMethod, ctrlPar, ctrlState0, NK,intensity)
+function [T, X, Y, U, ctrlState] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,p, ... 
+    ctrlAlgorithm, simMethod, simModel, observationMethod, ctrlPar,ctrlState0,NK,intensity)
 %
 % ClosedLoopSimulation()
 % 
@@ -9,7 +9,7 @@ function [T, X, Y, U, ctrlState] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, 
 % parameters, simulation model, observation model, and control algorithm.
 % Closed-loop is used when the input depends on the output; this function
 % is part of the PID-controller. 
-% 
+%
 % INPUT:
 %   x0                  - initial state                                     (dimension: nx    )
 %   tspan               - boundaries of the control intervals               (dimension: N+1   )
@@ -22,7 +22,7 @@ function [T, X, Y, U, ctrlState] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, 
 %   simMethod           - simulation method                                 (function handle)
 %   NK                  - Number of steps in each control interval
 %   intensity           - The intensity value used for Euler Maruyama
-% 
+%
 % OUTPUT:
 %   T - boundaries of control intervals (=tspan)    (dimension:      N+1)
 %   X - the states in the simulation model          (dimension: nx x N+1)
@@ -57,7 +57,7 @@ t0 = tspan(1);
 y0 = observationMethod(x0,p);
 
 % manipulated inputs calculated 
-uDummy = ctrlAlgorithm(y0, ctrlPar, ctrlState0);
+uDummy = ctrlAlgorithm(y0,U(1,1), ctrlPar, ctrlState0);
 
 % Number of each variable
 nx = numel(x0);         % states
@@ -75,7 +75,6 @@ Nk = NK;
 T = zeros( 1, N+1);
 X = zeros(nx, N+1);
 Y = zeros(ny, N+1);
-U = zeros(nu, N  );
 ctrlState = zeros(nc, N+1);
 
 % Storing solution
@@ -106,10 +105,10 @@ for k = 1:N
     dk = D(:, k);
     
     
-    %%%% Start computing
+    %%%% Start computing 
     
     % Compute manipulated inputs after the PID control
-    [uk, ctrlStatekp1] = ctrlAlgorithm(yk, ctrlPar, ctrlStatek);
+    [uk, ctrlStatekp1] = ctrlAlgorithm(yk, U(2,k), ctrlPar, ctrlStatek);
     
     % Solving the differential equation with euler maruyama
     [Tk, Xk] = simMethod(simModel, tspank, xk, uk, dk, p,intensity);

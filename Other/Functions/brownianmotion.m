@@ -1,4 +1,4 @@
-function W = brownianmotion(Nk,tspan,state)
+function W = brownianmotion(Nk,tspan)
 % brownianmotion()
 % 
 % DESCRIPTION:
@@ -9,7 +9,6 @@ function W = brownianmotion(Nk,tspan,state)
 % INPUT:
 % Nk     - Number of time steps in each control/sampling interval
 % tspan  - points in time where the solution is approximated.
-% state  - The state that start the generator of random numbers.
 %
 % OUTPUT:
 % W      - The brownian motion path
@@ -34,11 +33,7 @@ function W = brownianmotion(Nk,tspan,state)
 % s204226@student.dtu.dk
 %
 
-
 tk=(tspan(end)-tspan(1))/Nk;
-
-randn('state',state) % set the state of randn. Det gør at vi får de samme
-% random tal hver gang 
 
 dt = tk/Nk;
 dW = sqrt(dt)*randn(1,Nk); % increments

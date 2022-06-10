@@ -88,8 +88,8 @@ idxMeal3         = tMeal3  /Ts + 1;   % [#]
 %% Making meal sizes with respectivly bolus sizes
 
 meals=[50,70,10,120,40,80,110,90,60];
-bolus=[6,8,2,12,5,9,12,10,7];
-
+%bolus=[6,8,2,12,5,9,12,10,7];
+bolus = zeros(1,9);
 %% Inserting the meal sizes at the different hours/index
 
 % Lopping over 30 days (one month)

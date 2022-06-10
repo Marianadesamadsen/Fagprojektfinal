@@ -81,7 +81,7 @@ D = zeros(1, N); % No meal assumed
 
 % Time meals
 tMeal1           = 7*h2min;         
-tMeal2           = 12*h2min;
+tMeal2           = 12*h2min; 
 tMeal3           = 18*h2min;
 tSnack1          = 15*h2min;
 tSnack2          = 10*h2min;  
@@ -133,7 +133,7 @@ G               = zeros(1,length(tspan),length(intensity_range));   % Three dime
 % Looping over alle the values of intensities
 for i = 1:length(intensity_range)
     
-    [T(:,:,i), X(:,:,i)] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity_range(i),5);
+    [T(:,:,i), X(:,:,i)] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity_range(i));
     
     % Extracting the blood glucose concentration 
     G(:,:,i) = CGMsensor_withnoise(X(:,:,i),p); % [mg/dL] 
@@ -190,7 +190,6 @@ end
 % We can see that we get more and more falsenegative slower than
 % falsepositives when increasing the intensity
 
-
 %% Calculating percentage error 
 
 actualvalue = 90;
@@ -219,6 +218,7 @@ figure
 subplot(2,5,1)
 plot(falsepositive_rate(3,:),truepositive_rate(3,:),'*')
 %xlim([0 0.00001])
+xlim([0 1])
 ylim([0 1])
 xlabel('False positive rate') 
 ylabel('True positive rate')
@@ -235,6 +235,7 @@ title('ROC curve for intensity 2')
 subplot(2,5,3)
 plot(falsepositive_rate(3,:),truepositive_rate(3,:),'*')
 %xlim([0 0.00001])
+xlim([0 1])
 ylim([0 1])
 xlabel('False positive rate') 
 ylabel('True positive rate')

@@ -1,4 +1,4 @@
-function [T,X] = EulerM(f,tspank,x0,u,d,p,intensity,state)
+function [T,X] = EulerM(f,tspank,x0,u,d,p,intensity)
 %
 % EulerM
 %
@@ -64,7 +64,7 @@ dt = (tspank(end)-tspank(1))/Nk;
 xk = x0;
 
 % The simulation of noise
-W=brownianmotion(Nk+1,tspank,state); 
+W=brownianmotion(Nk+1,tspank); 
 
 for k=1:Nk
     

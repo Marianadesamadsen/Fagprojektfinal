@@ -150,23 +150,30 @@ U = zeros(2,length(D(1,:)));
 
 % Calculating the insulin amount for each meal 
 for i = 1 : length(U)
-    if D(1,i) > 50/Ts %because snack
-        U(2,i) = (D(1,i)*Ts/10)*U2mU/Ts; % ICR
+    if D(1,i) > 50/Ts % because snack
+        U(2,i) = (D(1,i)/15)*U2mU/Ts;
     end
 end
 
 % Removing bolus insulin from some of the meal indices. 
 % Every 5th day the meal at 7 hour is missed.
-for i = 1 : 5 : 29 
+idxmissed = zeros(1,29);
+for i = 1 : 2 : 29 
     U(2,idxMeal1+24*h2min/Ts*i) = 0;
+    idxmissed(i) = i*h2min/Ts+1;
 end
+
+%idxmissed = find(idxmissed);
 
 % Decreasing the amount of insulin for some of the meal indices. 
-% Every 5th day starting at day 3 the bolus insulin is 0.5 too low. 
-for i = 3 : 5 : 29
-    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.5;
+% Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
+idxless = zeros(1,29);
+for i = 2 : 5 : 29
+    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) - 1;
+    idxless(i) =  i*h2min/Ts+1;
 end
 
+%idxless = find(idxless);
 
 %% Simulate
 
@@ -179,27 +186,55 @@ intensity = 9;
 % Blood glucose concentration
 Gsc = Y; % [mg/dL]
 
-%% Detecting meals using GRID algorithm
+%% Compting the different combinations of Gmin value based on their different rates
+
+% Range for gmin try outs 
+gmin1range = (130:140);
+gmin2range = (2:0.1:3);
+gmin3range = (2:0.1:3);
+
+% Computing the combinations using meshgrid
+[Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
+
+% All types of combinations
+Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
+
+%% Detecting meals using GRID algorithm and computing the number of FP,TP,TN,FN
 
 % Inisializing 
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
 tau            = 6;                  % From the article
-Gmin           = [120 0.8 0.65];     % For meal under 50 considered
 
-% Other tries
-%Gmin           = [90 0.5 0.5];
-%Gmin = [ 130 1.5 1.6 ]; % Their meals
-%Gmin = [ 110 1 1.5 ]; % For no meal under 50 
+% Initialising
+number_combinations     = length(Gmin_combinations); 
+number_detectedmeals    = zeros(1,number_combinations);
+truepositive            = zeros(1,number_combinations);
+falsepositive           = zeros(1,number_combinations);
+falsenegative           = zeros(1,number_combinations);
+truenegative            = zeros(1,number_combinations);
+D_detected              = zeros(number_combinations,length(Y)-1);
 
-% Computing detected meals
-D_detected = GRIDalgorithm_mealdetection(Gsc,Gmin,tau,delta_G,t_vec,Ts);
+stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
 
-% The total amount of detected meals
-Number_detectedmeals = sum(D_detected);
+% Looping over all the different combinations of Gmin values
+for i = 1 : number_combinations(1)
 
-% Printing the number of detected meals
-fprintf('number of detected meals: %d\n',Number_detectedmeals);
+% Detecting meals
+D_detected(i,:) = GRIDalgorithm_mealdetection(Y,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+
+% Total number of detected meals for the current Gmin values.
+number_detectedmeals(i) = sum(D_detected(i,:));
+
+[truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected(i,:),Ts);
+
+end
+
+
+%% Calculating false positive and false negative rates 
+
+falsepositive_rate = falsepositive ./ (falsepositive + truenegative);
+truepositive_rate = truepositive ./ (truepositive + falsenegative);
 
 %% Visualize
 % Create figure with absolute size for reproducibility
@@ -216,7 +251,7 @@ plot(T2, Gsc);
 ylim([0 250])
 ylabel({'CGM measurements', '[mg/dL]'});
 hold on 
-plot(tspan2(1:end-1),D_detected*200,'r.');
+plot(tspan2(1:end-1),D_detected(1,:)*200,'r.');
 
 % Plot meal carbohydrate
 subplot(412);
@@ -225,7 +260,7 @@ stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
 ylim([-5 200])
 ylabel({'Meal carbohydrates', '[g CHO]'});
 hold on 
-plot(tspan2(1:end-1),D_detected*100,'r.');
+plot(tspan2(1:end-1),D_detected(1,:)*100,'r.');
 
 % Plot basal insulin flow rate
 subplot(413);
@@ -241,10 +276,6 @@ stem(tspan2(1:end-1),Ts*mU2U*U(2, :), 'MarkerSize', 1);
 ylim([0 5])
 ylabel({'Bolus insulin', '[U]'});
 xlabel('Time [h]');
-
-
-
-
 
 
 
