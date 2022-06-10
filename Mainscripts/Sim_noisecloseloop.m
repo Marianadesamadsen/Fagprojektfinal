@@ -146,8 +146,6 @@ end
 %% 
 
 % Test
-idx_missed = zeros(1,28);
-idx_
 
 % Insulin vector 
 U = zeros(2,length(D(1,:)));
@@ -208,6 +206,8 @@ figure;
 % Converting data
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
+T3 = datetime(idx_missed_temp*min2sec,'ConvertFrom','posixtime');
+tspan3=datetime(idx_missed_temp*min2sec,'ConvertFrom','posixtime');
 
 % Plot blood glucose concentration
 subplot(411);
