@@ -34,8 +34,6 @@ function pmat = pmatrix(n)
 % MANGLER FRA ARTIKEL
 %
 
-rand
-
 % The different parameters being simulated in range from article 
 p1 = 41+(131-41).*rand(1,n);
 p2 = 10+(70-10).*rand(1,n);
