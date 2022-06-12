@@ -187,6 +187,19 @@ intensity = 10;
 % Blood glucose concentration
 Gsc = Y; % [mg/dL]
 
+%% Compting the different combinations of Gmin value based on their different rates
+
+% Range for gmin try outs 
+gmin1range = (125:5:135);
+gmin2range = (1.2:0.5:2.2);
+gmin3range = (1.2:0.5:2.2);
+
+% Computing the combinations using meshgrid
+[Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
+
+% All types of combinations
+Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
+
 %% Detecting meals using GRID algorithm
 
 % Inisializing
@@ -195,14 +208,28 @@ t_vec          = [5,10,15];          % The respective sampling times
 tau            = 12;                  % From the article
 Gmin           = [130 1.6 1.5];     % For meal under 50 considered
 
-% Computing detected meals
-D_detected = GRIDalgorithm_mealdetection(Gsc,Gmin,tau,delta_G,t_vec,Ts);
+% Initialising
+number_combinations     = length(Gmin_combinations); 
+number_detectedmeals    = zeros(1,number_combinations);
+truepositive            = zeros(1,number_combinations);
+falsepositive           = zeros(1,number_combinations);
+falsenegative           = zeros(1,number_combinations);
+truenegative            = zeros(1,number_combinations);
 
-% The total amount of detected meals
-Number_detectedmeals = sum(D_detected);
+stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
 
-% Printing the number of detected meals
-fprintf('number of detected meals: %d\n',Number_detectedmeals);
+% Looping over all the different combinations of Gmin values
+for i = 1 : number_combinations(1)
+
+% Detecting meals
+D_detected = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+
+% Total number of detected meals for the current Gmin values.
+number_detectedmeals(i) = sum(D_detected);
+
+[truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
+
+end
 
 %% Vectors with length of time of when bolus is missed and lessened
 
@@ -232,8 +259,8 @@ plot(T2, Gsc);
 %ylim([0 300])
 ylabel({'CGM measurements', '[mg/dL]'});
 title('Blood glucose concentration over time')
-%hold on
-%plot(tspan2(1:end-1),D_detected*200,'r.');
+hold on
+%%plot(tspan2(1:end-1),D_detected*200,'r.');
 hold on
 plot(tspan2(1:end-1),missed_vector*150,'b *');
 hold on
