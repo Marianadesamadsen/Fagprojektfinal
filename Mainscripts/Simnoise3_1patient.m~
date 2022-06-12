@@ -221,7 +221,7 @@ title('Blood glucose concentration over time')
 hold on
 plot(tspan2(1:end-1),missed_vector*150,'b *');
 hold on
-plot(tspan2(1:end-1),less_vector*150,'g *');
+plot(tspan2(1:end-1),less_vector*150,'r *');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(412);
@@ -232,9 +232,9 @@ title('Meals and meal sizes')
 %hold on 
 %plot(tspan2(1:end-1),D_detected*100,'r.');
 hold on
-plot(tspan2(1:end-1),missed_vector*50,'b *');
+plot(tspan2(1:end-1),missed_vector*150,'b *');
 hold on
-plot(tspan2(1:end-1),less_vector*50,'g *');
+plot(tspan2(1:end-1),less_vector*150,'g *');
 
 % Plot basal insulin flow rate
 subplot(413);

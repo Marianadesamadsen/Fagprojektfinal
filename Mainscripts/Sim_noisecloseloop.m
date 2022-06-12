@@ -178,7 +178,7 @@ idx_less = nonzeros(idx_less_temp)';
 
 %% Simulate
 
-intensity = 9;
+intensity = 10;
 
 % Closed-loop simulation
 [T, X, Y, U] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,p, ...
@@ -229,10 +229,11 @@ figure;
 subplot(411);
 plot(T2, Gsc);
 %xlim([t0, tf]*min2h);
-ylim([0 250])
+%ylim([0 300])
 ylabel({'CGM measurements', '[mg/dL]'});
-hold on
-plot(tspan2(1:end-1),D_detected*200,'r.');
+title('Blood glucose concentration over time')
+%hold on
+%plot(tspan2(1:end-1),D_detected*200,'r.');
 hold on
 plot(tspan2(1:end-1),missed_vector*150,'b *');
 hold on
@@ -245,8 +246,13 @@ stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
 %xlim([t0, tf]*min2h);
 ylim([-5 200])
 ylabel({'Meal carbohydrates', '[g CHO]'});
+%hold on
+title('Meals and meal sizes')
+%plot(tspan2(1:end-1),D_detected*100,'r.');
 hold on
-plot(tspan2(1:end-1),D_detected*100,'r.');
+plot(tspan2(1:end-1),missed_vector*50,'b *');
+hold on
+plot(tspan2(1:end-1),less_vector*50,'g *');
 
 % Plot basal insulin flow rate
 subplot(413);
@@ -254,11 +260,13 @@ stairs(tspan2, U(1, [1:end, end]));
 %xlim([t0, tf]*min2h);
 ylim([-5 100])
 ylabel({'Basal insulin', '[mU/min]'});
+title('Basal insulin flow rate')
 
 % Plot bolus insulin
 subplot(414);
 stem(tspan2(1:end-1),Ts*mU2U*U(2, :), 'MarkerSize', 1);
 %xlim([t0, tf]*min2h);
-ylim([0 5])
+%ylim([0 5])
 ylabel({'Bolus insulin', '[U]'});
 xlabel('Time [h]');
+title('Bolus insulin')

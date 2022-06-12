@@ -59,6 +59,7 @@ ylim([30 400])
 xlim([t(1) t(end)])
 ylabel({'Glucose concentration', '[mg/gL]'});
 xlabel('Time');
+title('Blood glucose concentration over time')
 
 % Plot basal insulin from january till june
 subplot(4,1,2)
@@ -67,6 +68,7 @@ ylim([0 max(uba)])
 xlim([t2(1) t2(end)])
 ylabel({'Basal insulin', '[mU/min]'});
 xlabel('Time');
+title('Meals and meal sizes')
 
 % Plot bolus insulin from january till june
 subplot(4,1,3)
@@ -75,6 +77,7 @@ ylim([0 max(ubo)])
 xlim([t2(1) t2(end)])
 ylabel({'Bolus insulin', '[mU/min]'});
 xlabel('Time');
+title('Basal insulin flow rate')
 
 % Plot meals from january till june
 subplot(4,1,4)
@@ -82,6 +85,7 @@ plot(t2, meal)
 xlim([t2(1) t2(end)])
 ylabel({'Meals', '[carbs in g]'});
 xlabel('Time');
+title('Bolus insulin')
 
 %% Plots over the 4 measurements for almost a month
 % We have approximately 130 days for t_datetime (length(t)/ 24*(60/5))
@@ -96,35 +100,40 @@ uba_month = uba(floor((length(uba)/5)*2):floor((length(uba)/5)*2)+length(uba)/5)
 ubo_month = ubo(floor((length(ubo)/5)*2):floor((length(ubo)/5)*2)+length(ubo)/5);
 meal_month = meal(floor((length(meal)/5)*2):floor((length(meal)/5)*2)+length(meal)/5);
 
-
+figure 
 subplot(4,1,1)
 plot(t_test_CGM, CGM_month)
 ylim([min(CGM_month) max(CGM_month)])
 xlim([t_test_CGM(1) t_test_CGM(end)])
-ylabel({'Glucose concentration', '[mg/gL]'});
+ylabel({'CGM measurements', '[mg/dL]'});
 xlabel('Time');
+title('Blood glucose concentration over time')
 
+% Plot meals from january till june
 subplot(4,1,2)
+plot(t_test_ins_carb, meal_month)
+xlim([t_test_ins_carb(1) t_test_ins_carb(end)])
+ylabel({'Meal carbohydrates', '[g CHO]'});
+xlabel('Time');
+title('Meals and meal sizes')
+
+subplot(4,1,3)
 plot(t_test_ins_carb, uba_month)
 ylim([0 max(uba_month)])
 xlim([t_test_ins_carb(1) t_test_ins_carb(end)])
 ylabel({'Basal insulin', '[mU/min]'});
 xlabel('Time');
+title('Basal insulin flow rate')
 
 % Plot bolus insulin from january till june
-subplot(4,1,3)
+subplot(4,1,4)
 plot(t_test_ins_carb, ubo_month)
 ylim([0 max(ubo_month)])
 xlim([t_test_ins_carb(1) t_test_ins_carb(end)])
-ylabel({'Bolus insulin', '[mU/min]'});
+ylabel({'Bolus insulin', '[mU]'});
 xlabel('Time');
+title('Bolus insulin')
 
-% Plot meals from january till june
-subplot(4,1,4)
-plot(t_test_ins_carb, meal_month)
-xlim([t_test_ins_carb(1) t_test_ins_carb(end)])
-ylabel({'Meals', '[carbs in g]'});
-xlabel('Time');
 
 %% GRID
 delta_G        = 15;                 % From article
