@@ -1,4 +1,4 @@
-function [truepositive, falsepositive, truenegative, falsepositive] = detectionrates2(stride,D,D_detected,Ts,idx_missed, idx_less,U)
+function [truepositive, falsepositive, truenegative, falsenegative] = detectionrates2(stride,D,D_detected,Ts,idx_missed, idx_less,U)
 % detectionrates()
 % 
 % DESCRIPTION:
@@ -80,7 +80,7 @@ bolus_less = zeros(1,length(bolus));
     end 
 
 % Changing datatype bolus to binary with entry 1 for given bolus
-bolus(find(bolus))=1;
+bolus(find(bolus)) = 1;
 
 % Indicies for detected meal and true meal
 idx_detected = find(D_detected);
@@ -118,9 +118,10 @@ idx_true_meal = find(D);
        
        % Considering both true detected meal and neither missed nor
        % lessened bolus
-       if sum(D_detected(k_detected-stride:k_detected+stride)) == 1 && sum(D(k_detected-stride:k_detected+stride)) == 1 && sum(bolus_missed(k_detected-stride:k_detected+stride)) == 0 && sum(bolus_less(k_detected-stride:k_detected+stride)) == 0;
-           falsepositive = 1 + falsepositive;
+       if sum(D_detected(k_detected-stride:k_detected+stride)) == 1 && sum(D(k_detected-stride:k_detected+stride)) == 1 && sum(bolus_missed(k_detected-stride:k_detected+stride)) == 0 && sum(bolus_less(k_detected-stride:k_detected+stride)) == 0
+           falsepositive = falsepositive + 1;
        end
+       
     end
     
     % **** FALSE NEGATIVE ****

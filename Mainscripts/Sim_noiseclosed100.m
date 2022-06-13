@@ -197,7 +197,6 @@ for p = 1: numpatients
 
 end
 
-
 %% Simulating for all patients 
 
 % Inisializing 
