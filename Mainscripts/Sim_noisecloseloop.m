@@ -232,7 +232,7 @@ plot(T2, Gsc);
 ylim([0 250])
 ylabel({'CGM measurements', '[mg/dL]'});
 hold on
-plot(tspan2(1:end-1),D_detected*200,'r.');
+plot(tspan2(1:end-1),D_detected*250,'r.');
 hold on
 plot(tspan2(1:end-1),missed_vector*150,'b *');
 hold on
