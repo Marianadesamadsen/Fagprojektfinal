@@ -294,7 +294,9 @@ end
 
 %% Making a table 
 
-table(meanTN,meanTP,meanFP,meanFN)
+combi = (1:27);
+
+table(combi, meanTN,meanTP,meanFP,meanFN)
 
 
 
