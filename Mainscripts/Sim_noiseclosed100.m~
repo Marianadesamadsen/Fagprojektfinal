@@ -265,12 +265,12 @@ for i = 1 : number_combinations
 
     for p = 1 : numpatient
         % Detecting meals
-        D_detected(i,p) = GRIDalgorithm_mealdetection(Gsc(:,:,p),Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+        D_detected(i,p) = GRIDalgorithm_mealdetection(Gsc(,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
         % Total number of detected meals for the current Gmin values.
         number_detectedmeals(i,p) = sum(D_detected(i,p));
 
-        %[truenegative(i,p),truepositive(i,p),falsepositive(i,p),falsenegative(i,p)] = % Insert detectionrates2
+        [truenegative(i,p),truepositive(i,p),falsepositive(i,p),falsenegative(i,p)] = % Insert detectionrates2
         
     end 
     
@@ -291,12 +291,6 @@ for i = 1 : number_combinations
     meanFP(i) = mean(falsepositive(1,:));
     meanFN(i) = mean(falsenegative(1,:));
 end
-
-%% Making a table 
-
-table(meanTN,meanTP,meanFP,meanFN)
-
-
 
 
 
