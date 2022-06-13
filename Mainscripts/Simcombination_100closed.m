@@ -303,6 +303,39 @@ MeanDetec = meanDetec';
 
 table(MeanTN,MeanTP,MeanFP,MeanFN,MeanDetec)
 
+%% Computing the rates to find the optimal Gmin values
+
+rateFP = meanFP/30; % The mean of false positives pr day
+rateTP = meanTP/20; % The percent of how many true positives out of the total
+idxFPbest = 1;
+
+for i = 1 : number_combinations  
+    
+    % We want to have at max 0.5 false positives pr day
+    if rateFP(i) <= 0.5
+        idxFPbest = i;
+    end
+    
+    % We want to detect at least 70% of the meals we want to detect
+    % We want to have at max 0.5 false positives pr day
+    if rateFP(idxFPbest) <= 0.5 && rateTP(idxFPbest) >= 0.7
+        idx_tempoptimal(i) = i;
+    end
+      
+end
+
+%%
+
+idx_optimalfinal = nonzeros(idx_tempoptimal');
+
+rFP_optimal = rateFP(idx_optimalfinal)';
+rTP_optimal = rateTP(idx_optimalfinal)';
+rFP_total = rateFP';
+rTP_total = rateTP';
+
+table(rFP_optimal,rTP_optimal,idx_optimalfinal)
+table(rFP_total,rTP_total)
+
 
 
 
