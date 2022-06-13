@@ -191,8 +191,8 @@ Gsc = Y; % [mg/dL]
 
 % Range for gmin try outs
 gmin1range = (130:5:140);
-gmin2range = (1.0:0.5:2.0);
-gmin3range = (1.0:0.5:2.0);
+gmin2range = (1.5:0.5:2.5);
+gmin3range = (1.3:0.5:2.3);
 
 % Computing the combinations using meshgrid
 [Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
