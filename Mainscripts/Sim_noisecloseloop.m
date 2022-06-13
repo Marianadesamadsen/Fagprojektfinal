@@ -227,9 +227,17 @@ D_detected = GRIDalgorithm_mealdetection(Gsc,Gmin_combinations(i,:),tau,delta_G,
 % Total number of detected meals for the current Gmin values.
 number_detectedmeals(i) = sum(D_detected);
 
-[truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
+[truepositive(i), falsepositive(i), falsenegative(i), truenegative(i)] = detectionrates2(stride,D,D_detected,Ts,idx_missed, idx_less,U);
 
 end
+
+Detec = number_detectedmeals';
+TP = truepositive';
+FP = falsepositive';
+FN = falsenegative';
+TN = truenegative';
+
+table(Detec,TP,FP,FN,TN)
 
 %% Vectors with length of time of when bolus is missed and lessened
 

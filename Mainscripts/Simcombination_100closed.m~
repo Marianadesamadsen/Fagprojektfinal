@@ -251,28 +251,27 @@ Gmin           = [130 1.6 1.5];      % For meal under 50 considered
 
 % Initialising
 number_combinations     = length(Gmin_combinations); 
-number_detectedmeals    = zeros(1,number_combinations,numpatients);
-truepositive            = zeros(1,number_combinations,numpatients);
-falsepositive           = zeros(1,number_combinations,numpatients);
-falsenegative           = zeros(1,number_combinations,numpatients);
-truenegative            = zeros(1,number_combinations,numpatients);
-D_detected              = zeros(N,number_combinations,numpatients); 
+number_detectedmeals    = zeros(1,number_combinations,numpatient);
+truepositive            = zeros(1,number_combinations,numpatient);
+falsepositive           = zeros(1,number_combinations,numpatient);
+falsenegative           = zeros(1,number_combinations,numpatient);
+truenegative            = zeros(1,number_combinations,numpatient);
+D_detected              = zeros(number_combinations,numpatients); 
 
 stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
 
 % Looping over all the different combinations of Gmin values
 for i = 1 : number_combinations
 
-    for p = 1 : numpatients
+    for p = 1 : numpatient
         % Detecting meals
-        D_detected(:,i,p) = GRIDalgorithm_mealdetection(Gsc(:,:,p),Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+        D_detected(i,p) = GRIDalgorithm_mealdetection(Gsc(:,:,p),Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
         % Total number of detected meals for the current Gmin values.
-        number_detectedmeals(i,p) = sum(D_detected(:,i,p));
+        number_detectedmeals(i,p) = sum(D_detected(i,p));
 
         %[truenegative(i,p),truepositive(i,p),falsepositive(i,p),falsenegative(i,p)] = % Insert detectionrates2
-        [truepositive(i,p), falsepositive(i,p), falsenegative(i,p), truenegative(i,p)] = ...
-            detectionrates2(stride,D(:,:,p),D_detected(:,i,p),Ts,idx_missed, idx_less,U(:,:,p));
+        [truepositive(i,p), falsepositive(i,p), falsenegative(i,p), truenegative(i,p)] = detectionrates2(stride,D,D_detected,Ts,idx_missed, idx_less,U);
     end 
     
 end

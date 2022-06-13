@@ -108,17 +108,15 @@ ctrlPar(6) = us(1);
 D = zeros(1, N);
 
 %% Meal and meal bolus after 1 hour
-tMeal           = 2*h2min;        % [min]
+tMeal           = 1*h2min;        % [min]
 idxMeal         = tMeal/Ts + 1;   % [#]
-tSnack          = 4*h2min;
-tSnack2         = 6*h2min;
+tSnack          = 5*h2min;
+tSnack2         = 8*h2min;
 idxSnack        = tSnack/Ts +1;
-idxSnack2       = tSnack2/Ts +1;
-
-D(1, idxMeal)   = 20   /Ts;       % [g CHO/min]
-D(1, idxSnack)  = 40   /Ts; 
-D(1, idxSnack2) = 60 / Ts;
-
+idxSnakc2         = tSnack2/Ts +1;
+D(1, idxMeal)   = 40   /Ts;       % [g CHO/min]
+D(1, idxSnack)  = 20   /Ts; 
+D(1, idxSnack2) = 10/
 %% Simulate
 % Closed-loop simulation
 [T, X, Y, U] = ClosedLoopSimulation(tspan,x0,D,p, ... 
