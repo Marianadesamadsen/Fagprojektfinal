@@ -1,4 +1,4 @@
-function [truepositive, falsepositive, falsenegative] = detectionrates2(stride,D,D_detected,Ts,idx_missed, idx_less,U)
+function [truepositive, falsepositive, falsenegative, truenegative] = detectionrates2(stride,D,D_detected,Ts,idx_missed, idx_less,U)
 % detectionrates()
 %
 % DESCRIPTION:
@@ -150,7 +150,9 @@ idx_true_meal = find(D);
             falsenegative = falsenegative + 1;
 
         end
-   end
+  end
+   
+  truenegative = length(D) - truepositive - falsepositive - falsenegative;
 
 %    truenegative = length(D)-truepositive;
 %     % **** TRUE NEGATIVE **** Fungerer ikke optimalt

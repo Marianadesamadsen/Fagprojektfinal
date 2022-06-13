@@ -1,4 +1,4 @@
-function [truepositive, falsepositive, falsenegative] = test(stride,D,D_detected,Ts,idx_missed, idx_less,U)
+function [truepositive, falsepositive, falsenegative] = detectionrates3(stride,D,D_detected,Ts,idx_missed, idx_less,U)
 % detectionrates()
 % 
 % DESCRIPTION:

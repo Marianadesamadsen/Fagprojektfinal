@@ -1,4 +1,4 @@
-function [truepositive, falsepositive, truenegative, falsenegative] = detectionrates2(stride,D,D_detected,Ts,idx_missed, idx_less,U)
+function [truepositive, falsepositive, falsenegative] = detectionrates3(stride,D,D_detected,Ts,idx_missed, idx_less,U)
 % detectionrates()
 % 
 % DESCRIPTION:
@@ -132,22 +132,24 @@ idx_true_meal = find(D);
     % **** FALSE NEGATIVE ****
     % When bolus is either missed or lessened but no meal is detected
     
-    for i = 1:length(idx_missed)
+  for i = 1:length(idx_missed)
     % Index value for missed bolus
     k_missed = idx_missed(i);
     
     % Index value for lessened bolus
     k_less = idx_less(i);
     
-        if D(k_missed) == 1 && bolus_missed(k_missed) == 1 && sum(D_detected(k_detected:k_detected+stride)) == 0
-            falsenegative = falsenegative + 1;
-        elseif D(k_less) == 1 && bolus_(k_missed) == 1 && sum(D_detected(k_detected:k_detected+stride)) == 0
-            falsenegative = falsenegative + 1;
+        if D(k_missed) == 1 && bolus_missed(k_missed) == 1 && sum(D_detected(k_missed:k_missed+stride)) == 0
+            falsenegative = falsenegative + 1
         end
-    end
-
     
-    truenegative = length(D)-truepositive;
+        if D(k_less) == 1 && bolus_less(k_less) == 1 && sum(D_detected(k_less:k_less+stride)) == 0
+            falsenegative = falsenegative + 1
+            
+        end
+   end
+    
+%    truenegative = length(D)-truepositive;
 %     % **** TRUE NEGATIVE **** Fungerer ikke optimalt
 %     % When there's no true detected meal and bolus was neither missed nor
 %     % lessened
