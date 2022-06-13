@@ -17,7 +17,6 @@ addpath(genpath(fullfile(pwd, '../Other')));
 % Let the user know that the library is being loaded
 fprintf('Done\n');
 
-
 %% Formatting the plots
 
 fs = 11; % Font size
@@ -53,9 +52,9 @@ xs=zeros(numpatients,7);
 us=zeros(numpatients,2);
 
 % Looping over all patients
-for i=1:numpatients
+for p=1:numpatients
     
-    [xs(i,:), us(i,:), flag] = computeSteadyStateMVPModel(ts, pf(:,i), Gs);
+    [xs(p,:), us(p,:), flag] = computeSteadyStateMVPModel(ts, pf(:,p), Gs);
 
     % If fsolve did not converge, throw an error
     if(flag ~= 1), error ('fsolve did not converge!'); end
@@ -170,7 +169,7 @@ idx_less_temp = zeros(1,28,numpatients);
 for p = 1: numpatients
     
     % Calculating the insulin amount for each meal
-    for i = 1 : length(U)
+    for i = 1 : N
         if D(1,i,p) > 50/Ts %because snack
             U(2,i,p) = (D(1,i,p)*Ts/10)*U2mU/Ts; % ICR
         end
@@ -178,7 +177,7 @@ for p = 1: numpatients
 
     % Removing bolus insulin from some of the meal indices.
     % Every 5th day the meal at 7 hour is missed.
-    for i = 1 : 5 : 29
+    for i = 1 : 3 : 29
         U(2,idxMeal1+24*h2min/Ts*i,p) = 0;
         idx_missed_temp(i,p) = idxMeal1+24*h2min/Ts*i ;
     end
@@ -186,8 +185,8 @@ for p = 1: numpatients
 
     % Decreasing the amount of insulin for some of the meal indices.
     % Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
-    for i = 3 : 5 : 29
-        U(2,idxMeal2+24*h2min/Ts*i,p) = U(2,idxMeal2+24*h2min/Ts*i,p) * 0.5;
+    for i = 2 : 3 : 29
+        U(2,idxMeal2+24*h2min/Ts*i,p) = U(2,idxMeal2+24*h2min/Ts*i,p) * 0.2;
         idx_less_temp(i,p) = idxMeal2+24*h2min/Ts*i;
     end
     
@@ -203,7 +202,6 @@ end
 T         = zeros(1,N+1,numpatients); 
 X         = zeros(7,N+1,numpatients); 
 Y         = zeros(1,N+1,numpatients);
-U         = zeros(2,N+1,numpatients);
 
 % Intensity value
 intensity = 10;
@@ -230,10 +228,10 @@ end
 
 %% Compting the different combinations of Gmin value based on their different rates
 
-% Range for gmin try outs 
-gmin1range = (125:5:135);
-gmin2range = (1.2:0.5:2.2);
-gmin3range = (1.2:0.5:2.2);
+% Range for gmin try outs
+gmin1range = (130:5:140);
+gmin2range = (1.5:0.5:2.5);
+gmin3range = (1.3:0.5:2.3);
 
 % Computing the combinations using meshgrid
 [Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
@@ -246,31 +244,30 @@ Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
 % Inisializing
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
-tau            = 12;                 % From the article
-Gmin           = [130 1.6 1.5];      % For meal under 50 considered
+tau            = 6;                 % From the article
 
 % Initialising
 number_combinations     = length(Gmin_combinations); 
-number_detectedmeals    = zeros(1,number_combinations,numpatients);
-truepositive            = zeros(1,number_combinations,numpatients);
-falsepositive           = zeros(1,number_combinations,numpatients);
-falsenegative           = zeros(1,number_combinations,numpatients);
-truenegative            = zeros(1,number_combinations,numpatients);
+number_detectedmeals    = zeros(number_combinations,numpatients);
+truepositive            = zeros(number_combinations,numpatients);
+falsepositive           = zeros(number_combinations,numpatients);
+falsenegative           = zeros(number_combinations,numpatients);
+truenegative            = zeros(number_combinations,numpatients);
 D_detected              = zeros(N,number_combinations,numpatients); 
 
 stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
 
 % Looping over all the different combinations of Gmin values
-for i = 1 : number_combinations
-
-    for p = 1 : numpatients
+for p = 1 : numpatients
+    
+    for i = 1 : number_combinations
         % Detecting meals
         D_detected(:,i,p) = GRIDalgorithm_mealdetection(Gsc(:,:,p),Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
         % Total number of detected meals for the current Gmin values.
         number_detectedmeals(i,p) = sum(D_detected(:,i,p));
-
-        %[truenegative(i,p),truepositive(i,p),falsepositive(i,p),falsenegative(i,p)] = % Insert detectionrates2
+        
+        % Computing evaluation
         [truepositive(i,p), falsepositive(i,p), falsenegative(i,p), truenegative(i,p)] = ...
             detectionrates2(stride,D(:,:,p),D_detected(:,i,p),Ts,idx_missed, idx_less,U(:,:,p));
     end 
@@ -280,24 +277,31 @@ end
 %% Computing the mean of all truenegatives, truepositives, falsepositives, falsenegatives for each combination
 
 % Initializing 
-meanTN = zeros(1,numer_combinations);
-meanTP = zeros(1,numer_combinations);
-meanFN = zeros(1,numer_combinations);
-meanFP = zeros(1,numer_combinations);
+meanTN = zeros(1,number_combinations);
+meanTP = zeros(1,number_combinations);
+meanFN = zeros(1,number_combinations);
+meanFP = zeros(1,number_combinations);
+meanDetec = zeros(1,number_combinations);
 
 % Looping over all combinations
-for i = 1 : number_combinations
-    meanTN(i) = mean(truenegative(i,:));
-    meanTP(i) = mean(truepositive(i,:));
-    meanFP(i) = mean(falsepositive(1,:));
-    meanFN(i) = mean(falsenegative(1,:));
+for p = 1 : number_combinations
+    meanTN(p) = mean(truenegative(p,:));
+    meanTP(p) = mean(truepositive(p,:));
+    meanFP(p) = mean(falsepositive(1,:));
+    meanFN(p) = mean(falsenegative(1,:));
+    meanDetec(p) = mean(number_detectedmeals(p,:));
 end
 
 %% Making a table 
 
 combi = (1:27);
+MeanTN = meanTN';
+MeanTP = meanTP';
+MeanFP = meanFP';
+MeanFN = meanFN';
+MeanDetec = meanDetec';
 
-table(combi, meanTN,meanTP,meanFP,meanFN)
+table(MeanTN,MeanTP,MeanFP,MeanFN,MeanDetec)
 
 
 

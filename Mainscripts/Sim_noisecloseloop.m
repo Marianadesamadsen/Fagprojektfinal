@@ -159,7 +159,7 @@ end
 
 % Removing bolus insulin from some of the meal indices.
 % Every 5th day the meal at 7 hour is missed.
-for i = 1 : 5 : 29
+for i = 1 : 3 : 29
     U(2,idxMeal1+24*h2min/Ts*i) = 0;
     idx_missed_temp(i) = idxMeal1+24*h2min/Ts*i ;
 end
@@ -168,8 +168,8 @@ idx_missed = nonzeros(idx_missed_temp)';
 
 % Decreasing the amount of insulin for some of the meal indices.
 % Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
-for i = 3 : 5 : 29
-    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.5;
+for i = 2 : 3 : 29
+    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.2;
     idx_less_temp(i) = idxMeal2+24*h2min/Ts*i;
 end
 
@@ -205,8 +205,7 @@ Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
 % Inisializing
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
-tau            = 12;                  % From the article
-Gmin           = [130 1.6 1.5];     % For meal under 50 considered
+tau            = 6;                  % From the article
 
 % Initialising
 number_combinations     = length(Gmin_combinations);
@@ -240,6 +239,37 @@ TN = truenegative';
 
 table(Detec,TP,FP,FN,TN)
 
+%% Computing the rates to find the optimal Gmin values
+
+rateFP = FP/30; % The mean of false positives pr day
+rateTP = TP/20; % The percent of how many true positives out of the total
+idxFPbest = 1;
+
+for i = 1 : number_combinations  
+    
+    % We want to have at max 0.5 false positives pr day
+    if rateFP(i) <= 0.5
+        idxFPbest = i;
+    end
+    
+    % We want to detect at least 70% of the meals we want to detect
+    % We want to have at max 0.5 false positives pr day
+    if rateFP(idxFPbest) <= 0.5 && rateTP(idxFPbest) >= 0.7
+        idx_tempoptimal(i) = i;
+    end
+      
+end
+
+idx_optimalfinal = nonzeros(idx_tempoptimal');
+
+rFP_optimal = rateFP(idx_optimalfinal);
+rTP_optimal = rateTP(idx_optimalfinal);
+rFP_total = rateFP;
+rTP_total = rateTP;
+
+table(rFP_optimal,rTP_optimal,idx_optimalfinal)
+table(rFP_total,rTP_total)
+
 %% Vectors with length of time of when bolus is missed and lessened
 
 % Converting data
@@ -258,6 +288,7 @@ for i = 1:length(idx_less)
     less_vector(k) = 1;
 end
 
+
 %% Visualize
 % Create figure with absolute size for reproducibility
 figure;
@@ -269,7 +300,7 @@ plot(T2, Gsc);
 ylabel({'CGM measurements', '[mg/dL]'});
 title('Blood glucose concentration over time')
 hold on
-plot(tspan2(1:end-1),D_detected(:,:,end-1)*200,'r.');
+plot(tspan2(1:end-1),D_detected(:,:,end-7)*200,'r.');
 hold on
 plot(tspan2(1:end-1),missed_vector*150,'b *');
 hold on
