@@ -116,37 +116,39 @@ end
 
 %% Inserting bolus insulin computed by ICR
 
-% Calculating the insulin amount for each meal 
+% Insulin vector
+idx_missed_temp = zeros(1,26);
+idx_less_temp = zeros(1,28);
+
+% Calculating the insulin amount for each meal
 for i = 1 : length(U)
-    if D(1,i) > 50/Ts % because snack
+    if D(1,i) > 0 %because snack
         U(2,i) = (D(1,i)*Ts/10)*U2mU/Ts; % ICR
     end
 end
 
-% Removing bolus insulin from some of the meal indices. 
+% Removing bolus insulin from some of the meal indices.
 % Every 5th day the meal at 7 hour is missed.
-idxmissed = zeros(1,29);
-for i = 1 : 2 : 29 
+for i = 1 : 5 : 29
     U(2,idxMeal1+24*h2min/Ts*i) = 0;
-    idxmissed(i) = idxMeal1+24*h2min/Ts*i;
+    idx_missed_temp(i) = idxMeal1+24*h2min/Ts*i ;
 end
 
-% idxmissed = find(idxmissed);
+idx_missed = nonzeros(idx_missed_temp)';
 
-% Decreasing the amount of insulin for some of the meal indices. 
+% Decreasing the amount of insulin for some of the meal indices.
 % Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
-idxless = zeros(1,29);
-for i = 2 : 5 : 29
-    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) - 1;
-    idxless(i) = idxMeal2+24*h2min/Ts+1;
+for i = 3 : 5 : 29
+    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.5;
+    idx_less_temp(i) = idxMeal2+24*h2min/Ts*i;
 end
 
-% idxless = find(idxless);
+idx_less = nonzeros(idx_less_temp)';
 
 %% Simulating the control states based on x0, the steady state.
 
 % The noise intensity
-intensity = 3;
+intensity = 0;
 
 [T, X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity);
 
@@ -195,38 +197,63 @@ figure;
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
+missed_vector = zeros(1,length(T2)-1);
+for i = 1:length(idx_missed)
+    k = idx_missed(i);
+    missed_vector(k) = 1;
+end
+
+less_vector = zeros(1,length(T2)-1);
+for i = 1:length(idx_less)
+    k = idx_less(i);
+    less_vector(k) = 1;
+end
+
+
 % Plot blood glucose concentration and the detected meals as points
-subplot(511);
+subplot(411);
 plot(T2, G);
 %xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
-hold on 
-plot(tspan2(1:end-1),D_detected*200,'r.');
+title('Blood glucose concentration over time')
+%hold on 
+%plot(tspan2(1:end-1),D_detected*200,'r.');
+hold on
+plot(tspan2(1:end-1),missed_vector*150,'b *');
+hold on
+plot(tspan2(1:end-1),less_vector*150,'g *');
 
 % Plot meal carbohydrate and the detected meals as points
-subplot(512);
+subplot(412);
 stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
 %xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
-hold on 
-plot(tspan2(1:end-1),D_detected*100,'r.');
+title('Meals and meal sizes')
+%hold on 
+%plot(tspan2(1:end-1),D_detected*100,'r.');
+hold on
+plot(tspan2(1:end-1),missed_vector*50,'b *');
+hold on
+plot(tspan2(1:end-1),less_vector*50,'g *');
 
 % Plot basal insulin flow rate
-subplot(513);
+subplot(413);
 stairs(tspan2, U(1, [1:end, end]));
 %xlim([t0, tf]*min2h);
 ylabel({'Basal insulin', '[mU/min]'});
+title('Basal insulin flow rate')
 
 % Plot bolus insulin
-subplot(514);
+subplot(414);
 stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
 %xlim([t0, tf]*min2h);
 ylabel({'Bolus insulin', '[U]'}); 
 xlabel('Time [h]');
+title('Bolus insulin flow rate')
 
 % Plot detected Meals
-subplot(515);
-plot(tspan2(1:end-1),D_detected,'b-');
-%xlim([t0, tf]*min2h);
-ylabel({'detected meal'}); 
-xlabel('Time [h]'); 
+% subplot(515);
+% plot(tspan2(1:end-1),D_detected,'b-');
+% %xlim([t0, tf]*min2h);
+% ylabel({'detected meal'}); 
+% xlabel('Time [h]'); 
