@@ -1,4 +1,4 @@
-function [truepositive, falsepositive, truenegative, falsenegative] = detectionrates2(stride,D,D_detected,Ts,idx_missed, idx_less,U)
+function [truepositive, falsepositive, falsenegative] = detectionrates2(stride,D,D_detected,Ts,idx_missed, idx_less,U)
 % detectionrates()
 % 
 % DESCRIPTION:
@@ -98,13 +98,15 @@ idx_true_meal = find(D);
     % Index value for lessened bolus
     k_less = idx_less(i);
     
+    % Index value for D true meal
+    
     % If there's detected a true meal where bolus is missed
-    if sum(D_detected(k_missed:k_missed+stride)) == 1 && sum(D(k_missed:k_missed+stride)) == 1
+    if D(k_missed)==1 && sum(D_detected(k_missed:k_missed+stride)) == 1;
         truepositive = truepositive + 1;
     end
     
     % If there's a detected a true meal where bolus is lessened
-    if sum(D_detected(k_less:k_less+stride)) == 1 && sum(D(k_less:k_less+stride)) == 1
+    if D(k_less) == 1 && sum(D_detected(k_less:k_less+stride)) == 1 
         truepositive = truepositive + 1;
     end
     end
@@ -118,8 +120,11 @@ idx_true_meal = find(D);
        
        % Considering both true detected meal and neither missed nor
        % lessened bolus
-       if sum(D_detected(k_detected-stride:k_detected+stride)) == 1 && sum(D(k_detected-stride:k_detected+stride)) == 1 && sum(bolus_missed(k_detected-stride:k_detected+stride)) == 0 && sum(bolus_less(k_detected-stride:k_detected+stride)) == 0
+       if D_detected(k_detected) == 1 && sum(D(k_detected-stride:k_detected)) == 1 && sum(bolus_missed(k_detected-stride:k_detected)) == 0 && sum(bolus_less(k_detected-stride:k_detected)) == 0
            falsepositive = falsepositive + 1;
+       end
+       if D_detected(k_detected) == 1 && sum(D(k_detected-stride:k_detected)) == 0
+           falsepositive = falsepositive + 1; 
        end
        
     end
@@ -127,22 +132,24 @@ idx_true_meal = find(D);
     % **** FALSE NEGATIVE ****
     % When bolus is either missed or lessened but no meal is detected
     
-    for i = 1:length(idx_missed)
+  for i = 1:length(idx_missed)
     % Index value for missed bolus
     k_missed = idx_missed(i);
     
     % Index value for lessened bolus
     k_less = idx_less(i);
     
-        if sum(D_detected(k_missed-stride:k_missed+stride)) == 0 && sum(bolus_missed(k_missed-stride:k_missed+stride)) == 1
-            falsenegative = falsenegative + 1;
-        elseif sum(D_detected(k_less-stride:k_less+stride)) == 0 && sum(bolus_less(k_less-stride:k_less+stride)) == 1
+        if D(k_missed) == 1 && bolus_missed(k_missed) == 1 && sum(D_detected(k_missed:k_missed+stride)) == 0
             falsenegative = falsenegative + 1;
         end
-    end
-
     
-    truenegative = length(D)-truepositive;
+        if D(k_less) == 1 && bolus_less(k_less) == 1 && sum(D_detected(k_less:k_less+stride)) == 0
+            falsenegative = falsenegative + 1;
+            
+        end
+   end
+    
+%    truenegative = length(D)-truepositive;
 %     % **** TRUE NEGATIVE **** Fungerer ikke optimalt
 %     % When there's no true detected meal and bolus was neither missed nor
 %     % lessened
@@ -155,5 +162,3 @@ idx_true_meal = find(D);
  
 
 end
-
-
