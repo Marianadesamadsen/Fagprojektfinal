@@ -1,6 +1,7 @@
-%% Sim closed loop
+%% Sim closed loop 100 patients
 % Perform a closed-loop simulation with a PID controller with a 3 meals
-% and 2 snacks over 30 days for the Medtronic with stochastic noise
+% and 2 snacks over 30 days for the Medtronic with stochastic noise for 100
+% patients
 %%
 
 clear all
@@ -38,18 +39,28 @@ mU2U  = 1/U2mU;  % Convert from mU  to U
 min2sec = h2min; % Convert from min to sec
 sec2min = 1/h2min;% Convert from sec to min
 
-%% Initializing parameters
+%% Inizializing parameters
 
-p = [49,47,20.1,0.0106,0.0081,0.0022,1.33,253,47,5]; % Parameters at steady state
-Gs = 108; % [mg/dL]: Steady state blood glucose concentration
+numpatients = 100;         % number of patients
+pf = pmatrix(numpatients); % computing the p vectors for all patients
+Gs = 108;                  % Steady state blood glucose concentration
 ts = [];
 
-%% Computing steady state
+%% Computing steadty state
 
-[xs, us, flag] = computeSteadyStateMVPModel(ts, p, Gs);
+% Initializing
+xs=zeros(numpatients,7);
+us=zeros(numpatients,2);
 
-% If fsolve did not converge, throw an error
-if(flag ~= 1), error ('fsolve did not converge!'); end
+% Looping over all patients
+for i=1:numpatients
+    
+    [xs(i,:), us(i,:), flag] = computeSteadyStateMVPModel(ts, pf(:,i), Gs);
+
+    % If fsolve did not converge, throw an error
+    if(flag ~= 1), error ('fsolve did not converge!'); end
+
+end
 
 %% Intital and final time for the simulation over 30 days
 
@@ -93,7 +104,7 @@ ctrlPar = [
     NaN
     50.0;
     25.0;
-    ];     % [mU/min]  Nominal basal rate (overwritten below)
+    ];          % [mU/min]  Nominal basal rate (overwritten below)
 
 ctrlState = [
       0.0;  %          Initial value of integral
@@ -104,7 +115,7 @@ ctrlState = [
 ctrlPar(6) = us(1);
 
 %% Disturbance variables
-D = zeros(1, N);
+D = zeros(1, N,numpatients); % No meal assumed
 
 %% Meal and meal bolus at 7, 12, 18 hours
 
@@ -122,74 +133,105 @@ idxMeal3         = tMeal3  /Ts + 1;
 idxSnack1        = tSnack1 /Ts + 1;
 idxSnack2        = tSnack2 /Ts + 1;
 
-%% Making meal sizes
+%% Making meal sizes with respectivly bolus sizes
 
 meal  = randi([50,150],1,90);
 snack = 20;
 
 %% Inserting the meal sizes at the different hours/indicies
 
-% Lopping over 30 days (one month)
-for i = 0:29
+% Looping over all patients
+for p=1:numpatients
 
-    % Inserting the different meal sizes at the indcies
-        D(1, (idxMeal1+24*h2min/Ts*i))   = meal(1+3*i)     /Ts;       % [g CHO/min]
-        D(1, (idxMeal2+24*h2min/Ts*i))   = meal(2+3*i)     /Ts;       % [g CHO/min]
-        D(1, (idxMeal3+24*h2min/Ts*i))   = meal(3+3*i)     /Ts;       % [g CHO/min]
-
-    % Inserting the different meal sizes at the indcies
-        D(1, (idxSnack1+24*h2min/Ts*i))   = snack        /Ts;       % [g CHO/min]
-        D(1, (idxSnack2+24*h2min/Ts*i))   = snack        /Ts;       % [g CHO/min]
+    % Looping over 30 days (one month)
+    for i = 0:29
+    
+    % Inserting the different meal sizes at the indcies 
+        D(1, (idxMeal1+24*h2min/Ts*i),p)   = meal(1+3*i)     /Ts;       % [g CHO/min]
+        D(1, (idxMeal2+24*h2min/Ts*i),p)   = meal(2+3*i)     /Ts;       % [g CHO/min] 
+        D(1, (idxMeal3+24*h2min/Ts*i),p)   = meal(3+3*i)     /Ts;       % [g CHO/min] 
+        
+    % Inserting the different meal sizes at the indcies 
+        D(1, (idxSnack1+24*h2min/Ts*i),p)   = snack     /Ts;            % [g CHO/min]
+        D(1, (idxSnack2+24*h2min/Ts*i),p)   = snack    /Ts;             % [g CHO/min] 
+        
+     end
 
 end
 
 %% Removing bolus insulin every 5th day at 7 AM and decreasing bolus insulin every 5th day starting from day 3 at 7 AM
 
 % Insulin vector
-U = zeros(2,length(D(1,:)));
-idx_missed_temp = zeros(1,26);
-idx_less_temp = zeros(1,28);
+U = zeros(2,N,numpatients);
+idx_missed_temp = zeros(1,26,numpatients);
+idx_less_temp = zeros(1,28,numpatients);
 
-% Calculating the insulin amount for each meal
-for i = 1 : length(U)
-    if D(1,i) > 50/Ts %because snack
-        U(2,i) = (D(1,i)*Ts/10)*U2mU/Ts; % ICR
+% Looping over all patients
+for p = 1: numpatients
+    
+    % Calculating the insulin amount for each meal
+    for i = 1 : length(U)
+        if D(1,i,p) > 50/Ts %because snack
+            U(2,i,p) = (D(1,i,p)*Ts/10)*U2mU/Ts; % ICR
+        end
     end
+
+    % Removing bolus insulin from some of the meal indices.
+    % Every 5th day the meal at 7 hour is missed.
+    for i = 1 : 5 : 29
+        U(2,idxMeal1+24*h2min/Ts*i,p) = 0;
+        idx_missed_temp(i,p) = idxMeal1+24*h2min/Ts*i ;
+    end
+
+
+    % Decreasing the amount of insulin for some of the meal indices.
+    % Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
+    for i = 3 : 5 : 29
+        U(2,idxMeal2+24*h2min/Ts*i,p) = U(2,idxMeal2+24*h2min/Ts*i,p) * 0.5;
+        idx_less_temp(i,p) = idxMeal2+24*h2min/Ts*i;
+    end
+    
+    % VED IKKE LIGE MED INDEX HVAD GÆLDER DENNE
+    idx_missed = nonzeros(idx_missed_temp)';
+    idx_less = nonzeros(idx_less_temp)';
+
 end
 
-% Removing bolus insulin from some of the meal indices.
-% Every 5th day the meal at 7 hour is missed.
-for i = 1 : 5 : 29
-    U(2,idxMeal1+24*h2min/Ts*i) = 0;
-    idx_missed_temp(i) = idxMeal1+24*h2min/Ts*i ;
-end
 
-idx_missed = nonzeros(idx_missed_temp)';
+%% Simulating for all patients 
 
-% Decreasing the amount of insulin for some of the meal indices.
-% Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
-for i = 3 : 5 : 29
-    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.5;
-    idx_less_temp(i) = idxMeal2+24*h2min/Ts*i;
-end
+% Inisializing 
+T         = zeros(1,N+1,numpatients); 
+X         = zeros(7,N+1,numpatients); 
+Y         = zeros(1,N+1,numpatients);
+U         = zeros(2,N+1,numpatients);
 
-idx_less = nonzeros(idx_less_temp)';
-
-
-%% Simulate
-
+% Intensity value
 intensity = 10;
 
-% Closed-loop simulation
-[T, X, Y, U] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,p, ...
-    ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
+% Looping over all patients
+for p = 1 : numpatients
+    % Closed-loop simulation
+    [T(:,:,p), X(:,:,p), Y(:,:,p), U(:,:,p)] = ClosedLoopSimulation_withnoise2(tspan,x0(p,:)',D(:,:,p),U(:,:,p),pf(:,p), ...
+        ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
 
-% Blood glucose concentration
-Gsc = Y; % [mg/dL]
+end 
+
+%% Blood glucose concentration 
+
+% Inisializing
+Gsc = zeros(1,N+1,numpatients);
+
+% Looping over all patients
+for p=1:numpatients
+
+Gsc(:,:,p) = Y(X(:,:,p), pf(:,p)); % [mg/dL] 
+
+end
 
 %% Compting the different combinations of Gmin value based on their different rates
 
-% Range for gmin try outs
+% Range for gmin try outs 
 gmin1range = (125:5:135);
 gmin2range = (1.2:0.5:2.2);
 gmin3range = (1.2:0.5:2.2);
@@ -209,7 +251,7 @@ tau            = 12;                  % From the article
 Gmin           = [130 1.6 1.5];     % For meal under 50 considered
 
 % Initialising
-number_combinations     = length(Gmin_combinations);
+number_combinations     = length(Gmin_combinations); 
 number_detectedmeals    = zeros(1,number_combinations);
 truepositive            = zeros(1,number_combinations);
 falsepositive           = zeros(1,number_combinations);
@@ -222,7 +264,7 @@ stride = 90/Ts; % How long it can possibly take to detect meal from the time the
 for i = 1 : number_combinations(1)
 
 % Detecting meals
-D_detected = GRIDalgorithm_mealdetection(Gsc,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+D_detected = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
 % Total number of detected meals for the current Gmin values.
 number_detectedmeals(i) = sum(D_detected);

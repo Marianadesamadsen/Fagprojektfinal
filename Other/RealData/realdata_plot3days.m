@@ -1,6 +1,7 @@
 %% Loading real clinical data from excel where data is stored in sheets
 clear all
 clc
+close all
 %% Adding the path 
 addpath(genpath(fullfile(pwd, '../Other')));
 
@@ -56,5 +57,5 @@ end
 plot(t(1:720), CGM(1:720))
 ylim([30 400])
 xlim([t(1) t(720)])
-ylabel({'Glucose concentration', '[mg/gL]'});
+ylabel({'Glucose concentration', '[mg/dL]'});
 xlabel('Time');

@@ -131,67 +131,69 @@ snack = 20;
 
 % Lopping over 30 days (one month)
 for i = 0:29
-    
-    % Inserting the different meal sizes at the indcies 
+
+    % Inserting the different meal sizes at the indcies
         D(1, (idxMeal1+24*h2min/Ts*i))   = meal(1+3*i)     /Ts;       % [g CHO/min]
         D(1, (idxMeal2+24*h2min/Ts*i))   = meal(2+3*i)     /Ts;       % [g CHO/min]
         D(1, (idxMeal3+24*h2min/Ts*i))   = meal(3+3*i)     /Ts;       % [g CHO/min]
-       
-    % Inserting the different meal sizes at the indcies 
-        D(1, (idxSnack1+24*h2min/Ts*i))   = snack        /Ts;       % [g CHO/min] 
+
+    % Inserting the different meal sizes at the indcies
+        D(1, (idxSnack1+24*h2min/Ts*i))   = snack        /Ts;       % [g CHO/min]
         D(1, (idxSnack2+24*h2min/Ts*i))   = snack        /Ts;       % [g CHO/min]
-        
-end 
 
-%% 
+end
 
-% Insulin vector 
+%% Removing bolus insulin every 5th day at 7 AM and decreasing bolus insulin every 5th day starting from day 3 at 7 AM
+
+% Insulin vector
 U = zeros(2,length(D(1,:)));
+idx_missed_temp = zeros(1,26);
+idx_less_temp = zeros(1,28);
 
-% Calculating the insulin amount for each meal 
+% Calculating the insulin amount for each meal
 for i = 1 : length(U)
-    if D(1,i) > 50/Ts % because snack
-        U(2,i) = (D(1,i)/15)*U2mU/Ts;
+    if D(1,i) > 50/Ts %because snack
+        U(2,i) = (D(1,i)*Ts/10)*U2mU/Ts; % ICR
     end
 end
 
-% Removing bolus insulin from some of the meal indices. 
+% Removing bolus insulin from some of the meal indices.
 % Every 5th day the meal at 7 hour is missed.
-idxmissed = zeros(1,29);
-for i = 1 : 2 : 29 
+for i = 1 : 5 : 29
     U(2,idxMeal1+24*h2min/Ts*i) = 0;
-    idxmissed(i) = i*h2min/Ts+1;
+    idx_missed_temp(i) = idxMeal1+24*h2min/Ts*i ;
 end
 
-%idxmissed = find(idxmissed);
+idx_missed = nonzeros(idx_missed_temp)';
 
-% Decreasing the amount of insulin for some of the meal indices. 
+% Decreasing the amount of insulin for some of the meal indices.
 % Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
-idxless = zeros(1,29);
-for i = 2 : 5 : 29
-    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) - 1;
-    idxless(i) =  i*h2min/Ts+1;
+for i = 3 : 5 : 29
+    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.5;
+    idx_less_temp(i) = idxMeal2+24*h2min/Ts*i;
 end
 
-%idxless = find(idxless);
+idx_less = nonzeros(idx_less_temp)';
+
 
 %% Simulate
 
-intensity = 9;
+intensity = 10;
 
 % Closed-loop simulation
-[T, X, Y, U] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,p, ... 
+[T, X, Y, U] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,p, ...
     ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
 
 % Blood glucose concentration
 Gsc = Y; % [mg/dL]
 
+
 %% Compting the different combinations of Gmin value based on their different rates
 
 % Range for gmin try outs 
-gmin1range = (130:140);
-gmin2range = (2:0.1:3);
-gmin3range = (2:0.1:3);
+gmin1range = (125:5:135);
+gmin2range = (1.2:0.5:2.2);
+gmin3range = (1.2:0.5:2.2);
 
 % Computing the combinations using meshgrid
 [Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
@@ -211,7 +213,6 @@ number_combinations     = length(Gmin_combinations);
 number_detectedmeals    = zeros(1,number_combinations);
 truepositive            = zeros(1,number_combinations);
 falsepositive           = zeros(1,number_combinations);
-falsenegative           = zeros(1,number_combinations);
 truenegative            = zeros(1,number_combinations);
 D_detected              = zeros(number_combinations,length(Y)-1);
 
