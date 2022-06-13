@@ -222,7 +222,7 @@ stride = 90/Ts; % How long it can possibly take to detect meal from the time the
 for i = 1 : number_combinations(1)
 
 % Detecting meals
-D_detected = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+D_detected = GRIDalgorithm_mealdetection(Gsc,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
 % Total number of detected meals for the current Gmin values.
 number_detectedmeals(i) = sum(D_detected);
