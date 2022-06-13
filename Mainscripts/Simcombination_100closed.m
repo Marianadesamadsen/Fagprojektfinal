@@ -162,8 +162,8 @@ end
 
 % Insulin vector
 U = zeros(2,N,numpatients);
-idx_missed_temp = zeros(1,26,numpatients);
-idx_less_temp = zeros(1,28,numpatients);
+idx_missed_temp = zeros(26,numpatients);
+idx_less_temp = zeros(28,numpatients);
 
 % Looping over all patients
 for p = 1: numpatients
@@ -191,8 +191,8 @@ for p = 1: numpatients
     end
     
     % VED IKKE LIGE MED INDEX HVAD GÆLDER DENNE
-    idx_missed = nonzeros(idx_missed_temp)';
-    idx_less = nonzeros(idx_less_temp)';
+    idx_missed(:,p) = nonzeros(idx_missed_temp(:,p))';
+    idx_less(:,p) = nonzeros(idx_less_temp(:,p))';
 
 end
 
@@ -269,7 +269,7 @@ for p = 1 : numpatients
         
         % Computing evaluation
         [truepositive(i,p), falsepositive(i,p), falsenegative(i,p), truenegative(i,p)] = ...
-            detectionrates2(stride,D(:,:,p),D_detected(:,i,p),Ts,idx_missed, idx_less,U(:,:,p));
+            detectionrates2(stride,D(:,:,p),D_detected(:,i,p),Ts,idx_missed(:,p), idx_less(:,p),U(:,:,p));
     end 
     
 end

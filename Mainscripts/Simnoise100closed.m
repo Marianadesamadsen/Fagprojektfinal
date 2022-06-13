@@ -289,8 +289,8 @@ ylabel({'Basal insulin', '[mU/min]'});
 
 % Plot bolus insulin
 subplot(414);
-stem(tspan2(1:end-1), Ts*mU2U*U(1,2, :,minpatient), 'MarkerSize', 1);
-stem(tspan2(1:end-1), Ts*mU2U*U(1,2, :,maxpatient), 'MarkerSize', 1);
+stem(tspan2(1:end-1), Ts*mU2U*U(2, :,minpatient), 'MarkerSize', 1);
+stem(tspan2(1:end-1), Ts*mU2U*U(2, :,maxpatient), 'MarkerSize', 1);
 ylabel({'Bolus insulin', '[U]'}); 
 xlabel('Time [h]');
 
