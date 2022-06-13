@@ -50,7 +50,6 @@ function [truepositive, falsepositive, falsenegative, truenegative] = detectionr
 falsenegative   = 0;
 falsepositive   = 0;
 truepositive    = 0;
-truenegative   = 0;
 
 % bolus vector
 bolus = U(2,:);
@@ -103,7 +102,7 @@ idx_true_meal = find(D);
     % Index value for D true meal
 
     % If there's detected a true meal where bolus is missed
-    if D(k_missed)==1 && sum(D_detected(k_missed:k_missed+stride)) == 1;
+    if D(k_missed)==1 && sum(D_detected(k_missed:k_missed+stride)) == 1
         truepositive = truepositive + 1;
     end
 
@@ -153,17 +152,6 @@ idx_true_meal = find(D);
   end
    
   truenegative = length(D) - truepositive - falsepositive - falsenegative;
-
-%    truenegative = length(D)-truepositive;
-%     % **** TRUE NEGATIVE **** Fungerer ikke optimalt
-%     % When there's no true detected meal and bolus was neither missed nor
-%     % lessened
-%     for i = 1:length(idx_true_meal)
-%         k_true = idx_true_meal(i);
-%         if sum(D_detected(k_true-stride:k_true+stride)) == 0 && sum(bolus_missed(k_true-stride:k_true+stride))==0 && sum(bolus_less(k_true-stride:k_true+stride))==0
-%         truenegative = truenegative + 1;
-%         end
-%     end
 
 
 end
