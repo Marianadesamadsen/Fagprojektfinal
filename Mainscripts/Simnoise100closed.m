@@ -79,20 +79,41 @@ tspan = 5*(0:N);
 %% Initial condition
 x0 = xs;
 
-%% Manipulated inputs
+%% Inizialising the function to handles
+% Control algorithm
+ctrlAlgorithm = @PIDControl2;
 
-% Inisializing
-U=zeros(2,N,numpatients);
+% Simulation model
+simModel = @MVPmodel;
 
-% Looping over all patients 
-for i=1:numpatients
-    
-    U(:,:,i) = repmat(us(i,:)', 1, N); % The same bolus and base rate for all time samples
+% Observed variables
+observationModel = @CGMsensor_withnoise;
 
-end
+% Simulation method/function
+simMethod = @EulerM;
+
+%% Controller parameters and state
+ctrlPar = [
+      5.0;    % [min]     Sampling time
+      0.05;   %           Proportional gain
+      0.0005; %           Integral gain
+      0.2500; %           Derivative gain
+    108.0;    % [mg/dL]   Target blood glucose concentration
+    NaN
+    50.0;
+    25.0;
+    ];          % [mU/min]  Nominal basal rate (overwritten below)
+
+ctrlState = [
+      0.0;  %          Initial value of integral
+    108.0]; % [mg/dL] Last measurements of glucose (dummy value)
+
+%% Updating the nominal basal rate at steady state
+
+ctrlPar(6) = us(1);
 
 %% Disturbance variables
-D = zeros(1, N,numpatients); % No meal assumed
+D = zeros(1,N,numpatients); % No meal assumed
 
 %% Meals and snacks at 7,12,18 hours and 10,15 hours
 
@@ -112,7 +133,6 @@ idxSnack2        = tSnack2 /Ts + 1;
 
 %% Making meal sizes with respectivly bolus sizes
 
-bolus = 0;
 meal  = randi([50,150],1,90);
 snack = 20;
 
@@ -126,78 +146,90 @@ for p=1:numpatients
     
     % Inserting the different meal sizes at the indcies 
         D(1, (idxMeal1+24*h2min/Ts*i),p)   = meal(1+3*i)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal1+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
         D(1, (idxMeal2+24*h2min/Ts*i),p)   = meal(2+3*i)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal2+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
         D(1, (idxMeal3+24*h2min/Ts*i),p)   = meal(3+3*i)     /Ts;       % [g CHO/min]
-        U(2, (idxMeal3+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
         
     % Inserting the different meal sizes at the indcies 
         D(1, (idxSnack1+24*h2min/Ts*i),p)   = snack     /Ts;            % [g CHO/min]
-        U(2, (idxSnack1+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
         D(1, (idxSnack2+24*h2min/Ts*i),p)   = snack    /Ts;             % [g CHO/min]
-        U(2, (idxSnack2+24*h2min/Ts*i),p)   = bolus*U2mU/Ts;  
         
      end
 
 end
 
+%% Removing bolus insulin every 5th day at 7 AM and decreasing bolus insulin every 5th day starting from day 3 at 7 AM
 
-%% Simulating the control states for all patients
+% Insulin vector
+U = zeros(2,N,numpatients);
+idx_missed_temp = zeros(1,26,numpatients);
+idx_less_temp = zeros(1,28,numpatients);
+
+% Looping over all patients
+for p = 1: numpatients
+    
+    % Calculating the insulin amount for each meal
+    for i = 1 : N
+        if D(1,i,p) > 50/Ts %because snack
+            U(2,i,p) = (D(1,i,p)*Ts/10)*U2mU/Ts; % ICR
+        end
+    end
+
+    % Removing bolus insulin from some of the meal indices.
+    % Every 5th day the meal at 7 hour is missed.
+    for i = 1 : 5 : 29
+        U(2,idxMeal1+24*h2min/Ts*i,p) = 0;
+        idx_missed_temp(i,p) = idxMeal1+24*h2min/Ts*i ;
+    end
+
+
+    % Decreasing the amount of insulin for some of the meal indices.
+    % Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
+    for i = 3 : 5 : 29
+        U(2,idxMeal2+24*h2min/Ts*i,p) = U(2,idxMeal2+24*h2min/Ts*i,p) * 0.5;
+        idx_less_temp(i,p) = idxMeal2+24*h2min/Ts*i;
+    end
+    
+    % VED IKKE LIGE MED INDEX HVAD GÆLDER DENNE
+    idx_missed = nonzeros(idx_missed_temp)';
+    idx_less = nonzeros(idx_less_temp)';
+
+end
+
+
+%% Simulating for all patients 
 
 % Inisializing 
 T         = zeros(1,N+1,numpatients); 
 X         = zeros(7,N+1,numpatients); 
+Y         = zeros(1,N+1,numpatients);
 
 % Intensity value
-intensity = 5;
+intensity = 10;
 
-% Looping over all patients 
-for p=1:numpatients
-
-[T(:,:,p), X(:,:,p)] = OpenLoopSimulation_withnoise(x0(p,:)', tspan, U(:,:,p), D(:,:,p), pf(:,p), @MVPmodel, @EulerM, Nk,intensity);
+% Looping over all patients
+for p = 1 : numpatients
+    % Closed-loop simulation
+    [T(:,:,p), X(:,:,p), Y(:,:,p), U(:,:,p)] = ClosedLoopSimulation_withnoise2(tspan,x0(p,:)',D(:,:,p),U(:,:,p),pf(:,p), ...
+        ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
 
 end 
 
 %% Blood glucose concentration 
 
 % Inisializing
-G=zeros(1,N+1,numpatients);
+Gsc = zeros(1,N+1,numpatients);
 
 % Looping over all patients
 for p=1:numpatients
 
-G(:,:,p) = CGMsensor_withnoise(X(:,:,p), pf(:,p)); % [mg/dL] 
-
-end
-
-%% GRID
-
-% Inisializing
-number_detectedmeals  = zeros(1,numpatients);            
-D_detected            = zeros(length(G)-1,numpatients);     
-
-for p = 1:numpatients 
-
-% Initializing
-G_vec            = G(1,:,p);     % The current person
-Gmin             = [90 0.5 0.5]; % Temperaly chosen
-tau              = 6;            % From article   
-delta_G          = 15;           % From article   
-t_vec            = [5,10,15];    % The time is the same for each
-  
-% Computing the detected meals
-D_detected(:,p) = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
-
-% The total amount of detected meals for each patient in vector
-number_detectedmeals(p)=sum(D_detected(:,p));
+Gsc(1,:,p) = Y(1,:,p); % [mg/dL] 
 
 end
 
 %% Finding minimum and maximum patient
 
 % Sums the glucose concentration for each patient and stores it as a vector
-s=sum(G(:,:,1:100));
+s=sum(Gsc(1,:,1:100));
 
 % Find the minimum value
 minp=min(s);
@@ -211,13 +243,13 @@ for i=1:100
     
     % If the ith patient has the minimum patient sum then it is the minum
     % patient
-    if minp == sum(G(:,:,i))
+    if minp == sum(Gsc(1,:,i))
         minpatient = i; % The index for the max patient
     end
     
     % If the ith patient has the maximum patient sum then it is the maximum
     % patient
-    if maxp == sum(G(:,:,i))
+    if maxp == sum(Gsc(1,:,i))
         maxpatient = i; % The index for the max patient
     end
     
@@ -236,46 +268,31 @@ tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
 % Plot blood glucose concentration and the detected meals as points
 subplot(411);
-plot((T2(:,:,minpatient)), G(:,:,minpatient),'r');
+plot((T2(1,:,minpatient)), Gsc(1,:,minpatient),'r');
 hold on 
-plot((T2(:,:,maxpatient)), G(:,:,maxpatient),'b');
-%xlim([t0, tf]*min2h);
+plot((T2(1,:,maxpatient)), Gsc(1,:,maxpatient),'b');
 ylabel({'Blood glucose concentration', '[mg/dL]'});
-%hold on 
-%plot(tspan2(1:end-1),D_detected(:,minpatient)*400,'*r');
-%hold on 
-%plot(tspan2(1:end-1),D_detected(:,maxpatient)*300,'*b');
-legend('minpatient','maxpatient');
-%legend('minpatient','maxpatient','minpatient','maxpatient');
+legend('minpatient','maxpatient'); 
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(412);
 stem(tspan2(1:end-1),Ts*D(1,:,1), 'MarkerSize', 0.1);
 ylabel({'Meal carbohydrates', '[g CHO]'});
-%hold on 
-%plot(tspan2(1:end-1),D_detected(:,minpatient)*150,'*r');
-%hold on 
-%plot(tspan2(1:end-1),D_detected(:,maxpatient)*100,'*b');
 legend('minpatient','maxpatient');
 
 % Plot basal insulin flow rate
 subplot(413);
 stairs(tspan2, U(1, [1:end, end],minpatient));
 stairs(tspan2, U(1, [1:end, end],maxpatient));
-legend('minpatient','maxpatient');
 %xlim([t0, tf]*min2h);
 ylabel({'Basal insulin', '[mU/min]'});
 
 % Plot bolus insulin
 subplot(414);
-stem(tspan2(1:end-1), Ts*mU2U*U(2, :,minpatient), 'MarkerSize', 1);
-stem(tspan2(1:end-1), Ts*mU2U*U(2, :,maxpatient), 'MarkerSize', 1);
-%xlim([t0, tf]*min2h);
+stem(tspan2(1:end-1), Ts*mU2U*U(1,2, :,minpatient), 'MarkerSize', 1);
+stem(tspan2(1:end-1), Ts*mU2U*U(1,2, :,maxpatient), 'MarkerSize', 1);
 ylabel({'Bolus insulin', '[U]'}); 
 xlabel('Time [h]');
-
-
-
 
 
 
