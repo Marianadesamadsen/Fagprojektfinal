@@ -147,6 +147,7 @@ idx_true_meal = find(D);
 
         if D(k_less) == 1 && bolus_less(k_less) == 1 && sum(D_detected(k_less:k_less+stride)) == 0
             falsenegative = falsenegative + 1;
+
         end
   end
    
