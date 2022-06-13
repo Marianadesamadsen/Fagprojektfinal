@@ -246,8 +246,8 @@ Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
 % Inisializing
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
-tau            = 12;                  % From the article
-Gmin           = [130 1.6 1.5];     % For meal under 50 considered
+tau            = 12;                 % From the article
+Gmin           = [130 1.6 1.5];      % For meal under 50 considered
 
 % Initialising
 number_combinations     = length(Gmin_combinations); 
