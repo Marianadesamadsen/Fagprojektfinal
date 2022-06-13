@@ -103,9 +103,9 @@ tau            = 6;                  % From the article
 Gmin           = [130 1.5 1.6];      % For meal under 50 considered
 Ts             = 5;                  % min - step size between control steps
 
-D_detected = GRIDalgorithm_mealdetection2(CGM_month,Gmin,tau,delta_G,t_test_CGM,Ts);
+D_detected = GRIDalgorithm_mealdetection(CGM_month,Gmin,tau,delta_G,t_vec,Ts);
 
-% The total amount of detected meals
+% The total amount of detected meals 
 number_detectedmeals = sum(D_detected);
 
 fprintf('number of detected meals: %d\n',number_detectedmeals);

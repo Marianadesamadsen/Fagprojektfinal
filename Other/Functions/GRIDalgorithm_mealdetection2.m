@@ -47,6 +47,7 @@ flag           = 0;                  % No detected meal to begin with
 t_vec          = [tspan(1),tspan(1),tspan(1)];
 
 
+
 % Computing the first two detections
 [ Gfm_vec(2,:) , filt_prev(2,:) , flag, D_detected(2) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
                                     filt_prev(1,:) , Gmin, Gfm_vec(1,:) , t_vec ,flag );
@@ -54,7 +55,7 @@ t_vec          = [tspan(1),tspan(1),tspan(1)];
                                 % Updating G_vec and t_vec
                                 G_vec=[G(1),G(1),G(2)];
                                 t_vec=[tspan(1),tspan(1),tspan(2)];
-                                
+                               
 [ Gfm_vec(3,:) , filt_prev(3,:) , flag, D_detected(3) ] = GRID_func( delta_G , G_vec , tau, Ts , ...
                                     filt_prev(2,:) , Gmin, Gfm_vec(2,:) , t_vec, flag );
                                 

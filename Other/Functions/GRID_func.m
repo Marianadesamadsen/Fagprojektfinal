@@ -18,7 +18,7 @@ function  [ Gfm_vec , filt_prev , flag, zero_one ] = GRID_func( ...
 %                         two previous glucose measurements.
 %                         As follows: [Gm-2, Gm-1, Gm].
 %                           
-% tspan                 - The interval step given as a number
+% Ts                    - The interval step given as a number
 %
 % filt_prev             - Vector of previous filteret glucose measurements
 %                         As follows: [G_{F,NS}(k-1), G_{F}(k-2)].

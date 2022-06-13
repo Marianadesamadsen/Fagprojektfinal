@@ -246,95 +246,60 @@ Gmin_combinations = [Gmin1(:),Gmin2(:),Gmin3(:)];
 % Inisializing
 delta_G        = 15;                 % From article
 t_vec          = [5,10,15];          % The respective sampling times
-tau            = 12;                  % From the article
-Gmin           = [130 1.6 1.5];     % For meal under 50 considered
+tau            = 12;                 % From the article
+Gmin           = [130 1.6 1.5];      % For meal under 50 considered
 
 % Initialising
 number_combinations     = length(Gmin_combinations); 
-number_detectedmeals    = zeros(1,number_combinations);
-truepositive            = zeros(1,number_combinations);
-falsepositive           = zeros(1,number_combinations);
-falsenegative           = zeros(1,number_combinations);
-truenegative            = zeros(1,number_combinations);
+number_detectedmeals    = zeros(1,number_combinations,numpatient);
+truepositive            = zeros(1,number_combinations,numpatient);
+falsepositive           = zeros(1,number_combinations,numpatient);
+falsenegative           = zeros(1,number_combinations,numpatient);
+truenegative            = zeros(1,number_combinations,numpatient);
+D_detected              = zeros(number_combinations,numpatients); 
 
 stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
 
 % Looping over all the different combinations of Gmin values
-for i = 1 : number_combinations(1)
+for i = 1 : number_combinations
 
-% Detecting meals
-D_detected = GRIDalgorithm_mealdetection(G,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+    for p = 1 : numpatient
+        % Detecting meals
+        D_detected(i,p) = GRIDalgorithm_mealdetection(Gsc(:,:,p),Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
-% Total number of detected meals for the current Gmin values.
-number_detectedmeals(i) = sum(D_detected);
+        % Total number of detected meals for the current Gmin values.
+        number_detectedmeals(i,p) = sum(D_detected(i,p));
 
-[truenegative(i),truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected,Ts);
-
+        %[truenegative(i,p),truepositive(i,p),falsepositive(i,p),falsenegative(i,p)] = % Insert detectionrates2
+        
+    end 
+    
 end
 
-%% Vectors with length of time of when bolus is missed and lessened
+%% Computing the mean of all truenegatives, truepositives, falsepositives, falsenegatives for each combination
 
-% Converting data
-T2=datetime(T*min2sec,'ConvertFrom','posixtime');
-tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
+% Initializing 
+meanTN = zeros(1,numer_combinations);
+meanTP = zeros(1,numer_combinations);
+meanFN = zeros(1,numer_combinations);
+meanFP = zeros(1,numer_combinations);
 
-missed_vector = zeros(1,length(T2)-1);
-for i = 1:length(idx_missed)
-    k = idx_missed(i);
-    missed_vector(k) = 1;
+% Looping over all combinations
+for i = 1 : number_combinations
+    meanTN(i) = mean(truenegative(i,:));
+    meanTP(i) = mean(truepositive(i,:));
+    meanFP(i) = mean(falsepositive(1,:));
+    meanFN(i) = mean(falsenegative(1,:));
 end
 
-less_vector = zeros(1,length(T2)-1);
-for i = 1:length(idx_less)
-    k = idx_less(i);
-    less_vector(k) = 1;
-end
+%% Making a table 
 
-%% Visualize
-% Create figure with absolute size for reproducibility
-figure;
-% Plot blood glucose concentration
-subplot(411);
-plot(T2, Gsc);
-%xlim([t0, tf]*min2h);
-%ylim([0 300])
-ylabel({'CGM measurements', '[mg/dL]'});
-title('Blood glucose concentration over time')
-hold on
-%%plot(tspan2(1:end-1),D_detected*200,'r.');
-hold on
-plot(tspan2(1:end-1),missed_vector*150,'b *');
-hold on
-plot(tspan2(1:end-1),less_vector*150,'g *');
+combi = (1:27);
+
+table(combi, meanTN,meanTP,meanFP,meanFN)
 
 
-% Plot meal carbohydrate
-subplot(412);
-stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
-%xlim([t0, tf]*min2h);
-ylim([-5 200])
-ylabel({'Meal carbohydrates', '[g CHO]'});
-%hold on
-title('Meals and meal sizes')
-%plot(tspan2(1:end-1),D_detected*100,'r.');
-hold on
-plot(tspan2(1:end-1),missed_vector*50,'b *');
-hold on
-plot(tspan2(1:end-1),less_vector*50,'g *');
 
-% Plot basal insulin flow rate
-subplot(413);
-stairs(tspan2, U(1, [1:end, end]));
-%xlim([t0, tf]*min2h);
-ylim([-5 100])
-ylabel({'Basal insulin', '[mU/min]'});
-title('Basal insulin flow rate')
 
-% Plot bolus insulin
-subplot(414);
-stem(tspan2(1:end-1),Ts*mU2U*U(2, :), 'MarkerSize', 1);
-%xlim([t0, tf]*min2h);
-%ylim([0 5])
-ylabel({'Bolus insulin', '[U]'});
-xlabel('Time [h]');
-title('Bolus insulin')
+
+
