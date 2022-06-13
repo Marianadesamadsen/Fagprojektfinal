@@ -161,8 +161,6 @@ end
 
 % Insulin vector
 U = zeros(2,N,numpatients);
-idx_missed_temp = zeros(1,26,numpatients);
-idx_less_temp = zeros(1,28,numpatients);
 
 % Looping over all patients
 for p = 1: numpatients
@@ -178,7 +176,6 @@ for p = 1: numpatients
     % Every 5th day the meal at 7 hour is missed.
     for i = 1 : 5 : 29
         U(2,idxMeal1+24*h2min/Ts*i,p) = 0;
-        idx_missed_temp(i,p) = idxMeal1+24*h2min/Ts*i ;
     end
 
 
@@ -186,12 +183,8 @@ for p = 1: numpatients
     % Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
     for i = 3 : 5 : 29
         U(2,idxMeal2+24*h2min/Ts*i,p) = U(2,idxMeal2+24*h2min/Ts*i,p) * 0.5;
-        idx_less_temp(i,p) = idxMeal2+24*h2min/Ts*i;
     end
-    
-    % VED IKKE LIGE MED INDEX HVAD GÆLDER DENNE
-    idx_missed = nonzeros(idx_missed_temp)';
-    idx_less = nonzeros(idx_less_temp)';
+   
 
 end
 

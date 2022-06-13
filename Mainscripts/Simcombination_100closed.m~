@@ -338,14 +338,6 @@ table(rFP_optimal,rTP_optimal,idx_optimalfinal)
 table(rFP_total,rTP_total)
 
 
-%%
-
-% Converting data
-T2=datetime(T*min2sec,'ConvertFrom','posixtime');
-tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
-
-figure(1)
-plot(tspan2,Gsc(:,:,2))
 
 
 
