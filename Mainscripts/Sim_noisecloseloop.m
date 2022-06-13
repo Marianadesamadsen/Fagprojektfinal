@@ -5,7 +5,7 @@
 
 clear all
 clc
-%close all
+close all
 
 %% Loading all folders
 fprintf('Loading diabetes library .. ');
@@ -190,9 +190,9 @@ Gsc = Y; % [mg/dL]
 %% Compting the different combinations of Gmin value based on their different rates
 
 % Range for gmin try outs
-gmin1range = (125:5:135);
-gmin2range = (1.2:0.5:2.2);
-gmin3range = (1.2:0.5:2.2);
+gmin1range = (130:5:140);
+gmin2range = (1.0:0.5:2.0);
+gmin3range = (1.0:0.5:2.0);
 
 % Computing the combinations using meshgrid
 [Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
@@ -215,6 +215,7 @@ truepositive            = zeros(1,number_combinations);
 falsepositive           = zeros(1,number_combinations);
 falsenegative           = zeros(1,number_combinations);
 truenegative            = zeros(1,number_combinations);
+D_detected              = zeros(1,N,number_combinations);
 
 stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
 
@@ -222,12 +223,12 @@ stride = 90/Ts; % How long it can possibly take to detect meal from the time the
 for i = 1 : number_combinations(1)
 
 % Detecting meals
-D_detected = GRIDalgorithm_mealdetection(Gsc,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
+D_detected(:,:,i) = GRIDalgorithm_mealdetection(Gsc,Gmin_combinations(i,:),tau,delta_G,t_vec,Ts);
 
 % Total number of detected meals for the current Gmin values.
-number_detectedmeals(i) = sum(D_detected);
+number_detectedmeals(i) = sum(D_detected(:,:,i));
 
-[truepositive(i), falsepositive(i), falsenegative(i), truenegative(i)] = detectionrates2(stride,D,D_detected,Ts,idx_missed, idx_less,U);
+[truepositive(i), falsepositive(i), falsenegative(i), truenegative(i)] = detectionrates2(stride,D,D_detected(:,:,i),Ts,idx_missed, idx_less,U);
 
 end
 
@@ -268,12 +269,11 @@ plot(T2, Gsc);
 ylabel({'CGM measurements', '[mg/dL]'});
 title('Blood glucose concentration over time')
 hold on
-plot(tspan2(1:end-1),D_detected*200,'r.');
+plot(tspan2(1:end-1),D_detected(:,:,end-1)*200,'r.');
 hold on
 plot(tspan2(1:end-1),missed_vector*150,'b *');
 hold on
 plot(tspan2(1:end-1),less_vector*150,'g *');
-
 
 % Plot meal carbohydrate
 subplot(412);
