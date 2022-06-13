@@ -76,7 +76,7 @@ for k = 1:length(TT)-1
     Ts(k) = TT(k+1)-TT(k);
 end
 
-D_detected = GRIDalgorithm_mealdetection2(CGM,Gmin,tau,delta_G,TT,Ts);
+D_detected = GRIDalgorithm_mealdetection2(CGM_month,Gmin,tau,delta_G,TT,Ts);
 
 % The total amount of detected meals 
 number_detectedmeals = sum(D_detected);
@@ -91,8 +91,6 @@ ylim([30 400])
 xlim([t(1) t(end)])
 ylabel({'Glucose concentration', '[mg/gL]'});
 xlabel('Time');
-hold on
-plot(t(1:end-1),D_detected*100,'r.');
 
 % Plot basal insulin from january till june
 % subplot(4,1,2)
