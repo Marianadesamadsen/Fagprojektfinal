@@ -222,7 +222,7 @@ end
 %% Finding minimum and maximum patient
 
 % Sums the glucose concentration for each patient and stores it as a vector
-s=sum(Gsc(:,:,1:end));
+s=sum(Gsc(:,:,1:100));
 
 % Find the minimum value
 minp=min(s);
