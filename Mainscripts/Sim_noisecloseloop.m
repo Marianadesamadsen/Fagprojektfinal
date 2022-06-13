@@ -260,7 +260,7 @@ plot(T2, Gsc);
 ylabel({'CGM measurements', '[mg/dL]'});
 title('Blood glucose concentration over time')
 hold on
-%%plot(tspan2(1:end-1),D_detected*200,'r.');
+plot(tspan2(1:end-1),D_detected*200,'r.');
 hold on
 plot(tspan2(1:end-1),missed_vector*150,'b *');
 hold on
