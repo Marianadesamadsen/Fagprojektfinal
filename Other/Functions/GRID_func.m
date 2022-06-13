@@ -1,5 +1,5 @@
 function  [ Gfm_vec , filt_prev , flag, zero_one ] = GRID_func( ...
-         delta_G , G_vec , tau, tspan , filt_prev , Gmin, Gfm_vec , t_vec, flag)
+         delta_G , G_vec , tau, Ts , filt_prev , Gmin, Gfm_vec , t_vec, flag)
 %
 % GRID_func()
 % 
@@ -18,7 +18,7 @@ function  [ Gfm_vec , filt_prev , flag, zero_one ] = GRID_func( ...
 %                         two previous glucose measurements.
 %                         As follows: [Gm-2, Gm-1, Gm].
 %                           
-% tspan                 - The interval step given as a number
+% Ts                    - The interval step given as a number
 %
 % filt_prev             - Vector of previous filteret glucose measurements
 %                         As follows: [G_{F,NS}(k-1), G_{F}(k-2)].
@@ -147,7 +147,7 @@ elseif flag == 0 && zero_one == 1
   % but only is if zero_one equals 1. When this happen flag start over
   % counting down 120 min.
     
-    flag = 120/tspan;
+    flag = 120/Ts;
     
 end 
    
