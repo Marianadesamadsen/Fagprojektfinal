@@ -137,84 +137,84 @@ plot(t(1:end-1),D_detected*100,'r.');
 % ylabel({'Meals', '[carbs in g]'});
 % xlabel('Time');
 
-%% Plots over the 4 measurements for almost a month
-% We have approximately 130 days for t_datetime (length(t)/ 24*(60/5))
-% approx 26 days a month, which is length(t)/5 = 7500 of 5-minute
-% samplings. So we take the month march-april
-
-t_test_CGM = t(floor((length(t)/5)*2):floor((length(t)/5)*2)+length(t)/5  ); % Time for almost month for CGM
-t_test_ins_carb = t2(floor((length(t2)/5)*2):floor((length(t2)/5)*2)+length(t2)/5  ); % Time for almost month for insulin and carb
-
-CGM_month = CGM(floor((length(CGM)/5)*2):floor((length(CGM)/5)*2)+length(CGM)/5);
-uba_month = uba(floor((length(uba)/5)*2):floor((length(uba)/5)*2)+length(uba)/5);
-ubo_month = ubo(floor((length(ubo)/5)*2):floor((length(ubo)/5)*2)+length(ubo)/5);
-meal_month = meal(floor((length(meal)/5)*2):floor((length(meal)/5)*2)+length(meal)/5);
-
-%% GRID
-delta_G        = 15;                 % From article
-tau            = 6;                  % From the article
-Gmin           = [130 1.5 1.6];      % For meal under 50 considered
-
-% making vector to numerical span between measurements
-TT = zeros(1,length(t_test_CGM));
-TT(1) = 0;
-for i = 1:length(t_test_CGM)-1
-    temp_time1 = datevec(t_test_CGM(i));
-    temp_time2 = datevec(t_test_CGM(i+1));
-    
-    if temp_time2(4)==00 && temp_time1(4)~=0
-        TT(i+1) = TT(i)+(24*h2min+temp_time2(5)) - (temp_time1(4)*h2min+temp_time1(5));
-    else 
-        TT(i+1) = TT(i)+(temp_time2(4)*h2min+temp_time2(5)) - (temp_time1(4)*h2min+temp_time1(5));
-    end
-end
-
-% step size between control steps
-Ts = zeros(1,length(TT));
-for k = 1:length(TT)-1
-    Ts(k) = TT(k+1)-TT(k);
-end
-
-D_detected = GRIDalgorithm_mealdetection2(CGM_month,Gmin,tau,delta_G,TT,Ts);
-
-% The total amount of detected meals 
-number_detectedmeals = sum(D_detected);
-
-fprintf('number of detected meals: %d\n',number_detectedmeals);
-
-%% Visualize 
-figure;
-
-subplot(4,1,1)
-plot(t_test_CGM, CGM_month)
-ylim([min(CGM_month) max(CGM_month)])
-xlim([t_test_CGM(1) t_test_CGM(end)])
-ylabel({'Glucose concentration', '[mg/dL]'});
-xlabel('Time');
-hold on
-plot(t_test_CGM(1:end-1),D_detected*100,'r.');
-
-subplot(4,1,2)
-stairs(t_test_ins_carb, uba_month)
-ylim([0 max(uba_month)])
-xlim([t_test_ins_carb(1) t_test_ins_carb(end)])
-ylabel({'Basal insulin', '[mU/min]'});
-xlabel('Time');
-
-% Plot bolus insulin from january till june
-subplot(4,1,3)
-stem(t_test_ins_carb, ubo_month*mU2U, 'markersize',1)
-%ylim([0 max(ubo_month)])
-xlim([t_test_ins_carb(1) t_test_ins_carb(end)])
-ylabel({'Bolus insulin', '[U/min]'});
-xlabel('Time');
-
-% Plot meals from january till june
-subplot(4,1,4)
-plot(t_test_ins_carb, meal_month*Ts)
-xlim([t_test_ins_carb(1) t_test_ins_carb(end)])
-ylabel({'Meals', '[g CHO]'});
-xlabel('Time');
-
-
-
+% %% Plots over the 4 measurements for almost a month
+% % We have approximately 130 days for t_datetime (length(t)/ 24*(60/5))
+% % approx 26 days a month, which is length(t)/5 = 7500 of 5-minute
+% % samplings. So we take the month march-april
+% 
+% t_test_CGM = t(floor((length(t)/5)*2):floor((length(t)/5)*2)+length(t)/5  ); % Time for almost month for CGM
+% t_test_ins_carb = t2(floor((length(t2)/5)*2):floor((length(t2)/5)*2)+length(t2)/5  ); % Time for almost month for insulin and carb
+% 
+% CGM_month = CGM(floor((length(CGM)/5)*2):floor((length(CGM)/5)*2)+length(CGM)/5);
+% uba_month = uba(floor((length(uba)/5)*2):floor((length(uba)/5)*2)+length(uba)/5);
+% ubo_month = ubo(floor((length(ubo)/5)*2):floor((length(ubo)/5)*2)+length(ubo)/5);
+% meal_month = meal(floor((length(meal)/5)*2):floor((length(meal)/5)*2)+length(meal)/5);
+% 
+% %% GRID
+% delta_G        = 15;                 % From article
+% tau            = 6;                  % From the article
+% Gmin           = [130 1.5 1.6];      % For meal under 50 considered
+% 
+% % making vector to numerical span between measurements
+% TT = zeros(1,length(t_test_CGM));
+% TT(1) = 0;
+% for i = 1:length(t_test_CGM)-1
+%     temp_time1 = datevec(t_test_CGM(i));
+%     temp_time2 = datevec(t_test_CGM(i+1));
+%     
+%     if temp_time2(4)==00 && temp_time1(4)~=0
+%         TT(i+1) = TT(i)+(24*h2min+temp_time2(5)) - (temp_time1(4)*h2min+temp_time1(5));
+%     else 
+%         TT(i+1) = TT(i)+(temp_time2(4)*h2min+temp_time2(5)) - (temp_time1(4)*h2min+temp_time1(5));
+%     end
+% end
+% 
+% % step size between control steps
+% Ts = zeros(1,length(TT));
+% for k = 1:length(TT)-1
+%     Ts(k) = TT(k+1)-TT(k);
+% end
+% 
+% D_detected = GRIDalgorithm_mealdetection2(CGM_month,Gmin,tau,delta_G,TT,Ts);
+% 
+% % The total amount of detected meals 
+% number_detectedmeals = sum(D_detected);
+% 
+% fprintf('number of detected meals: %d\n',number_detectedmeals);
+% 
+% %% Visualize 
+% figure;
+% 
+% subplot(4,1,1)
+% plot(t_test_CGM, CGM_month)
+% ylim([min(CGM_month) max(CGM_month)])
+% xlim([t_test_CGM(1) t_test_CGM(end)])
+% ylabel({'Glucose concentration', '[mg/dL]'});
+% xlabel('Time');
+% hold on
+% plot(t_test_CGM(1:end-1),D_detected*100,'r.');
+% 
+% subplot(4,1,2)
+% stairs(t_test_ins_carb, uba_month)
+% ylim([0 max(uba_month)])
+% xlim([t_test_ins_carb(1) t_test_ins_carb(end)])
+% ylabel({'Basal insulin', '[mU/min]'});
+% xlabel('Time');
+% 
+% % Plot bolus insulin from january till june
+% subplot(4,1,3)
+% stem(t_test_ins_carb, ubo_month*mU2U, 'markersize',1)
+% %ylim([0 max(ubo_month)])
+% xlim([t_test_ins_carb(1) t_test_ins_carb(end)])
+% ylabel({'Bolus insulin', '[U/min]'});
+% xlabel('Time');
+% 
+% % Plot meals from january till june
+% subplot(4,1,4)
+% plot(t_test_ins_carb, meal_month*Ts)
+% xlim([t_test_ins_carb(1) t_test_ins_carb(end)])
+% ylabel({'Meals', '[g CHO]'});
+% xlabel('Time');
+% 
+% 
+% 
