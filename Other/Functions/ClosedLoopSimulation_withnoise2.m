@@ -135,6 +135,6 @@ for k = 1:N
     X(:, k+1) = xkp1; 
     Y(:, k+1) = ykp1; 
     U(:, k  ) = uk; 
-    ctrlState(:, k+1) = ctrlStatekp1;
+    ctrlState(:, k+1) = ctrlStatekp1; 
     
 end
