@@ -285,12 +285,12 @@ meanFP = zeros(1,number_combinations);
 meanDetec = zeros(1,number_combinations);
 
 % Looping over all combinations
-for p = 1 : number_combinations
-    meanTN(p) = mean(truenegative(p,:));
-    meanTP(p) = mean(truepositive(p,:));
-    meanFP(p) = mean(falsepositive(1,:));
-    meanFN(p) = mean(falsenegative(1,:));
-    meanDetec(p) = mean(number_detectedmeals(p,:));
+for i = 1 : number_combinations
+    meanTN(i) = mean(truenegative(i,:));
+    meanTP(i) = mean(truepositive(i,:));
+    meanFP(i) = mean(falsepositive(i,:));
+    meanFN(i) = mean(falsenegative(i,:));
+    meanDetec(i) = mean(number_detectedmeals(i,:));
 end
 
 %% Making a table 

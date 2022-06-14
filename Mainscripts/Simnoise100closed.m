@@ -222,7 +222,7 @@ end
 %% Finding minimum and maximum patient
 
 % Sums the glucose concentration for each patient and stores it as a vector
-s=sum(Gsc(1,:,1:100));
+s=sum(Gsc(:,:,1:end));
 
 % Find the minimum value
 minp=min(s);
@@ -260,7 +260,7 @@ T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
 % Plot blood glucose concentration and the detected meals as points
-subplot(411);
+subplot(511);
 plot((T2(1,:,minpatient)), Gsc(1,:,minpatient),'r');
 hold on 
 plot((T2(1,:,maxpatient)), Gsc(1,:,maxpatient),'b');
@@ -268,20 +268,22 @@ ylabel({'Blood glucose concentration', '[mg/dL]'});
 legend('minpatient','maxpatient'); 
 
 % Plot meal carbohydrate and the detected meals as points
-subplot(412);
+subplot(512);
 stem(tspan2(1:end-1),Ts*D(1,:,1), 'MarkerSize', 0.1);
 ylabel({'Meal carbohydrates', '[g CHO]'});
-legend('minpatient','maxpatient');
 
 % Plot basal insulin flow rate
-subplot(413);
+subplot(513);
 stairs(tspan2, U(1, [1:end, end],minpatient));
+ylabel({'Basal insulin: minpatient', '[mU/min]'});
+
+subplot(514)
 stairs(tspan2, U(1, [1:end, end],maxpatient));
 %xlim([t0, tf]*min2h);
-ylabel({'Basal insulin', '[mU/min]'});
+ylabel({'Basal insulin: maxpatient', '[mU/min]'});
 
 % Plot bolus insulin
-subplot(414);
+subplot(515);
 stem(tspan2(1:end-1), Ts*mU2U*U(2, :,minpatient), 'MarkerSize', 1);
 stem(tspan2(1:end-1), Ts*mU2U*U(2, :,maxpatient), 'MarkerSize', 1);
 ylabel({'Bolus insulin', '[U]'}); 
