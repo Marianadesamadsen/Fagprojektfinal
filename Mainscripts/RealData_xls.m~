@@ -1,31 +1,35 @@
 %% Loading real clinical data from excel where data is stored in sheets
+
 clear all
 clc
+
 %% Adding the path 
+
 addpath(genpath(fullfile(pwd, '../Other')));
 
 CGM_sheet = readtable('Control-IQ_Sample_Diasend','Sheet','CGM');
 Insulin_carbs_sheet = readtable('Control-IQ_Sample_Diasend', 'Sheet','Insulin and Carbs');
 
-% Store the data in temporary arrays and the time in cell
-CGM = table2array(CGM_sheet(:,2));                  % Glucose concentration
-uba_temp = table2array(Insulin_carbs_sheet(:,2));   % Basal insulin
-ubo_temp = table2array(Insulin_carbs_sheet(:,4));   % Bolus insulin
-meal_temp = table2array(Insulin_carbs_sheet(:,8));  % Amount of carbs
+% Store the data in temporary arrays
+CGM                     = table2array(CGM_sheet(:,2));              % Glucose concentration
+uba_temp                = table2array(Insulin_carbs_sheet(:,2));    % Basal insulin
+ubo_temp                = table2array(Insulin_carbs_sheet(:,4));    % Bolus insulin
+meal_temp               = table2array(Insulin_carbs_sheet(:,8));    % Amount of carbs
 
-time_temp_CGM = table2cell(CGM_sheet(:,1));         % Time frame for glucose measurements
-time_temp_insulin_carb = table2cell(Insulin_carbs_sheet(:,1)); % Time frame for insulin and meal measurements
+% Store time in cell
+time_temp_CGM           = table2cell(CGM_sheet(:,1));               % Time frame for glucose measurements
+time_temp_insulin_carb  = table2cell(Insulin_carbs_sheet(:,1));     % Time frame for insulin and meal measurements
 
 %% Replacing the missing values NaN with zeros
 
 % Replacing all NaN values with 0
-uba_temp(isnan(uba_temp))=0;
-ubo_temp(isnan(ubo_temp))=0;
-meal_temp(isnan(meal_temp))=0;
+uba_temp(isnan(uba_temp))       = 0;
+ubo_temp(isnan(ubo_temp))       = 0;
+meal_temp(isnan(meal_temp))     = 0;
 
-uba = uba_temp;     % Filtered numerical values for basal insulin
-ubo = ubo_temp;     % Filtered numerical values for bolus insulin
-meal = meal_temp;   % Filtered numerical values for meals
+uba     = uba_temp;     % Filtered numerical values for basal insulin
+ubo     = ubo_temp;     % Filtered numerical values for bolus insulin
+meal    = meal_temp;    % Filtered numerical values for meals
 
 %% Conversion factors
 
@@ -76,7 +80,7 @@ for k = 1:length(TT)-1
     Ts(k) = TT(k+1)-TT(k);
 end
 
-D_detected = GRIDalgorithm_mealdetection2(CGM_month,Gmin,tau,delta_G,TT,Ts);
+D_detected = GRIDalgorithm_mealdetection2(CGM,Gmin,tau,delta_G,TT,Ts);
 
 % The total amount of detected meals 
 number_detectedmeals = sum(D_detected);
@@ -91,6 +95,8 @@ ylim([30 400])
 xlim([t(1) t(end)])
 ylabel({'Glucose concentration', '[mg/gL]'});
 xlabel('Time');
+hold on
+plot(t(1:end-1),D_detected*100,'r.');
 
 % Plot basal insulin from january till june
 % subplot(4,1,2)
