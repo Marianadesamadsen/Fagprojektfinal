@@ -190,9 +190,9 @@ Gsc = Y; % [mg/dL]
 %% Compting the different combinations of Gmin value based on their different rates
 
 % Range for gmin try outs
-gmin1range = (130:5:140);
-gmin2range = (1.5:0.5:2.5);
-gmin3range = (1.3:0.5:2.3);
+gmin1range = (120:5:140);
+gmin2range = [0.6,1.1,1.6,2.1,2.6];
+gmin3range = [0.5,1.0,1.5,2.0,2.5];
 
 % Computing the combinations using meshgrid
 [Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
@@ -227,7 +227,7 @@ D_detected(:,i) = GRIDalgorithm_mealdetection(Gsc,Gmin_combinations(i,:),tau,del
 % Total number of detected meals for the current Gmin values.
 number_detectedmeals(i) = sum(D_detected(:,i));
 
-[truepositive(i), falsepositive(i), falsenegative(i), truenegative(i)] = detectionrates2(stride,D,D_detected(:,i),Ts,idx_missed, idx_less,U);
+[truenegative(i) ,truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected(:,i),Ts,N);
 
 end
 
@@ -241,20 +241,15 @@ table(Detec,TP,FP,FN,TN)
 
 %% Computing the rates to find the optimal Gmin values
 
-rateFP = FP/30; % The mean of false positives pr day
-rateTP = TP/20; % The percent of how many true positives out of the total
-idxFPbest = 1;
+rateFP = FP/30; % The mean of false positives pr day since 30 days
+rateTP = TP/90; % The percent of how many true positives out of the total
 
+%%
 for i = 1 : number_combinations  
-    
-    % We want to have at max 0.5 false positives pr day
-    if rateFP(i) <= 0.6
-        idxFPbest = i;
-    end
     
     % We want to detect at least 70% of the meals we want to detect
     % We want to have at max 0.5 false positives pr day
-    if rateFP(idxFPbest) <= 0.6 && rateTP(idxFPbest) >= 0.7
+    if rateFP(i) < 0.2 && rateTP(i) >= 0.7
         idx_tempoptimal(i) = i;
     end
       
@@ -264,11 +259,14 @@ idx_optimalfinal = nonzeros(idx_tempoptimal');
 
 rFP_optimal = rateFP(idx_optimalfinal);
 rTP_optimal = rateTP(idx_optimalfinal);
+
+%%
+
 rFP_total = rateFP;
 rTP_total = rateTP;
 
-table(rFP_optimal,rTP_optimal,idx_optimalfinal)
 table(rFP_total,rTP_total)
+table(rFP_optimal,rTP_optimal,idx_optimalfinal)
 
 %% Vectors with length of time of when bolus is missed and lessened
 
@@ -300,7 +298,7 @@ plot(T2, Gsc);
 ylabel({'CGM measurements', '[mg/dL]'});
 title('Blood glucose concentration over time')
 hold on
-plot(tspan2(1:end-1),D_detected(:,:,end-7)*200,'r.');
+plot(tspan2(1:end-1),D_detected(:,1)*200,'r.');
 hold on
 plot(tspan2(1:end-1),missed_vector*150,'b *');
 hold on
@@ -314,7 +312,8 @@ ylim([-5 200])
 ylabel({'Meal carbohydrates', '[g CHO]'});
 %hold on
 title('Meals and meal sizes')
-%plot(tspan2(1:end-1),D_detected*100,'r.');
+hold on
+plot(tspan2(1:end-1),D_detected(:,1)*100,'r.');
 hold on
 plot(tspan2(1:end-1),missed_vector*50,'b *');
 hold on

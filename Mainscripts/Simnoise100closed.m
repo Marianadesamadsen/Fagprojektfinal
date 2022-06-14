@@ -196,12 +196,12 @@ T         = zeros(1,N+1,numpatients);
 X         = zeros(7,N+1,numpatients); 
 Y         = zeros(1,N+1,numpatients);
 
-% Intensity value
+% Intensity value 
 intensity = 10;
 
-% Looping over all patients
-for p = 1 : numpatients
-    % Closed-loop simulation
+% Looping over all patients 
+for p = 1 : numpatients 
+    % Closed-loop simulation 
     [T(:,:,p), X(:,:,p), Y(:,:,p), U(:,:,p)] = ClosedLoopSimulation_withnoise2(tspan,x0(p,:)',D(:,:,p),U(:,:,p),pf(:,p), ...
         ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
 

@@ -1,4 +1,4 @@
-function [truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts,U)
+function [truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts,N)
 %
 % detectionrates()
 % 
@@ -19,6 +19,7 @@ function [truenegative,truepositive,falsepositive,falsenegative] = detectionrate
 % U                 - Bolus insulin
 % 
 % Ts                - The time between control steps
+% N                 - The number of observations
 %
 % OUTPUT:
 % Four outputs being TP, FP, TN, FN
@@ -47,11 +48,11 @@ function [truenegative,truepositive,falsepositive,falsenegative] = detectionrate
 falsenegative   = 0;
 falsepositive   = 0;
 truepositive    = 0;
-truemeals       = zeros(1,length(D(1,:)));
-mealdetec       = zeros(1,length(D_detected));
+truemeals       = zeros(1,N);
+mealdetec       = zeros(1,N);
 
 % Changing datatype of D to binary
-for i = 1:length(D(1,:))
+for i = 1:N
     
     if D(1,i) >= 50/Ts % Not considering the snackmeals 
         D(1,i) = 1;
@@ -63,14 +64,14 @@ for i = 1:length(D(1,:))
 end 
 
 % Finding the indices for the truemeals
-for i = 1 : length(D(1,:))
+for i = 1 : N
     if D(1,i) == 1
         truemeals(i) = i;
     end 
 end
 
 % Finding the indices for the detected meals 
-for i = 1 : length(D(1,:)) 
+for i = 1 : N
     if D_detected(i) == 1
         mealdetec(i) = i;
     end 
@@ -97,7 +98,14 @@ for i = 1:length(idxdetecmeals)
     % The idx value when meal has been detected 
     k = idxdetecmeals(i);
     
-    if sum(D(1,k-stride:k)) == 0 
+    if (k-stride) < 1 
+        j = k-1;
+        
+        if  sum(D(1,k-j:k)) == 0 
+        falsepositive = falsepositive + 1;
+        end
+    
+    elseif sum(D(1,k-stride:k)) == 0 
         falsepositive = falsepositive + 1;
     end  
 end
@@ -108,7 +116,14 @@ for i = 1:length(idxdetecmeals)
     % The idx value when meal has been detected 
     k = idxdetecmeals(i);
     
-    if sum(D(1,k-stride:k)) == 1 
+    if (k-stride) < 1 
+        j = k-1;
+        
+        if  sum(D(1,k-j:k)) == 0 
+        falsepositive = falsepositive + 1;
+        end
+    
+    elseif sum(D(1,k-stride:k)) == 1 
         truepositive = truepositive + 1;
     end  
 end
@@ -116,7 +131,7 @@ end
 % FINDING true negatives 
 
 % Since TOTAL = FP + FN + TP + TN -> TN = TOTAL - FN - FP - TP
-truenegative = length(D(1,:))-falsenegative-falsepositive-truepositive;
+truenegative = N-falsenegative-falsepositive-truepositive;
 
 end
 

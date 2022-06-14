@@ -54,7 +54,7 @@ if(flag ~= 1), error ('fsolve did not converge!'); end
 %% Intital and final time for the simulation over 18 hours
 
 t0 =  0;       % min - start time
-tf = 48*h2min; % min - end time
+tf = 24*h2min; % min - end time
 Ts = 5;        % min - Sampling time
 
 %% Number of contral intervals
@@ -73,16 +73,16 @@ x0 = xs;
 
 %% Inizialising the function to handles 
 % Control algorithm
-ctrlAlgorithm = @PIDControl;
+ctrlAlgorithm = @PIDControl2;
 
 % Simulation model
 simModel = @MVPmodel;
 
 % Observed variables
-observationModel = @CHMsensor;
+observationModel = @CGMsensor_withnoise;
 
 % Simulation method/function
-simMethod = @ExplicitEuler;
+simMethod = @EulerM;
 
 %% Controller parameters and state
 ctrlPar = [
@@ -108,24 +108,36 @@ ctrlPar(6) = us(1);
 D = zeros(1, N);
 
 %% Meal and meal bolus after 1 hour
-tMeal           = 2*h2min;        % [min]
+tMeal           = 7*h2min;        % [min]
 idxMeal         = tMeal/Ts + 1;   % [#]
-tSnack          = 4*h2min;
-tSnack2         = 6*h2min;
+tSnack          = 10*h2min;
 idxSnack        = tSnack/Ts +1;
-idxSnack2       = tSnack2/Ts +1;
 
-D(1, idxMeal)   = 20   /Ts;       % [g CHO/min]
-D(1, idxSnack)  = 40   /Ts; 
-D(1, idxSnack2) = 60 / Ts;
+D(1, idxMeal)   = 70   /Ts;       % [g CHO/min]
+D(1, idxSnack)  = 20   /Ts; 
+
+% Insulin vector
+U = zeros(2,length(D(1,:)));
+idx_missed_temp = zeros(1,26);
+idx_less_temp = zeros(1,28);
+
+% Calculating the insulin amount for each meal
+for i = 1 : length(U)
+    if D(1,i) > 50/Ts %because snack
+        U(2,i) = (D(1,i)*Ts/10)*U2mU/Ts; % ICR
+    end
+end
 
 %% Simulate
+
+intensity = 10;
+
 % Closed-loop simulation
-[T, X, Y, U] = ClosedLoopSimulation(tspan,x0,D,p, ... 
-    ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk);
+[T, X, Y, U] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,p, ... 
+    ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
 
 % Blood glucose concentration
-Gsc = Y; % [mg/dL]
+Gsc = Y; % [mg/dL] 
 
 %% Visualize
 % Create figure with absolute size for reproducibility
@@ -160,7 +172,7 @@ ylabel({'Basal insulin', '[mU/min]'});
 subplot(414);
 stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
 %xlim([t0, tf]*min2h);
-ylim([-1 1])
+ylim([0 15])
 ylabel({'Bolus insulin', '[U]'});
 xlabel('Time [h]');
 
