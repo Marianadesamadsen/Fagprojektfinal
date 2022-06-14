@@ -248,13 +248,13 @@ idxFPbest = 1;
 for i = 1 : number_combinations  
     
     % We want to have at max 0.5 false positives pr day
-    if rateFP(i) <= 0.5
+    if rateFP(i) <= 0.6
         idxFPbest = i;
     end
     
     % We want to detect at least 70% of the meals we want to detect
     % We want to have at max 0.5 false positives pr day
-    if rateFP(idxFPbest) <= 0.5 && rateTP(idxFPbest) >= 0.7
+    if rateFP(idxFPbest) <= 0.6 && rateTP(idxFPbest) >= 0.7
         idx_tempoptimal(i) = i;
     end
       
