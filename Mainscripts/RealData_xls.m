@@ -46,7 +46,6 @@ CGM = CGM * mmolLiter2mgDl;    % Glucose measurements are given in mmol/L and we
 uba = uba * U2mU*min2h;        % Insulin measurements are given in U/h and we convert to mU/min
 ubo = ubo * U2mU*min2h;        % Insulin measurements are given in U/h and we convert to mU/min
 
-
 %% Time format conversion
 
 % We loop over the cell array and convert it to a string such that it gets
@@ -61,97 +60,118 @@ for i = 1:length(time_temp_insulin_carb)
 
 end
 
-% %% Test for data
-%
-% date_test = (t2(70:85));
-% for i = 1:length(date_test)
-%     if isequal(date_test(i), date_test(i+1)) == 1
-%         date_test(i) = []
-%     end
-% end
-
-% %% ***** FUNGERER IKKE The non duplicated datetimes for insulin, no repeats of time****
-% time_CGM = unique(t);
-% time_insulin = unique(t2);
-%
-% % The most measurements within almost the same time interval we have is
-% % from the CGM measurements
-% time_range = length(time_CGM);
-% % Adding 100 extra datetimes in each end of the time interval
-% extendFactor = 20;
-% % Insulin starts getting measured 2 minutes before CGM and finishes 1
-% % minute after CGM
-% t_1 = time_insulin(1);
-% t_2 = time_insulin(end);
-%
-% time_vec = linspace(t_1, t_2, time_range *extendFactor);
-%
-% % Adjusting the bolus insulin vector to match the time_vec
-% %vec_ratio = length(time_vec)/length(ubo);  % length ratio between time vector and bolus vector. Is gonna be used for indexing
-% %zero_ubo_vec = zeros(1,length(time_vec));  % allocating space for the extended bolus vector
-%
-% idx_bolus = find(ubo);
-%
-% zero_ubo_vec(1,length(time_vec));
-%
-% for i = 1:length(idx_bolus)
-%     zero_ubo_vec(idx_bolus(i)*extendFactor) = ubo(idx_bolus(i));
-% end
-%
-% ubo_vec = zero_ubo_vec;
-
-%% The non duplicated datetimes for insulin, no repeats of time
-%time_CGM = unique(t);       % Filtered time for CGM
-%time_insulin = unique(t2);  % Filtered time for insulin
-
-%t_start = min(time_CGM(1),time_insulin(1)); % Start time, the one out of the two measurements that start first
-%t_end = max(time_CGM(end), time_insulin(end)); % Finish time, the one out of the two measurements that finishes last
-%
-% % timerange = max(length(time_CGM),length(time_insulin));
-%
-% time_vec2 = [t_start, time_CGM, t_end];
-
 %% Plot over 3 days from january 2nd till end of January 4th
-t_start = min(t(1),t2(1)); % Start time, the one out of the two measurements that start first
+t_start = min(t(1),t2(1));    % Start time, the one out of the two measurements that start first
 t_end = max(t(end), t2(end)); % Finish time, the one out of the two measurements that finishes last
 
-time_vec_CGM = [t_start, t, t_end];
-time_vec_insulin = [t_start, t2, t_end];
+time_vec_CGM = [t_start, t, t_end];         % Datetime vector for CGM (add one more timepoint)
+time_vec_insulin = t2;                      % Datetime vector for insulin & carbs (add one more timepoint)
 
-time3days_CGM = time_vec_CGM(1:858+1);
-time3days_insulin = time_vec_insulin(1:482+1);
+time3days_CGM = time_vec_CGM(1:858+1);      % Datetime vector for 3 days for CGM
+time3days_insulin = time_vec_insulin(1:482); % Datetime vector for 3 days for insulin & carbs
 
-CGM_3 = CGM(1:858);
-CGM_3(end+1) = 0;
+CGM_3 = CGM(1:858);       % CGM measurements for 3 days
+CGM_3(end+1) = 0;         % Add an extra row with 0 to match the dimension of timevector
 
-ubo_3 = ubo(1:482);
-ubo_3(end+1) = 0;
+ubo_3 = ubo(1:482);       % Bolus measurements for 3 days
 
-uba_3 = uba(1:482);
-uba_3(end+1) = 0;
+uba_3 = uba(1:482);       % Basal measurements for 3 days
 
-figure (1)
-subplot(3,1,1)
+meal_3 = meal(1:482);     % Meal measurements for 3 days
+
+%% Plots over 3 days
+figure (2)
+subplot(4,1,1)
 plot(time3days_CGM, CGM_3);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 xlabel('Time');
 title('Blood glucose concentration over time')
 
-
-subplot(3,1,2)
+subplot(4,1,2)
 stem(time3days_insulin, ubo_3)
 ylabel({'Bolus insulin', '[U]'});
 xlabel('Time');
 title('Bolus insulin flow rate')
 
-
-subplot(3,1,3)
+subplot(4,1,3)
 stairs(time3days_insulin, uba_3)
 ylabel({'Basal insulin', '[mU/min]'});
 xlabel('Time');
 title('Basal insulin flow rate')
 
+subplot(4,1,4)
+stem(time3days_insulin, meal_3)
+ylabel({'Meal carbohydrates', '[g CHO]'});
+xlabel('Time');
+title('Meals and meal sizes')
 
+%% GRID over 3 days
+TT = zeros(1,length(time3days_CGM));
+TT(1) = 0;
+
+% Making vector to numerical span between measurements
+for i = 1:length(time3days_CGM)-1
+    temp_time1 = datevec(time3days_CGM(i));
+    temp_time2 = datevec(time3days_CGM(i+1));
+
+    if temp_time2(4)==00 && temp_time1(4)~=0
+        TT(i+1) = TT(i)+(24*h2min+temp_time2(5)) - (temp_time1(4)*h2min+temp_time1(5));
+    else
+        TT(i+1) = TT(i)+(temp_time2(4)*h2min+temp_time2(5)) - (temp_time1(4)*h2min+temp_time1(5));
+    end
+end
+
+% step size between control steps
+
+Ts = zeros(1,length(TT));
+
+for k = 1:length(TT)-1
+    Ts(k) = TT(k+1)-TT(k); % This is the final vector to use
+end
+
+% Initializing for the GRID algorithm
+delta_G        = 15;                 % From article
+tau            = 6;                  % From the article
+Gmin           = [130 1.5 1.6];      % For meal under 50 considered
+
+% Computing the GRID algorithm
+D_detected = GRIDalgorithm_mealdetection2(CGM_3,Gmin,tau,delta_G,TT,Ts);
+
+% The total amount of detected meals
+number_detectedmeals = sum(D_detected);
+
+% Printing the number of detected meals
+fprintf('number of detected meals: %d\n',number_detectedmeals);
+
+% figure (2)
+% stem(time3days_CGM(1:end-1), meal_3)
+% hold on
+% plot(time3days_CGM(1:end-1), D_detected, '*')
+
+%% Most optimal G_min values tried on the GRID algorithm
+
+% Allocate space for detections for each G_min
+detec = zeros(length(idx_optimalfinal),length(CGM_3)-1);
+detecmeals = zeros(length(idx_optimalfinal), 1);
+
+% Define the table of optimal G min combinations and the indices
+delta_G        = 15;                 % From article
+tau            = 6;                  % From the article
+
+for i = length(idx_optimalfinal)
+    G_min_temp = Gmin_combinations(idx_optimalfinal(i),:)
+    detec(1,:) = GRIDalgorithm_mealdetection2(CGM_3,G_min_temp,tau,delta_G,TT,Ts)
+    detecmeals(i) = sum(detec(i,:))
+end
+
+% The total amount of detected meals
+%number_detectedmeals = sum(D_detected);
+
+% Printing the number of detected meals
+%fprintf('number of detected meals: %d\n',number_detectedmeals);
+    
+    
+%% ***** ALL OF THE FOLLOWING IS FOR THE WHOLE TIME FRAME FROM JANUARY 1ST TILL JUNE *****
 
 %% GRID - temp
 delta_G        = 15;                 % From article
@@ -201,16 +221,16 @@ fprintf('number of detected meals: %d\n',number_detectedmeals);
 
 %% Plots over the 4 measurements, G, ubo, uba and D for the whole time frame from january-june
 
-%Plot glucose concentration from january till June
-%subplot(4,1,1)
-figure;
-plot(t, CGM)
-ylim([30 400])
-xlim([t(1) t(end)])
-ylabel({'Glucose concentration', '[mg/gL]'});
-xlabel('Time');
-hold on
-plot(t(1:end-1),D_detected*100,'r.');
+% %Plot glucose concentration from january till June
+% %subplot(4,1,1)
+% figure;
+% plot(t, CGM)
+% ylim([30 400])
+% xlim([t(1) t(end)])
+% ylabel({'Glucose concentration', '[mg/gL]'});
+% xlabel('Time');
+% hold on
+% plot(t(1:end-1),D_detected*100,'r.');
 
 % Plot basal insulin from january till june
 % subplot(4,1,2)
