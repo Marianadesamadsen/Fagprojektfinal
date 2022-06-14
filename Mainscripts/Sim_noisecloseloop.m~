@@ -192,7 +192,7 @@ Gsc = Y; % [mg/dL]
 % Range for gmin try outs
 gmin1range = (125:5:135);
 gmin2range = (1.0:0.5:2.0);
-gmin3range = (1.0:0.5:2.0);
+gmin3range = (1.0:0.5:2.);
 
 % Computing the combinations using meshgrid
 [Gmin1,Gmin2,Gmin3] = meshgrid(gmin1range,gmin2range,gmin3range);
@@ -245,7 +245,6 @@ rateFP = FP/30; % The mean of false positives pr day since 30 days
 rateTP = TP/90; % The percent of how many true positives out of the total
 idxFPbest = 1;
 
-%%
 for i = 1 : number_combinations  
     
     % We want to have at max 0.5 false positives pr day
@@ -268,8 +267,7 @@ rTP_optimal = rateTP(idx_optimalfinal);
 rFP_total = rateFP;
 rTP_total = rateTP;
 
-%%
-%table(rFP_optimal,rTP_optimal,idx_optimalfinal)
+table(rFP_optimal,rTP_optimal,idx_optimalfinal)
 table(rFP_total,rTP_total)
 
 %% Vectors with length of time of when bolus is missed and lessened

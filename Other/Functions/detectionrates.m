@@ -1,4 +1,4 @@
-function [truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts,U)
+function [truenegative,truepositive,falsepositive,falsenegative] = detectionrates(stride,D,D_detected,Ts)
 %
 % detectionrates()
 % 
