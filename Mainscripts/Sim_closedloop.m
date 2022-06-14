@@ -79,7 +79,7 @@ ctrlAlgorithm = @PIDControl2;
 simModel = @MVPmodel;
 
 % Observed variables
-observationModel = @CHMsensor_withnoise;
+observationModel = @CGMsensor_withnoise;
 
 % Simulation method/function
 simMethod = @EulerM;
@@ -113,8 +113,8 @@ idxMeal         = tMeal/Ts + 1;   % [#]
 tSnack          = 10*h2min;
 idxSnack        = tSnack/Ts +1;
 
-D(1, idxMeal)   = 20   /Ts;       % [g CHO/min]
-D(1, idxSnack)  = 70   /Ts; 
+D(1, idxMeal)   = 70   /Ts;       % [g CHO/min]
+D(1, idxSnack)  = 20   /Ts; 
 
 % Insulin vector
 U = zeros(2,length(D(1,:)));
@@ -133,11 +133,11 @@ end
 intensity = 10;
 
 % Closed-loop simulation
-[T, X, Y, U] = ClosedLoopSimulation_withnoise(tspan,x0,D,p, ... 
+[T, X, Y, U] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,p, ... 
     ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
 
 % Blood glucose concentration
-Gsc = Y; % [mg/dL]
+Gsc = Y; % [mg/dL] 
 
 %% Visualize
 % Create figure with absolute size for reproducibility
@@ -172,7 +172,7 @@ ylabel({'Basal insulin', '[mU/min]'});
 subplot(414);
 stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
 %xlim([t0, tf]*min2h);
-ylim([-1 1])
+ylim([0 15])
 ylabel({'Bolus insulin', '[U]'});
 xlabel('Time [h]');
 
