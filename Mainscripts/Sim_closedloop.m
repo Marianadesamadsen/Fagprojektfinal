@@ -54,7 +54,7 @@ if(flag ~= 1), error ('fsolve did not converge!'); end
 %% Intital and final time for the simulation over 18 hours
 
 t0 =  0;       % min - start time
-tf = 24*h2min; % min - end time
+tf = 720*h2min; % min - end time
 Ts = 5;        % min - Sampling time
 
 %% Number of contral intervals
@@ -105,17 +105,46 @@ ctrlState = [
 ctrlPar(6) = us(1);
 
 %% Disturbance variables
-D = zeros(1, N);
+D = zeros(1, N); % No meal assumed
 
-%% Meal and meal bolus after 1 hour
-tMeal           = 7*h2min;        % [min]
-idxMeal         = tMeal/Ts + 1;   % [#]
-tSnack          = 10*h2min;
-idxSnack        = tSnack/Ts +1;
+%% Meal and meal bolus at 7, 12, 18 hours
 
-D(1, idxMeal)   = 70   /Ts;       % [g CHO/min]
-D(1, idxSnack)  = 20   /Ts; 
+% Time meals
+tMeal1           = 7*h2min;         
+tMeal2           = 12*h2min;
+tMeal3           = 18*h2min;
+tSnack1          = 15*h2min;
+tSnack2          = 10*h2min;  
 
+% Index meals
+idxMeal1         = tMeal1  /Ts + 1;   
+idxMeal2         = tMeal2  /Ts + 1;   
+idxMeal3         = tMeal3  /Ts + 1;   
+idxSnack1        = tSnack1 /Ts + 1;   
+idxSnack2        = tSnack2 /Ts + 1;
+
+%% Making meal sizes 
+
+meal  = randi([50,150],1,90);
+snack = 20; 
+
+%% Inserting the meal sizes at the different hours/indicies
+
+% Lopping over 30 days (one month)
+for i = 0:29
+    
+        % Inserting the different meal sizes at the indcies 
+        D(1, (idxMeal1+24*h2min/Ts*i))   = meal(1+3*i)     /Ts;       % [g CHO/min]
+        D(1, (idxMeal2+24*h2min/Ts*i))   = meal(2+3*i)     /Ts;       % [g CHO/min]
+        D(1, (idxMeal3+24*h2min/Ts*i))   = meal(3+3*i)     /Ts;       % [g CHO/min]
+        
+        % Inserting the different meal sizes at the indcies 
+        D(1, (idxSnack1+24*h2min/Ts*i))   = snack     /Ts;            % [g CHO/min]  
+        D(1, (idxSnack2+24*h2min/Ts*i))   = snack    /Ts;             % [g CHO/min] 
+        
+end
+
+%%
 % Insulin vector
 U = zeros(2,length(D(1,:)));
 idx_missed_temp = zeros(1,26);
@@ -127,6 +156,25 @@ for i = 1 : length(U)
         U(2,i) = (D(1,i)*Ts/10)*U2mU/Ts; % ICR
     end
 end
+
+% Removing bolus insulin from some of the meal indices.
+% Every 5th day the meal at 7 hour is missed.
+for i = 1 : 3 : 29
+    U(2,idxMeal1+24*h2min/Ts*i) = 0;
+    idx_missed_temp(i) = idxMeal1+24*h2min/Ts*i ;
+end
+
+idx_missed = nonzeros(idx_missed_temp)';
+
+% Decreasing the amount of insulin for some of the meal indices.
+% Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
+for i = 2 : 3 : 29
+    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.2;
+    idx_less_temp(i) = idxMeal2+24*h2min/Ts*i;
+end
+
+idx_less = nonzeros(idx_less_temp)';
+
 
 %% Simulate
 
@@ -140,6 +188,11 @@ intensity = 10;
 Gsc = Y; % [mg/dL] 
 
 %% Visualize
+
+reset(groot);
+
+close all 
+
 % Create figure with absolute size for reproducibility
 figure;
 
@@ -147,35 +200,46 @@ figure;
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
-% Plot blood glucose concentration
+% Plot blood glucose concentration and the detected meals as points
 subplot(411);
 plot(T2, Gsc);
 %xlim([t0, tf]*min2h);
-ylim([10 250])
-ylabel({'CGM measurements', '[mg/dL]'});
+ylabel({'Blood glucose concentration', '[mg/dL]'});
+title('Blood glucose concentration over time','FontSize', 25)
+%hold on 
+%plot(tspan2(1:end-1),D_detected*200,'r.');
+% hold on
+% plot(tspan2(1:end-1),missed_vector*150,'r *');
+% hold on
+% plot(tspan2(1:end-1),less_vector*150,'black *');
 
-% Plot meal carbohydrate
+% Plot meal carbohydrate and the detected meals as points
 subplot(412);
 stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
 %xlim([t0, tf]*min2h);
-ylim([0 100])
 ylabel({'Meal carbohydrates', '[g CHO]'});
+title('Meals and meal sizes','FontSize', 25)
+%hold on 
+%plot(tspan2(1:end-1),D_detected*100,'r.');
+% hold on
+% plot(tspan2(1:end-1),missed_vector*50,'r *');
+% hold on
+% plot(tspan2(1:end-1),less_vector*50,'black *');
 
 % Plot basal insulin flow rate
 subplot(413);
 stairs(tspan2, U(1, [1:end, end]));
 %xlim([t0, tf]*min2h);
-ylim([20 50])
 ylabel({'Basal insulin', '[mU/min]'});
+title('Basal insulin flow rate','FontSize', 25)
 
 % Plot bolus insulin
 subplot(414);
 stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
 %xlim([t0, tf]*min2h);
-ylim([0 15])
-ylabel({'Bolus insulin', '[U]'});
+ylabel({'Bolus insulin', '[U]'}); 
 xlabel('Time [h]');
-
+title('Bolus insulin with missing bolus and less bolus at some meals','FontSize', 25)
 
 
 
