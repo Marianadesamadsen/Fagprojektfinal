@@ -122,28 +122,28 @@ idx_less_temp = zeros(1,28);
 
 % Calculating the insulin amount for each meal
 for i = 1 : length(U)
-    if D(1,i) > 0 %because snack
+    if D(1,i) > 50/Ts %because snack
         U(2,i) = (D(1,i)*Ts/10)*U2mU/Ts; % ICR
     end
 end
 
-% Removing bolus insulin from some of the meal indices.
-% Every 5th day the meal at 7 hour is missed.
-for i = 1 : 5 : 29
-    U(2,idxMeal1+24*h2min/Ts*i) = 0;
-    idx_missed_temp(i) = idxMeal1+24*h2min/Ts*i ;
-end
-
-idx_missed = nonzeros(idx_missed_temp)';
-
-% Decreasing the amount of insulin for some of the meal indices.
-% Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
-for i = 3 : 5 : 29
-    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.5;
-    idx_less_temp(i) = idxMeal2+24*h2min/Ts*i;
-end
-
-idx_less = nonzeros(idx_less_temp)';
+% % Removing bolus insulin from some of the meal indices.
+% % Every 5th day the meal at 7 hour is missed.
+% for i = 1 : 3 : 29
+%     U(2,idxMeal1+24*h2min/Ts*i) = 0;
+%     idx_missed_temp(i) = idxMeal1+24*h2min/Ts*i ;
+% end
+% 
+% idx_missed = nonzeros(idx_missed_temp)';
+% 
+% % Decreasing the amount of insulin for some of the meal indices.
+% % Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
+% for i = 2 : 3 : 29
+%     U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.2;
+%     idx_less_temp(i) = idxMeal2+24*h2min/Ts*i;
+% end
+% 
+% idx_less = nonzeros(idx_less_temp)';
 
 %% Simulating the control states based on x0, the steady state.
 
@@ -154,7 +154,7 @@ intensity = 0;
 
 %% Extractign the blood glucose concentration 
 
-G = CGMsensor_withnoise(X, p); % [mg/dL] 
+G = CGMsensor(X, p); % [mg/dL] 
 
 %% Detecting meals using GRID algorithm
 
@@ -197,17 +197,17 @@ figure;
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
-missed_vector = zeros(1,length(T2)-1);
-for i = 1:length(idx_missed)
-    k = idx_missed(i);
-    missed_vector(k) = 1;
-end
-
-less_vector = zeros(1,length(T2)-1);
-for i = 1:length(idx_less)
-    k = idx_less(i);
-    less_vector(k) = 1;
-end
+% missed_vector = zeros(1,length(T2)-1);
+% for i = 1:length(idx_missed)
+%     k = idx_missed(i);
+%     missed_vector(k) = 1;
+% end
+% 
+% less_vector = zeros(1,length(T2)-1);
+% for i = 1:length(idx_less)
+%     k = idx_less(i);
+%     less_vector(k) = 1;
+% end
 
 
 % Plot blood glucose concentration and the detected meals as points
@@ -215,33 +215,33 @@ subplot(411);
 plot(T2, G);
 %xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
-title('Blood glucose concentration over time')
+title('Blood glucose concentration over time','FontSize', 25)
 %hold on 
 %plot(tspan2(1:end-1),D_detected*200,'r.');
-hold on
-plot(tspan2(1:end-1),missed_vector*150,'b *');
-hold on
-plot(tspan2(1:end-1),less_vector*150,'g *');
+% hold on
+% plot(tspan2(1:end-1),missed_vector*150,'r *');
+% hold on
+% plot(tspan2(1:end-1),less_vector*150,'black *');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(412);
 stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
 %xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
-title('Meals and meal sizes')
+title('Meals and meal sizes','FontSize', 25)
 %hold on 
 %plot(tspan2(1:end-1),D_detected*100,'r.');
-hold on
-plot(tspan2(1:end-1),missed_vector*50,'b *');
-hold on
-plot(tspan2(1:end-1),less_vector*50,'g *');
+% hold on
+% plot(tspan2(1:end-1),missed_vector*50,'r *');
+% hold on
+% plot(tspan2(1:end-1),less_vector*50,'black *');
 
 % Plot basal insulin flow rate
 subplot(413);
 stairs(tspan2, U(1, [1:end, end]));
 %xlim([t0, tf]*min2h);
 ylabel({'Basal insulin', '[mU/min]'});
-title('Basal insulin flow rate')
+title('Basal insulin flow rate','FontSize', 25)
 
 % Plot bolus insulin
 subplot(414);
@@ -249,7 +249,7 @@ stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
 %xlim([t0, tf]*min2h);
 ylabel({'Bolus insulin', '[U]'}); 
 xlabel('Time [h]');
-title('Bolus insulin flow rate')
+title('Bolus insulin','FontSize', 25)
 
 % Plot detected Meals
 % subplot(515);

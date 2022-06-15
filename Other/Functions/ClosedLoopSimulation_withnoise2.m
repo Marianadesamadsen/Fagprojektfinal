@@ -2,7 +2,7 @@ function [T, X, Y, U, ctrlState] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,
     ctrlAlgorithm, simMethod, simModel, observationMethod, ctrlPar,ctrlState0,NK,intensity)
 %
 % ClosedLoopSimulation()
-% 
+% s
 % DESCRIPTION:
 % Performs a closed-loop simulation of a model-based control algorithm for
 % given initial condition, control intervals, disturbance variables,
