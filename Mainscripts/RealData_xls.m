@@ -152,27 +152,23 @@ plot(time3days_CGM, CGM_3);
 hold on
 plot(time3days_CGM, D_detected*200, '*')
 ylabel({'Blood glucose concentration', '[mg/dL]'});
-xlabel('Time');
-title('Blood glucose concentration over time')
-
-subplot(4,1,2)
-stem(time3days_insulin, ubo_3*h2min)
-ylabel({'Bolus insulin', '[U]'});
-xlabel('Time');
-title('Bolus insulin flow rate')
-
-subplot(4,1,3)
-stairs(time3days_insulin, uba_3)
-ylabel({'Basal insulin', '[mU/min]'});
-xlabel('Time');
-title('Basal insulin flow rate')
+title('Blood glucose concentration over time', 'FontSize', 25)
 
 subplot(4,1,4)
 stem(time3days_insulin, meal_3)
 ylabel({'Meal carbohydrates', '[g CHO]'});
-xlabel('Time');
-title('Meals and meal sizes')
+xlabel('Time [h]');
+title('Meals and meal sizes', 'FontSize', 25)
 
+subplot(4,1,2)
+stem(time3days_insulin, ubo_3*h2min*mU2U)
+ylabel({'Bolus insulin', '[U]'});
+title('Bolus insulin flow rate', 'FontSize', 25)
+
+subplot(4,1,3)
+stairs(time3days_insulin, uba_3)
+ylabel({'Basal insulin', '[mU/min]'});
+title('Basal insulin flow rate', 'FontSize', 25)
 
 %% Most optimal G_min values tried on the GRID algorithm (several combinations)
 
@@ -195,7 +191,7 @@ end
 detectedmeals_vec = detec(1,:);
 detectedmeals = sum(detectedmeals_vec);
 
-%% Plots over the 4 measurements from January 2nd till 2nd of February
+%% Plots over the 4 measurements from 1st of March till 31st of March
 
 figure(3)
 
@@ -204,14 +200,15 @@ subplot(4,1,1)
 plot(t(11769:20536), CGM(11769:20536))
 xlim([t(11767) t(20555)])
 ylabel({'Glucose concentration', '[mg/gL]'});
-xlabel('Time');
+title('Blood glucose concentration over time', 'FontSize', 25)
+
 
 %Plot meals from 1st of march till 31st of march
 subplot(4,1,2)
 plot(t2(6990:12407), meal(6990:12407))
 xlim([t2(6980) t2(12415)])
-ylabel({'Meals', '[carbs in g]'});
-xlabel('Time');
+ylabel({'Meal carbohydrates', '[g CHO]'});
+title('Meals and meal sizes', 'FontSize', 25)
 
 %Plot basal insulin from 1st of march till 31st of march
 subplot(4,1,3)
@@ -219,21 +216,20 @@ plot(t2(6990:12407), uba(6990:12407))
 ylim([0 max(uba)])
 xlim([t2(6980) t2(12415)])
 ylabel({'Basal insulin', '[mU/min]'});
-xlabel('Time');
+title('Basal insulin flow rate', 'FontSize', 25)
 
 %Plot bolus insulin from 1st of march till 31st of march
 subplot(4,1,4)
-plot(t2(6990:12407), ubo(6990:12407)*h2min)
+plot(t2(6990:12407), ubo(6990:12407)*h2min*mU2U)
 xlim([t2(6980) t2(12415)])
 ylabel({'Bolus insulin', '[mU]'});
-xlabel('Time');
+xlabel({'Time [h]'})
+title('Bolus insulin', 'FontSize', 25)
+
+
+
     
 %% ***** ALL OF THE FOLLOWING IS FOR THE WHOLE TIME FRAME FROM JANUARY 1ST TILL JUNE *****
-
-%% GRID - temp
-delta_G        = 15;                 % From article
-tau            = 6;                  % From the article
-Gmin           = [130 1.5 1.6];      % For meal under 50 considered
 
 %% GRID - temp for the whole timeframe
 
@@ -265,7 +261,7 @@ end
 % Initializing for the GRID algorithm
 delta_G        = 15;                 % From article
 tau            = 6;                  % From the article
-Gmin           = [130 1.5 1.6];      % For meal under 50 considered
+Gmin           = [120 0.6 0.5];      % For meal under 50 considered
 
 % Computing the GRID algorithm
 D_detected = GRIDalgorithm_mealdetection2(CGM,Gmin,tau,delta_G,TT,Ts);
