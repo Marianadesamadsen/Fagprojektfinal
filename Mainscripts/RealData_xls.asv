@@ -195,39 +195,41 @@ end
 detectedmeals_vec = detec(1,:);
 detectedmeals = sum(detectedmeals_vec);
 
-%% Plots over the 4 measurements from January 2nd till 2nd of February
+%% Plots over the 4 measurements from 1st of March till 31st of March
 
-%Plot glucose concentration from january till June
+figure(3)
+
+%Plot glucose concentration from 1st of march till 31st of march
 subplot(4,1,1)
-figure;
 plot(t(11769:20536), CGM(11769:20536))
-ylim([30 400])
 xlim([t(11767) t(20555)])
 ylabel({'Glucose concentration', '[mg/gL]'});
-xlabel('Time');
+title('Blood glucose concentration over time')
 
-%Plot meals from january till june
+
+%Plot meals from 1st of march till 31st of march
 subplot(4,1,2)
 plot(t2(6990:12407), meal(6990:12407))
 xlim([t2(6980) t2(12415)])
-ylabel({'Meals', '[carbs in g]'});
-xlabel('Time');
+ylabel({'Meal carbohydrates', '[g CHO]'});
+title('Meals and meal sizes')
 
-%Plot basal insulin from january till june
-subplot(4,1,2)
+%Plot basal insulin from 1st of march till 31st of march
+subplot(4,1,3)
 plot(t2(6990:12407), uba(6990:12407))
 ylim([0 max(uba)])
 xlim([t2(6980) t2(12415)])
 ylabel({'Basal insulin', '[mU/min]'});
-xlabel('Time');
+title('Basal insulin flow rate')
 
-%Plot bolus insulin from january till june
-subplot(4,1,3)
-plot(t2(1:2570), ubo(1:2570)*h2min)
-ylim([0 max(ubo)])
-xlim([t2(1) t2(2570)])
-ylabel({'Bolus insulin', '[mU/min]'});
-xlabel('Time');
+%Plot bolus insulin from 1st of march till 31st of march
+subplot(4,1,4)
+plot(t2(6990:12407), ubo(6990:12407)*h2min)
+xlim([t2(6980) t2(12415)])
+ylabel({'Bolus insulin', '[mU]'});
+title('Bolus insulin')
+
+
     
 %% ***** ALL OF THE FOLLOWING IS FOR THE WHOLE TIME FRAME FROM JANUARY 1ST TILL JUNE *****
 
