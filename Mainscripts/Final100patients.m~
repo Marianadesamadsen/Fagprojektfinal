@@ -40,7 +40,7 @@ sec2min = 1/h2min;% Convert from sec to min
 
 %% Initializing parameters
 
-numpatients = 100;         % number of patients
+numpatients = 50;         % number of patients
 pf = pmatrix(numpatients); % computing the p vectors for all patients
 Gs = 108;                  % [mg/dL]: Steady state blood glucose concentration
 ts = [];
@@ -202,7 +202,7 @@ for p = 1 : numpatients
         ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
 
     % Making sure to remove unusual patients
-    if max(Y(:,p)) < 550 && min(Y(:,p)) > 20
+    if max(Y(:,p)) < 400 && min(Y(:,p)) > 20
     
         % Blood glucose concentration
         Gsc_temp(:,p) = Y(:,p); % [mg/dL]
@@ -338,34 +338,64 @@ table(rFP_optimal,rTP_optimal,idx_optimalfinal)
 
 close all
 
+T2=datetime(T*min2sec,'ConvertFrom','posixtime');
+tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
+
+figure (1) 
+
+subplot(2,1,1)
+plot(T2,Y(:,30))
+hold on 
+%plot(tspan2(1:end-1),D_detected(:,79,30)*200,'r.');
+%hold on 
+ylim([0 1000])
+
+subplot(2,1,2)
+stem(tspan2(1:end-1),Ts*D(:,30)','MarkerSize', 0.1)
+
+
+
+
 % Converting data
 T2=datetime(T*min2sec,'ConvertFrom','posixtime');
 tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
 % Plot blood glucose concentration and the detected meals as points
 subplot(411);
-plot(T2, Y(:,5))
+plot(T2, Y(:,30))
+%xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 title('Blood glucose concentration over time','FontSize', 25)
+%hold on 
+%plot(tspan2(1:end-1),D_detected*200,'r.');
+% hold on
+% plot(tspan2(1:end-1),missed_vector*150,'r *');
+% hold on
+% plot(tspan2(1:end-1),less_vector*150,'black *');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(412);
-stem(tspan2(1:end-1), Ts*D(:,5)', 'MarkerSize', 0.1)
+stem(tspan2(1:end-1), Ts*D(:,30)', 'MarkerSize', 0.1)
 %xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
 title('Meals and meal sizes','FontSize', 25)
-
+%hold on 
+%plot(tspan2(1:end-1),D_detected*100,'r.');
+% hold on
+% plot(tspan2(1:end-1),missed_vector*50,'r *');
+% hold on
+% plot(tspan2(1:end-1),less_vector*50,'black *');
 
 % Plot basal insulin flow rate
 subplot(413);
-stairs(tspan2, U(1, [1:end, end]),5)
+stairs(tspan2, U(1, [1:end, end]))
 %xlim([t0, tf]*min2h);
 ylabel({'Basal insulin', '[mU/min]'});
 title('Basal insulin flow rate','FontSize', 25)
 
 % Plot bolus insulin
 subplot(414);
-stem(tspan2(1:end-1), Ts*mU2U*U(2, :,5), 'MarkerSize', 1)
+stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
 %xlim([t0, tf]*min2h);
 ylabel({'Bolus insulin', '[U]'}); 
 xlabel('Time [h]');
