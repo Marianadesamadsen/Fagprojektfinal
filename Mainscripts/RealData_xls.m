@@ -163,7 +163,7 @@ title('Meals and meal sizes', 'FontSize', 25)
 subplot(4,1,2)
 stem(time3days_insulin, ubo_3*h2min*mU2U)
 ylabel({'Bolus insulin', '[U]'});
-title('Bolus insulin flow rate', 'FontSize', 25)
+title('Bolus insulin', 'FontSize', 25)
 
 subplot(4,1,3)
 stairs(time3days_insulin, uba_3)
