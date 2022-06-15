@@ -40,7 +40,7 @@ sec2min = 1/h2min;% Convert from sec to min
 
 %% Initializing parameters
 
-numpatients = 100;         % number of patients
+numpatients = 50;         % number of patients
 pf = pmatrix(numpatients); % computing the p vectors for all patients
 Gs = 108;                  % [mg/dL]: Steady state blood glucose concentration
 ts = [];
@@ -343,12 +343,15 @@ tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
 figure (1) 
 
-plot(T2,Gsc(:,30))
+subplot(2,1,1)
+plot(T2,Y(:,14))
 hold on 
-plot(tspan2(1:end-1),D_detected(:,79,30)*200,'r.');
-hold on 
-ylim([0 550])
+%plot(tspan2(1:end-1),D_detected(:,79,30)*200,'r.');
+%hold on 
+ylim([0 1000])
 
+subplot(2,1,2)
+stem(tspan2(1:end-1),Ts*D(:,14)','MarkerSize', 0.1)
 
 
 
