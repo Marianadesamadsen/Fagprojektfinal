@@ -344,28 +344,27 @@ tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
 % Plot blood glucose concentration and the detected meals as points
 subplot(411);
-plot(T2, Y(:,5))
+plot(T2, Y(:,32))
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 title('Blood glucose concentration over time','FontSize', 25)
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(412);
-stem(tspan2(1:end-1), Ts*D(:,5)', 'MarkerSize', 0.1)
+stem(tspan2(1:end-1), Ts*D(:,32)', 'MarkerSize', 0.1)
 %xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
 title('Meals and meal sizes','FontSize', 25)
 
-
 % Plot basal insulin flow rate
 subplot(413);
-stairs(tspan2, U(1, [1:end, end]),5)
+stairs(tspan2, U(1, [1:end, end],32))
 %xlim([t0, tf]*min2h);
 ylabel({'Basal insulin', '[mU/min]'});
 title('Basal insulin flow rate','FontSize', 25)
 
 % Plot bolus insulin
 subplot(414);
-stem(tspan2(1:end-1), Ts*mU2U*U(2, :,5), 'MarkerSize', 1)
+stem(tspan2(1:end-1), Ts*mU2U*U(2, :,32), 'MarkerSize', 1)
 %xlim([t0, tf]*min2h);
 ylabel({'Bolus insulin', '[U]'}); 
 xlabel('Time [h]');
