@@ -18,7 +18,7 @@ function D_detected = GRIDalgorithm_mealdetection2(G,Gmin,tau,delta_G,tspan,Ts)
 % D_detected    - The vector with 0 or 1. 1 meaning meal is detected. 
 % 
 % PROJECT:
-% Fagprojekt 2022
+% Fagprojekt 2022 
 % A diabetes case study - Meal detection
 %
 % GENEREL:
