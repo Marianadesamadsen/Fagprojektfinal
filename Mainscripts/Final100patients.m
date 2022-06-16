@@ -289,7 +289,7 @@ meanDetec = zeros(1,number_combinations);
 
 % Looping over all combinations
 for i = 1 : number_combinations
-    meanFN(i) = mean(falsepositive(i,:));
+    meanFP(i) = mean(falsepositive(i,:));
     meanTP(i) = mean(truepositive(i,:));
     meanDetec(i) = mean(number_detectedmeals(i,:));
 end
