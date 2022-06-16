@@ -1,8 +1,11 @@
-%% Sim closed loop
+%% Closed loop simulation 100 patients
 % Perform a closed-loop simulation with a PID controller with a 3 meals
 % and 2 snacks over 30 days for the Medtronic with stochastic noise
-%%
+% Detecting meals using the GRID algorithm with 125 combinations of the
+% gmin values.
+% Computes the optimal Gmin values using the evaluation function.
 
+%%
 clear all
 clc
 close all
@@ -256,8 +259,6 @@ number_combinations     = length(Gmin_combinations);
 number_detectedmeals    = zeros(number_combinations,numpatients_new);
 truepositive            = zeros(number_combinations,numpatients_new);
 falsepositive           = zeros(number_combinations,numpatients_new);
-falsenegative           = zeros(number_combinations,numpatients_new);
-truenegative            = zeros(number_combinations,numpatients_new);
 D_detected              = zeros(N,number_combinations,numpatients_new);
 
 stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
@@ -273,7 +274,7 @@ for p = 1 : numpatients_new
     % Total number of detected meals for the current Gmin values.
     number_detectedmeals(i,p) = sum(D_detected(:,i,p));
 
-    [truenegative(i,p) ,truepositive(i,p),falsepositive(i,p),falsenegative(i,p)] = detectionrates(stride,D(:,p)',D_detected(:,i,p),Ts,N);
+    [truepositive(i,p),falsepositive(i,p)] = evaluationfunction(stride,D(:,p)',D_detected(:,i,p),Ts,N);
 
     end
 
@@ -282,30 +283,22 @@ end
 %% Computing the mean of all truenegatives, truepositives, falsepositives, falsenegatives for each combination
 
 % Initializing 
-meanTN = zeros(1,number_combinations);
-meanTP = zeros(1,number_combinations);
 meanFN = zeros(1,number_combinations);
-meanFP = zeros(1,number_combinations);
+meanTP = zeros(1,number_combinations);
 meanDetec = zeros(1,number_combinations);
 
 % Looping over all combinations
 for i = 1 : number_combinations
-    meanTN(i) = mean(truenegative(i,:));
+    meanFN(i) = mean(falsepositive(i,:));
     meanTP(i) = mean(truepositive(i,:));
-    meanFP(i) = mean(falsepositive(i,:));
-    meanFN(i) = mean(falsenegative(i,:));
     meanDetec(i) = mean(number_detectedmeals(i,:));
 end
 
 %% Making a table 
 
-MeanTN = meanTN';
 MeanTP = meanTP';
 MeanFP = meanFP';
-MeanFN = meanFN';
 MeanDetec = meanDetec';
-
-table(MeanTN,MeanTP,MeanFP,MeanFN,MeanDetec)
 
 %% Computing the rates to find the optimal Gmin values
 

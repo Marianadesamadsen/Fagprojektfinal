@@ -1,12 +1,16 @@
-%% Sim closed loop
-% Perform a closed-loop simulation with a PID controller with a single meal for the Medtronic
+%% Open loop simulation 1 patient
+% Performing an open-loop simulation 
+% 3 meals and 2 snack meals a day for a month 
+% With noise
+% Detecting meals using the GRID algorithm
 
+%%
 clear all 
 clc 
 close all
 
-%% Loading all folders
 
+%% Loading all folders
 fprintf('Loading diabetes library .. ');
 
 % Add real thermodynamics functions
@@ -15,19 +19,16 @@ addpath(genpath(fullfile(pwd, '../Other')));
 % Let the user know that the library is being loaded
 fprintf('Done\n');
 
-
 %% Formatting the plots 
 
-fs = 11; % Font size
-lw = 3; % Line width
-set(groot, 'DefaultAxesFontSize',   fs); % Set default font size
+fs = 11; % Font size 
+lw = 3; % Line width 
+set(groot, 'DefaultAxesFontSize',   fs); % Set default font size 
 
-% Set default line widths
+% Set default line widths 
 set(groot, 'DefaultLineLineWidth',  lw);
 set(groot, 'DefaultStairLineWidth', lw);
 set(groot, 'DefaultStemLineWidth',  lw);
-
-%reset(groot);
 
 %%  Conversion factors 
 
@@ -35,7 +36,8 @@ h2min = 60;      % Convert from h   to min
 min2h = 1/h2min; % Convert from min to h 
 U2mU  = 1e3;     % Convert from U   to mU 
 mU2U  = 1/U2mU;  % Convert from mU  to U 
-min2sec = h2min;
+min2sec = h2min; % Convert from min to sec
+sec2min = 1/h2min; %Convert from sec to min
 
 %% Inizializing parameters
 
@@ -50,19 +52,17 @@ ts = [];
 % If fsolve did not converge, throw an error
 if(flag ~= 1), error ('fsolve did not converge!'); end
 
+%% Intital and final time for the simulation over 30 days
 
-%% Intital and final time for the simulation over 18 hours
-
-t0 =  0;       % min - start time
+t0 =  0;        % min - start time
 tf = 720*h2min; % min - end time
-Ts = 5;        % min - Sampling time
+Ts = 5;         % min - step size 
 
-%% Number of contral intervals
+%% Number of control intervals
 
-N = (tf - t0)/Ts; % [#]
+N = (tf - t0)/5; % [#]
 
 %% Number of time steps in each control/sampling interval
-
 Nk = 10;
 
 %% Time span
@@ -71,38 +71,8 @@ tspan = 5*(0:N);
 %% Initial condition
 x0 = xs;
 
-%% Inizialising the function to handles 
-% Control algorithm
-ctrlAlgorithm = @PIDControl2;
-
-% Simulation model
-simModel = @MVPmodel;
-
-% Observed variables
-observationModel = @CGMsensor_withnoise;
-
-% Simulation method/function
-simMethod = @EulerM;
-
-%% Controller parameters and state
-ctrlPar = [
-      5.0;    % [min]     Sampling time
-      0.05;   %           Proportional gain
-      0.0005; %           Integral gain
-      0.2500; %           Derivative gain
-    108.0;    % [mg/dL]   Target blood glucose concentration
-    NaN
-    50.0;
-    25.0;
-    ];     % [mU/min]  Nominal basal rate (overwritten below)
-
-ctrlState = [
-      0.0;  %          Initial value of integral
-    108.0]; % [mg/dL] Last measurements of glucose (dummy value)
-
-%% Updating the nominal basal rate at steady state 
-
-ctrlPar(6) = us(1);
+%% Manipulated inputs
+U = repmat(us, 1, N); % The same bolus and base rate for all
 
 %% Disturbance variables
 D = zeros(1, N); % No meal assumed
@@ -142,11 +112,11 @@ for i = 0:29
         D(1, (idxSnack1+24*h2min/Ts*i))   = snack     /Ts;            % [g CHO/min]  
         D(1, (idxSnack2+24*h2min/Ts*i))   = snack    /Ts;             % [g CHO/min] 
         
-end
+end 
 
-%%
+%% Inserting bolus insulin computed by ICR
+
 % Insulin vector
-U = zeros(2,length(D(1,:)));
 idx_missed_temp = zeros(1,26);
 idx_less_temp = zeros(1,28);
 
@@ -157,41 +127,56 @@ for i = 1 : length(U)
     end
 end
 
-% Removing bolus insulin from some of the meal indices.
-% Every 5th day the meal at 7 hour is missed.
-for i = 1 : 3 : 29
-    U(2,idxMeal1+24*h2min/Ts*i) = 0;
-    idx_missed_temp(i) = idxMeal1+24*h2min/Ts*i ;
-end
+% % Removing bolus insulin from some of the meal indices.
+% % Every 5th day the meal at 7 hour is missed.
+% for i = 1 : 3 : 29
+%     U(2,idxMeal1+24*h2min/Ts*i) = 0;
+%     idx_missed_temp(i) = idxMeal1+24*h2min/Ts*i ;
+% end
+% 
+% idx_missed = nonzeros(idx_missed_temp)';
+% 
+% % Decreasing the amount of insulin for some of the meal indices.
+% % Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
+% for i = 2 : 3 : 29
+%     U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.2;
+%     idx_less_temp(i) = idxMeal2+24*h2min/Ts*i;
+% end
+% 
+% idx_less = nonzeros(idx_less_temp)';
 
-idx_missed = nonzeros(idx_missed_temp)';
+%% Simulating the control states based on x0, the steady state.
 
-% Decreasing the amount of insulin for some of the meal indices.
-% Every 5th day starting at day 3 the bolus insulin is 0.5 too low.
-for i = 2 : 3 : 29
-    U(2,idxMeal2+24*h2min/Ts*i) = U(2,idxMeal2+24*h2min/Ts*i) * 0.2;
-    idx_less_temp(i) = idxMeal2+24*h2min/Ts*i;
-end
+% The noise intensity
+intensity = 0;
 
-idx_less = nonzeros(idx_less_temp)';
+[T, X] = OpenLoopSimulation_withnoise(x0, tspan, U, D, p, @MVPmodel, @EulerM, Nk,intensity);
+
+%% Extractign the blood glucose concentration 
+
+G = CGMsensor(X, p); % [mg/dL] 
+
+%% Detecting meals using GRID algorithm
+
+% Inisializing 
+delta_G        = 15;                 % From article
+t_vec          = [5,10,15];          % The respective sampling times
+tau            = 6;                  % From the article 
+Gmin = [130 1.5 1.6]; % For no meal under 50 considered
+
+% Computing the detected meals
+D_detected = GRIDalgorithm_mealdetection(G,Gmin,tau,delta_G,t_vec,Ts);
+
+% The total number of detected meals
+number_detectedmeals = sum(D_detected);
+
+% Printing the value of detected meals
+fprintf('number of detected meals: %d\n',number_detectedmeals);
 
 
-%% Simulate
-
-intensity = 10;
-
-% Closed-loop simulation
-[T, X, Y, U] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,p, ... 
-    ctrlAlgorithm, simMethod, simModel, observationModel, ctrlPar,ctrlState,Nk,intensity);
-
-% Blood glucose concentration
-Gsc = Y; % [mg/dL] 
-
-%% Visualize
+%% Visualize 
 
 reset(groot);
-
-close all 
 
 % Create figure with absolute size for reproducibility
 figure;
@@ -202,16 +187,10 @@ tspan2=datetime(tspan*min2sec,'ConvertFrom','posixtime');
 
 % Plot blood glucose concentration and the detected meals as points
 subplot(411);
-plot(T2, Gsc);
+plot(T2, G);
 %xlim([t0, tf]*min2h);
 ylabel({'Blood glucose concentration', '[mg/dL]'});
 title('Blood glucose concentration over time','FontSize', 25)
-%hold on 
-%plot(tspan2(1:end-1),D_detected*200,'r.');
-% hold on
-% plot(tspan2(1:end-1),missed_vector*150,'r *');
-% hold on
-% plot(tspan2(1:end-1),less_vector*150,'black *');
 
 % Plot meal carbohydrate and the detected meals as points
 subplot(412);
@@ -219,12 +198,6 @@ stem(tspan2(1:end-1), Ts*D(1, :), 'MarkerSize', 0.1);
 %xlim([t0, tf]*min2h);
 ylabel({'Meal carbohydrates', '[g CHO]'});
 title('Meals and meal sizes','FontSize', 25)
-%hold on 
-%plot(tspan2(1:end-1),D_detected*100,'r.');
-% hold on
-% plot(tspan2(1:end-1),missed_vector*50,'r *');
-% hold on
-% plot(tspan2(1:end-1),less_vector*50,'black *');
 
 % Plot basal insulin flow rate
 subplot(413);
@@ -239,12 +212,4 @@ stem(tspan2(1:end-1), Ts*mU2U*U(2, :), 'MarkerSize', 1);
 %xlim([t0, tf]*min2h);
 ylabel({'Bolus insulin', '[U]'}); 
 xlabel('Time [h]');
-title('Bolus insulin with missing bolus and less bolus at some meals','FontSize', 25)
-
-
-
-
-
-
-
-
+title('Bolus insulin','FontSize', 25)

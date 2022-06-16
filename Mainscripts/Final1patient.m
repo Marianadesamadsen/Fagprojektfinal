@@ -1,8 +1,11 @@
-%% Sim closed loop
+%% Closed loop simulation 1 patient
 % Perform a closed-loop simulation with a PID controller with a 3 meals
 % and 2 snacks over 30 days for the Medtronic with stochastic noise
-%%
+% Detecting meals using the GRID algorithm with 125 combinations of the
+% gmin values.
+% Computes the optimal Gmin values using the evaluation function.
 
+%%
 clear all
 clc
 close all
@@ -212,8 +215,6 @@ number_combinations     = length(Gmin_combinations);
 number_detectedmeals    = zeros(1,number_combinations);
 truepositive            = zeros(1,number_combinations);
 falsepositive           = zeros(1,number_combinations);
-falsenegative           = zeros(1,number_combinations);
-truenegative            = zeros(1,number_combinations);
 D_detected              = zeros(N,number_combinations);
 
 stride = 90/Ts; % How long it can possibly take to detect meal from the time the meal was given.
@@ -227,17 +228,12 @@ D_detected(:,i) = GRIDalgorithm_mealdetection(Gsc,Gmin_combinations(i,:),tau,del
 % Total number of detected meals for the current Gmin values.
 number_detectedmeals(i) = sum(D_detected(:,i));
 
-[truenegative(i) ,truepositive(i),falsepositive(i),falsenegative(i)] = detectionrates(stride,D,D_detected(:,i),Ts,N);
+[truepositive(i),falsepositive(i)] = evaluationfunction(stride,D,D_detected(:,i),Ts,N);
 
 end
 
-Detec = number_detectedmeals';
 TP = truepositive';
 FP = falsepositive';
-FN = falsenegative';
-TN = truenegative';
-
-table(Detec,TP,FP,FN,TN)
 
 %% Computing the rates to find the optimal Gmin values
 
