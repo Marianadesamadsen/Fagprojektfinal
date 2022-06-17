@@ -1,7 +1,7 @@
 function  [ Gfm_vec , filt_prev , flag, zero_one ] = GRID_func( ...
          delta_G , G_vec , tau, tspan , filt_prev , Gmin, Gfm_vec , t_vec, flag)
-%
-% GRID_func()
+% 
+% GRID_func() 
 % 
 % DESCRIPTION:
 % The function is a part of the GRID algortihm. This is part of the
@@ -18,7 +18,7 @@ function  [ Gfm_vec , filt_prev , flag, zero_one ] = GRID_func( ...
 %                         two previous glucose measurements.
 %                         As follows: [Gm-2, Gm-1, Gm].
 %                           
-% Ts                    - The interval step given as a number
+% tspan                 - The interval step given as a number
 %
 % filt_prev             - Vector of previous filteret glucose measurements
 %                         As follows: [G_{F,NS}(k-1), G_{F}(k-2)].

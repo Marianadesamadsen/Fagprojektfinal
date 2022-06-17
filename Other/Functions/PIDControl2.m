@@ -9,7 +9,7 @@ function [uk,ctrlstate] = PIDControl2(yk, U, ctrlPar, ctrlState)
 % 
 % INPUT:
 % yk         - Current blood glucose concentration
-% U          - Insulin vector of both basal and bolus
+% U          - Insulin vector of both basal and bolus insulin
 % 
 % ctrlPar    - vector of the following:
 %                   * Ts              - Sampling time, 5 min
