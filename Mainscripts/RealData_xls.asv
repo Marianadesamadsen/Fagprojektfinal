@@ -94,8 +94,8 @@ TT(1) = 0;
 
 % Making vector to numerical span between measurements
 for i = 1:length(time3days_CGM)-1
-    temp_time1 = datevec(time3days_CGM(i));   % Convert datetime to vector of components with dates and hours
-    temp_time2 = datevec(time3days_CGM(i+1)); % Convert datetime to vector of components with dates and hours
+    temp_time1 = datevec(time3days_CGM(i)); %
+    temp_time2 = datevec(time3days_CGM(i+1));
 
     if temp_time2(4)==00 && temp_time1(4)~=0
         TT(i+1) = TT(i)+(24*h2min+temp_time2(5)) - (temp_time1(4)*h2min+temp_time1(5));
@@ -218,8 +218,8 @@ TT(1) = 0;
 
 % Making vector to numerical span between measurements
 for i = 1:length(t)-1
-    temp_time1 = datevec(t(i));   % Convert datetime to vector of components with dates and hours
-    temp_time2 = datevec(t(i+1)); % Convert datetime to vector of components with dates and hours
+    temp_time1 = datevec(t(i));
+    temp_time2 = datevec(t(i+1));
 
     if temp_time2(4)==00 && temp_time1(4)~=0
         TT(i+1) = TT(i)+(24*h2min+temp_time2(5)) - (temp_time1(4)*h2min+temp_time1(5));

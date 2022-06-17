@@ -4,13 +4,15 @@ function [uk,ctrlstate] = PIDControl2(yk, U, ctrlPar, ctrlState)
 % 
 % DESCRIPTION:
 % This function implements a discretized proportional-integral-derivative
-% (PID) controller for controlling the insulin flow rate.
+% (PID) controller for controlling the insulin flow rate. This differs from
+% PIDControl by additionally having the insulin vector as input
 % 
 % INPUT:
-% yk         - current blood glucose concentration
+% yk         - Current blood glucose concentration
+% U          - Insulin vector of both basal and bolus
 % 
 % ctrlPar    - vector of the following:
-%                   * Ts              - sampling time, 5 min
+%                   * Ts              - Sampling time, 5 min
 %                   * Kp              - Proportional gain
 %                   * Ki              - Integrator gain  
 %                   * Kd              - Derivative gain     

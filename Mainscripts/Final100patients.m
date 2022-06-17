@@ -304,7 +304,7 @@ MeanDetec = meanDetec';
 
 rateFP = meanFP/30; % The mean of false positives pr day
 rateTP = meanTP/90; % The percent of how many true positives out of the total
-
+idx_tempoptimal = zeros(1,length(number_combinations));
 for i = 1 : number_combinations 
     
     % We want to detect at least 70% of the meals we want to detect

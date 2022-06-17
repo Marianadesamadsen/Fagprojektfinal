@@ -2,26 +2,29 @@ function [T, X, Y, U, ctrlState] = ClosedLoopSimulation_withnoise2(tspan,x0,D,U,
     ctrlAlgorithm, simMethod, simModel, observationMethod, ctrlPar,ctrlState0,NK,intensity)
 %
 % ClosedLoopSimulation()
-% s
+% 
 % DESCRIPTION:
 % Performs a closed-loop simulation of a model-based control algorithm for
-% given initial condition, control intervals, disturbance variables,
-% parameters, simulation model, observation model, and control algorithm.
-% Closed-loop is used when the input depends on the output; this function
-% is part of the PID-controller. 
+% given time range, initial condition, disturbance variables, insulin
+% levels, parameters, control algorithm, simulation model, observation 
+% model, control parameters, control state, control intervals and intensity
+% level. 
+% Closed-loop is used when the input depends on the 
+% output; this function is part of the PID-controller. 
 %
 % INPUT:
-%   x0                  - initial state                                     (dimension: nx    )
 %   tspan               - boundaries of the control intervals               (dimension: N+1   )
+%   x0                  - initial state                                     (dimension: nx    )
 %   D                   - disturbance variables for each control interval   (dimension: nd x N)
-%   p                   - parameters                                        (dimension: np    )
+%   U                   - Insulin levels of both bolus and basal            (dimension nu x N)
+%   p                   - parameters                                        (dimension: np   )
 %   simModel            - simulation model                                  (function handle)
 %   ctrlAlgorithm       - control algorithm                                 (function handle)
 %   ctrlPar             - controller parameters
 %   ctrlState0          - initial controller state                          (dimension: nc)
 %   simMethod           - simulation method                                 (function handle)
-%   NK                  - Number of steps in each control interval
-%   intensity           - The intensity value used for Euler Maruyama
+%   NK                  - Number of steps in each control interval          (scalar)
+%   intensity           - The intensity value used for Euler Maruyama       (scalar)
 %
 % OUTPUT:
 %   T - boundaries of control intervals (=tspan)    (dimension:      N+1)
@@ -71,7 +74,7 @@ N = numel(tspan)-1;
 % Number of time steps in each control interval
 Nk = NK;
 
-% Inizialising OUTPUT
+% Initialising Output
 T = zeros( 1, N+1);
 X = zeros(nx, N+1);
 Y = zeros(ny, N+1);
@@ -90,7 +93,7 @@ yk = y0;
 
 for k = 1:N
     
-    %%%% Inizializing the loop 
+    %%%% Initializing the loop 
     
     % Time
     tkp1 = tspan(k+1);
@@ -126,7 +129,6 @@ for k = 1:N
     tk = tkp1;
     xk = xkp1;
     yk = ykp1;
-    
     
     %%%% Storing solution 
     

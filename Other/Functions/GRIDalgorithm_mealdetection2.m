@@ -2,15 +2,18 @@ function D_detected = GRIDalgorithm_mealdetection2(G,Gmin,tau,delta_G,tspan,Ts)
 % GRIDalgorithm_mealdetection()
 % 
 % DESCRIPTION:
-% This function takes in the G, that is consists of severeal control steps
-% and computes the whole meal detection part of the GRID algorithm. This
-% means it is extended to several datapoints not only 1. 
+% This function takes in glucose measurements (G), that consists of several
+% control steps and computes the whole meal detection part of the GRID
+% algorithm. This means it is extended to several datapoints not only 1. It
+% differs from GRIDalgorithm_mealdetection by being able to test the
+% GRID-algorithm on any given glucose measurements where the control steps
+% are not equally distanced. 
 %
 % INPUT:
 % G             - The glucose concentration for several datapoints
 % Gmin          - Vector of Gmin values for the detection part
 % tau           - Filter time constant 
-% delta_ G      - From article 
+% delta_ G      - Maximum allowable ROC (from article)
 % t_vec         - The current time and the two previous time points 
 % Ts            - The step size between control steps. 
 %
