@@ -68,8 +68,6 @@ function  [ Gfm_vec , filt_prev , flag, zero_one ] = GRID_func( ...
 % s191159@student.dtu.dk
 % s204226@student.dtu.dk
 %
-% REFERENCE: 
-% MANGLER FRA ARTIKEL 
 %
 
 % Inisializing all values
